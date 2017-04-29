@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tabs>
+
+    <tab
+        id="@+id/tab_calls"
+        icon="@drawable/ic_phone_white_24dp"
+        title="@string/drawer_op_call_log" />
+    <tab
+        id="@+id/tab_contacts"
+        icon="@drawable/ic_users"
+        title="@string/drawer_op_contactos" />
+    <tab
+        id="@+id/tab_messages"
+        icon="@drawable/ic_chat_speech_bubbles"
+        title="@string/drawer_op_inbox" />
+    <!--
+    <tab
+        id="@+id/tab_dialer"
+        icon="@drawable/ic_telephone_keypad"
+        title="Marcador" />
+        -->
+    <tab
+        id="@+id/tab_chart"
+        icon="@drawable/ic_telephone_keypad"
+        title="Marcador " />
+</tabs>

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:fab="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:background="@color/md_grey_200"
+    android:layout_height="match_parent">
+
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/_recycler_contacts_list"
+        android:layout_width="match_parent"
+        android:scrollbars="vertical"
+        android:layout_height="match_parent"/>
+
+
+        <com.edxavier.cerberus_sms.helpers.TextViewHelper
+            android:id="@+id/empty_blaclist_message"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:visibility="gone"
+            android:text="@string/empty_sms_bl_msg" />
+
+    <include layout="@layout/admob_banner"/>
+    <!--
+        <android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/tools"
+            android:id="@+id/sms_warning_cardviewRow"
+            android:layout_gravity="center_horizontal|bottom"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="16dp"
+            card_view:cardElevation="4dp"
+            card_view:cardBackgroundColor="@color/md_yellow_900"
+            card_view:contentPaddingTop="18dp"
+            card_view:contentPaddingBottom="18dp"
+            card_view:cardCornerRadius="3dp">
+
+            <com.edxavier.cerberus_sms.helpers.TextViewHelper
+                android:layout_width="match_parent"
+                android:text="@string/version_warning"
+                android:gravity="center"
+                android:textColor="@color/md_white_1000"
+                android:layout_height="wrap_content" />
+
+
+            </android.support.v7.widget.CardView>
+            -->
+
+</FrameLayout>

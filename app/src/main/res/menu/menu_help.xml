@@ -1,0 +1,13 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.videumcorp.desarrolladorandroid.navigationdrawerandroidsupportlibrary.SettingsActivity">
+
+    <item android:id="@+id/action_rate"  android:icon="@drawable/ic_star"
+        android:orderInCategory="100" app:showAsAction="ifRoom" android:title="Valorar" />
+
+    <item android:id="@+id/action_share"  android:icon="@drawable/ic_share"
+        android:orderInCategory="100" app:showAsAction="ifRoom" android:title="Compartir" />
+
+
+</menu>

@@ -1,0 +1,92 @@
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:src="@drawable/ic_action_social_share_orange"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:layout_marginRight="5dp"
+            android:layout_marginEnd="5dp"
+            android:layout_gravity="right"
+            android:id="@+id/img_conversation_avatar_left" />
+
+        <android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/tools"
+            android:id="@+id/sms_bl_cardviewRow"
+            android:layout_gravity="center_horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="4dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginEnd="8dp"
+            card_view:cardElevation="4dp"
+            card_view:contentPadding="8dp"
+            card_view:cardCornerRadius="3dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:orientation="vertical"
+                android:layout_height="wrap_content">
+
+            <com.edxavier.cerberus_sms.helpers.TextViewHelper
+                android:id="@+id/txt_sms_body"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/md_black_1000_75"
+                android:text="sdsdgdssd fgsdgsdg dsgdfgsdg sdghds kjghsdkghlskdjhglksdgsd"
+                />
+
+            <com.edxavier.cerberus_sms.helpers.TextViewHelper
+                android:id="@+id/txt_sms_time"
+                android:layout_width="wrap_content"
+                android:layout_gravity="right"
+                android:text="12-nov-2015"
+                android:textSize="12sp"
+                android:layout_height="wrap_content" />
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_gravity="right"
+                    android:id="@+id/img_conversation_send_failures"
+                    android:src="@drawable/ic_error_64"
+                    android:layout_height="24dp" />
+
+            </LinearLayout>
+
+        </android.support.v7.widget.CardView>
+
+    </LinearLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <ImageView
+            android:id="@+id/img1"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:src="@drawable/ic_action_social_share_orange"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <ImageView
+            android:src="@drawable/ic_action_action_delete_orange"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_toLeftOf="@+id/img1"
+            android:layout_toStartOf="@+id/img1" />
+
+    </RelativeLayout>
+
+</LinearLayout>

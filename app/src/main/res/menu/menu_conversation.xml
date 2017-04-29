@@ -1,0 +1,12 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.videumcorp.desarrolladorandroid.navigationdrawerandroidsupportlibrary.SettingsActivity">
+
+    <item android:id="@+id/action_new_msg"  android:icon="@drawable/ic_chat_bubble_white_24dp"
+        android:orderInCategory="100" app:showAsAction="ifRoom" android:title="Nuevo mensaje" />
+
+    <item android:id="@+id/action_new_call"  android:icon="@drawable/ic_phone_white_24dp"
+        android:orderInCategory="100" app:showAsAction="ifRoom" android:title="Llamar" />
+
+</menu>

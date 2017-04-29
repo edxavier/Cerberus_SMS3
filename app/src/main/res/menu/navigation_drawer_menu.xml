@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single" android:id="@+id/s1">
+
+        <item
+            android:checked="true"
+            android:id="@+id/item_navigation_drawer_check_operador"
+            android:icon="@drawable/ic_cellular_network_100_1"
+            android:title="@string/drawer_operator_menu" />
+
+        <item
+            android:id="@+id/item_navigation_contacts"
+            android:icon="@drawable/ic_contacts_filled_100"
+            android:title="@string/drawer_op_contactos" />
+
+        <item
+            android:id="@+id/item_navigation_drawer_inbox"
+            android:icon="@drawable/ic_inbox_100"
+            android:title="@string/drawer_op_inbox" />
+
+
+        <item
+            android:id="@+id/item_navigation_drawer_call_log"
+            android:icon="@drawable/ic_calendar_filled_100"
+            android:title="@string/drawer_op_call_log" />
+
+        <!--
+        <item
+            android:id="@+id/item_navigation_drawer_help_and_feedback"
+            android:icon="@drawable/ic_delete_message_100"
+            android:title="@string/drawer_op_lista_negra" />
+            -->
+
+        <item
+            android:id="@+id/item_navigation_drawer_acerca_de"
+            android:icon="@drawable/ic_help_100"
+            android:title="@string/drawer_help_menu" />
+
+
+    </group>
+    <group android:id="@+id/sdfsd">
+
+    </group>
+
+
+
+</menu>

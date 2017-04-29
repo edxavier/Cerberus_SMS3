@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:fab="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:background="@color/md_white_1000"
+    android:gravity="center"
+    android:layout_height="match_parent">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <LinearLayout
+            android:orientation="vertical"
+            android:gravity="center"
+            android:padding="16dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:layout_width="80dp"
+                android:src="@drawable/material_sim_256"
+                android:layout_height="80dp" />
+
+            <com.edxavier.cerberus_sms.helpers.TextViewHelper
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:textSize="24dp"
+                android:text="@string/app_name" />
+
+            <com.edxavier.cerberus_sms.helpers.TextViewHelper
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:layout_marginBottom="16dp"
+                android:text="Version 2016.2.2.0"
+                android:id="@+id/app_version" />
+
+            <ImageView
+                android:layout_width="80dp"
+                android:src="@drawable/licence"
+                android:layout_height="50dp" />
+
+            <com.edxavier.cerberus_sms.helpers.TextViewHelper
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:gravity="left"
+                android:textSize="12sp"
+                android:text="@string/about" />
+
+
+
+        </LinearLayout>
+    </ScrollView>
+
+
+</LinearLayout>

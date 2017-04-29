@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/sms_bl_cardviewRow"
+    android:layout_gravity="center_horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="@dimen/card_view_margin_bottom"
+    card_view:cardBackgroundColor="@color/md_grey_50"
+    card_view:cardElevation="2dp"
+    card_view:contentPadding="4dp"
+    card_view:cardCornerRadius="3dp">
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <android.support.v7.widget.AppCompatImageView
+                android:layout_gravity="center"
+                android:id="@+id/avatar_operator"
+                app:srcCompat="@drawable/ic_user_red"
+                android:layout_width="60dp"
+                android:layout_height="60dp" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="65"
+                android:orientation="vertical"
+                android:padding="8dp">
+
+
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+
+                <com.edxavier.cerberus_sms.helpers.TextViewHelper
+                    android:layout_gravity="center"
+                    android:id="@+id/lbl_caller_name"
+                    android:layout_width="0dp"
+                    android:layout_weight="80"
+                    android:layout_height="wrap_content"
+                    android:textSize="16sp"
+                    android:textColor="@color/md_blue_grey_700"
+                    android:text="Ed" />
+
+                    <ImageView
+                        android:layout_marginLeft="4dp"
+                        android:layout_marginStart="4dp"
+                        android:id="@+id/call_count"
+                        android:layout_gravity="center"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp" />
+
+                    </LinearLayout>
+
+                <com.edxavier.cerberus_sms.helpers.TextViewHelper
+                    android:layout_width="wrap_content"
+                    android:id="@+id/lbl_caller_number"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/md_blue_grey_400"
+                    android:textSize="12sp"
+                    android:text="8494 3267"
+                    />
+
+                <com.edxavier.cerberus_sms.helpers.TextViewHelper
+                    android:layout_width="wrap_content"
+                    android:id="@+id/lbl_call_datetime"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/md_blue_grey_300"
+                    android:textSize="12sp"
+                    android:textStyle="italic"
+                    android:text="text"
+                    />
+
+                <com.edxavier.cerberus_sms.helpers.TextViewHelper
+                    android:layout_width="wrap_content"
+                    android:id="@+id/lbl_call_areaName"
+                    android:layout_height="wrap_content"
+                    android:textSize="12sp"
+                    android:textStyle="italic"
+                    android:text="test"
+                    />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="35"
+                android:orientation="vertical"
+                android:gravity="right"
+                android:padding="8dp">
+
+                <com.edxavier.cerberus_sms.helpers.TextViewHelper
+                    android:id="@+id/lbl_call_operator"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/md_green_400"
+                    android:textSize="13sp"
+                    android:text="Movistar"
+                    />
+
+                <com.edxavier.cerberus_sms.helpers.TextViewHelper
+                    android:id="@+id/lbl_call_duration"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="12sp"
+                    android:gravity="right"
+                    android:text="25seg"
+                    />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:id="@+id/call_type"
+                    android:src="@drawable/ic_action_communication_call_made"
+                    android:layout_height="wrap_content" />
+
+
+            </LinearLayout>
+
+
+        </LinearLayout>
+
+</android.support.v7.widget.CardView>

@@ -1,0 +1,12 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.videumcorp.desarrolladorandroid.navigationdrawerandroidsupportlibrary.SettingsActivity">
+
+    <item android:id="@+id/action_call_bl"  android:icon="@drawable/ic_cellular_network_100_1"
+        android:orderInCategory="100" app:showAsAction="ifRoom" android:title="Llamar" />
+
+    <item android:id="@+id/action_write_bl"  android:icon="@drawable/ic_create_new_100"
+        android:orderInCategory="100" app:showAsAction="ifRoom" android:title="Escribir" />
+
+</menu>

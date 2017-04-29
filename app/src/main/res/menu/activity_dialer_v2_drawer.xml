@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+
+        <item
+            android:id="@+id/nav_charts"
+            android:icon="@drawable/ic_pie_chart"
+            android:title="@string/statistics" />
+        <item
+            android:id="@+id/nav_remove_ads"
+            android:icon="@drawable/ic_coins_on_hand"
+            android:title="@string/remove_ads" />
+
+    <item
+        android:icon="@drawable/ic_info"
+        android:id="@+id/ac_drawer_app_info"
+        android:visible="true"
+        android:title="@string/app_info" />
+    <item android:title="@string/communicate">
+        <menu>
+            <item
+                android:id="@+id/nav_share"
+                android:icon="@drawable/ic_menu_share"
+                android:title="@string/share_app" />
+            <item
+                android:id="@+id/nav_rate"
+                android:icon="@drawable/ic_star"
+                android:title="@string/rate_app" />
+
+            <item
+                android:icon="@drawable/ic_send"
+                android:id="@+id/ac_drawer_issues"
+                android:visible="true"
+                android:title="@string/report_issues" />
+
+
+        </menu>
+    </item>
+
+</menu>
