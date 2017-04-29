@@ -199,6 +199,7 @@ encontrado.
     <string name="contacts_chart_title">Contactos por operador</string>
     <string name="sms_chart_title">Mensajes por operador</string>
     <string name="app_info">App Info</string>
+    <string name="resync">\"Sincronizar \"</string>
 
 
 </resources>

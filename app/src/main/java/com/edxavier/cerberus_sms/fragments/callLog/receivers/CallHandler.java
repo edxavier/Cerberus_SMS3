@@ -25,8 +25,10 @@ import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.InterstitialAd;
 import com.google.firebase.crash.FirebaseCrash;
+import com.pixplicity.easyprefs.library.Prefs;
 
 import java.util.Date;
+import java.util.Random;
 
 import io.realm.Realm;
 import io.realm.RealmResults;
@@ -50,11 +52,13 @@ public class CallHandler extends PhonecallReceiver {
     protected void onIncomingCallStarted(Context ctx, String number, Date start) {
         super.onIncomingCallStarted(ctx, number, start);
         if(checkDrawPermission(ctx)) {
+            Log.e("EDER", "onIncomingCallStarted");
             if(CallHandler.manager==null)
                 CallHandler.manager = (WindowManager) ctx.getSystemService(Context.WINDOW_SERVICE);
             Realm realm = Realm.getDefaultInstance();
             WindowManager.LayoutParams layoutParams = setupWM(ctx);
             LayoutInflater layoutInflater = (LayoutInflater) ctx.getSystemService(LAYOUT_INFLATER_SERVICE);
+            //Verificar si existe una ventana flotante visible y removerla
             if(CallHandler.view !=null && CallHandler.view.isShown())
                 CallHandler.manager.removeView(CallHandler.view);
             CallHandler.view = layoutInflater.inflate(R.layout.floating_window_v2, null);
@@ -68,7 +72,8 @@ public class CallHandler extends PhonecallReceiver {
                 @Override
                 public void onClick(View v) {
                     try {
-                        CallHandler.manager.removeView(CallHandler.view);
+                        if(CallHandler.view !=null && CallHandler.view.isShown())
+                            CallHandler.manager.removeView(CallHandler.view);
                     }catch (Exception e){
                         CallHandler.manager.removeView(CallHandler.view);
                         FirebaseCrash.logcat(Log.ERROR, "onIncomingCallStarted", e.getMessage());
@@ -147,7 +152,8 @@ public class CallHandler extends PhonecallReceiver {
                 @Override
                 public void onClick(View v) {
                     try {
-                        CallHandler.manager.removeView( CallHandler.view);
+                        if(CallHandler.view !=null && CallHandler.view.isShown())
+                            CallHandler.manager.removeView(CallHandler.view);
                     }catch (Exception e){
                         CallHandler.manager.removeView( CallHandler.view);
                         FirebaseCrash.logcat(Log.ERROR, "onOutgoingCallStarted", e.getMessage());
@@ -236,6 +242,7 @@ public class CallHandler extends PhonecallReceiver {
     protected void onMissedCall(Context ctx, String number, Date start) {
         super.onMissedCall(ctx, number, start);
         try {
+            getads(ctx);
             if(CallHandler.view !=null && CallHandler.view.isShown())
                 CallHandler.manager.removeView(CallHandler.view);
         }catch (Exception ignored){}
@@ -304,7 +311,8 @@ public class CallHandler extends PhonecallReceiver {
                             CallHandler.manager.updateViewLayout(CallHandler.view, updatedParameters);
                         }catch (Exception e){
                             FirebaseCrash.logcat(Log.ERROR, "ACTION_MOVE", "Error al mover la ventana");
-                            CallHandler.manager.removeView(CallHandler.view);
+                            if(CallHandler.view !=null && CallHandler.view.isShown())
+                                CallHandler.manager.removeView(CallHandler.view);
                         }
 
                     default:
@@ -363,22 +371,32 @@ public class CallHandler extends PhonecallReceiver {
     }
     public void getads(Context ctx){
 
-        InterstitialAd mInterstitialAd = new InterstitialAd(ctx);
-        mInterstitialAd.setAdUnitId("ca-app-pub-3940256099942544/1033173712");
+        int ne =  Prefs.getInt("num_missed_calls", 0);
+        Prefs.putInt("num_missed_calls", ne + 1);
+        if(Prefs.getInt("num_missed_calls", 0) == Prefs.getInt("show_after_missed", 4)) {
+            Prefs.putInt("num_missed_calls", 0);
+            Random r = new Random();
+            int Low = 4;
+            int High = 8;
+            int rnd = r.nextInt(High - Low) + Low;
+            Prefs.putInt("show_after_missed", rnd);
 
-        mInterstitialAd.setAdListener(new AdListener() {
-            @Override
-            public void onAdLoaded() {
-                super.onAdLoaded();
-                mInterstitialAd.show();
-            }
-        });
+            InterstitialAd mInterstitialAd = new InterstitialAd(ctx);
+            mInterstitialAd.setAdUnitId(ctx.getString(R.string.id_banner_interstical));
 
-        AdRequest adRequest = new AdRequest.Builder()
-                //.addTestDevice("0B307F34E3DDAF6C6CAB28FAD4084125")
-                .build();
+            mInterstitialAd.setAdListener(new AdListener() {
+                @Override
+                public void onAdLoaded() {
+                    super.onAdLoaded();
+                    mInterstitialAd.show();
+                }
+            });
 
-        mInterstitialAd.loadAd(adRequest);
+            AdRequest adRequest = new AdRequest.Builder()
+                    //.addTestDevice("0B307F34E3DDAF6C6CAB28FAD4084125")
+                    .build();
 
+            mInterstitialAd.loadAd(adRequest);
+        }
     }
 }

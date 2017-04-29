@@ -56,4 +56,9 @@ public class CalllogPresenterImpl implements CallLogPresenter {
     public void syncCalls() {
         service.syncCallsToRealm();
     }
+
+    @Override
+    public void clearRecords() {
+        service.clearRecords();
+    }
 }

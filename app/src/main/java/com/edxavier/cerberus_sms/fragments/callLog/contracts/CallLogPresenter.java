@@ -11,6 +11,7 @@ public interface CallLogPresenter {
 
     void getCallsFromRealm();
     void syncCalls();
+    void clearRecords();
 
 
 }

@@ -441,7 +441,7 @@ public class DialerActivityV2 extends AppCompatActivity
         if(Prefs.getInt("num_show_interstical", 0) == Prefs.getInt("show_after", 7)) {
             Prefs.putInt("num_show_interstical", 0);
             Random r = new Random();
-            int Low = 11;int High = 16;
+            int Low = 7;int High = 14;
             int rnd = r.nextInt(High-Low) + Low;
             Prefs.putInt("show_after", rnd);
 

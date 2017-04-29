@@ -1,0 +1,18 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.videumcorp.desarrolladorandroid.navigationdrawerandroidsupportlibrary.SettingsActivity">
+
+    <!--
+    <item android:id="@+id/action_share"  android:icon="@drawable/ic_share"
+        android:orderInCategory="100" app:showAsAction="ifRoom" android:title="@string/share_app" />
+
+-->
+
+    <item android:id="@+id/action_resync"  android:icon="@drawable/ic_sync"
+        android:orderInCategory="100" app:showAsAction="ifRoom" android:title="@string/resync" />
+
+    <item android:id="@+id/action_help"  android:icon="@drawable/ic_info"
+        android:orderInCategory="100" app:showAsAction="never" android:title="@string/drawer_help_menu" />
+
+</menu>

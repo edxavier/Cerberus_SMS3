@@ -130,7 +130,6 @@ public class CalllogServiceImpl implements CallLogService{
                             });
                         }
                     }
-
                     //calls.add(callLog);
                 }
             if (cur != null) {
@@ -178,6 +177,14 @@ public class CalllogServiceImpl implements CallLogService{
     public void onDestroy() {
         if(this.realmG !=null)
             this.realmG.close();
+    }
+
+    @Override
+    public void clearRecords() {
+        realmG.executeTransaction(realm -> {
+            realm.delete(CallsHistoryRealm.class);
+            realm.delete(CallsRealm.class);
+        });
     }
 
 }

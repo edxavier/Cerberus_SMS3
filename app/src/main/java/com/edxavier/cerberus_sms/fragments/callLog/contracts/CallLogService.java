@@ -13,4 +13,7 @@ public interface CallLogService {
     void syncCallsToRealm();
     RealmResults<CallsRealm> getCallsFromRealm();
     void onDestroy();
+
+    void clearRecords();
+
 }

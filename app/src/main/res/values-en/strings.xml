@@ -157,5 +157,6 @@ found.
     <string name="outgo_calls_chart">Outgoing calls per operator</string>
     <string name="sms_chart_title">Messages by operator</string>
     <string name="app_info">App Info</string>
+    <string name="resync">Synchronize</string>
 
 </resources>
