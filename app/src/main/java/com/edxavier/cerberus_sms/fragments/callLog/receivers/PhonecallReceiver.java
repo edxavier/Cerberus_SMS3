@@ -7,6 +7,7 @@ import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.Toast;
 
 import com.google.firebase.crash.FirebaseCrash;
 
@@ -30,19 +31,15 @@ import java.util.Date;
     @Override
     public void onReceive(Context context, Intent intent) {
         //We listen to two intents.  The new outgoing call only tells us of an outgoing call.  We use it to get the number.
+        Log.e("EDER", intent.getAction());
         if (intent.getAction().equals("android.intent.action.NEW_OUTGOING_CALL")) {
             savedNumber = intent.getExtras().getString("android.intent.extra.PHONE_NUMBER");
         }
         else{
-            String stateStr = "";
-            String number = "";
-            try {
-                stateStr = intent.getExtras().getString(TelephonyManager.EXTRA_STATE);
-                number = intent.getExtras().getString(TelephonyManager.EXTRA_INCOMING_NUMBER);
-            }catch (Exception e){
-                FirebaseCrash.logcat(Log.ERROR, "PhonecallReceiver", "");
-            }
-            if(number.length()>1) {
+
+            String stateStr = intent.getExtras().getString(TelephonyManager.EXTRA_STATE);
+            String number = intent.getExtras().getString(TelephonyManager.EXTRA_INCOMING_NUMBER);
+           
                 int state = 0;
                 if (stateStr != null && stateStr.equals(TelephonyManager.EXTRA_STATE_IDLE)) {
                     state = TelephonyManager.CALL_STATE_IDLE;
@@ -52,7 +49,6 @@ import java.util.Date;
                     state = TelephonyManager.CALL_STATE_RINGING;
                 }
                 onCallStateChanged(context, state, number);
-            }
         }
     }
 

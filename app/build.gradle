@@ -30,8 +30,8 @@ android {
         applicationId "com.edxavier.cerberus_sms"
         minSdkVersion 15
         targetSdkVersion 25
-        versionCode 16
-        versionName "3.0.4.1704"
+        versionCode 18
+        versionName "3.0.6.1704"
         multiDexEnabled true
     }
     packagingOptions {

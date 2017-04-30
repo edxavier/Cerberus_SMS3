@@ -24,6 +24,7 @@ import com.edxavier.cerberus_sms.helpers.Utils;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.InterstitialAd;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.crash.FirebaseCrash;
 import com.pixplicity.easyprefs.library.Prefs;
 
@@ -52,15 +53,19 @@ public class CallHandler extends PhonecallReceiver {
     protected void onIncomingCallStarted(Context ctx, String number, Date start) {
         super.onIncomingCallStarted(ctx, number, start);
         if(checkDrawPermission(ctx)) {
-            Log.e("EDER", "onIncomingCallStarted");
             if(CallHandler.manager==null)
                 CallHandler.manager = (WindowManager) ctx.getSystemService(Context.WINDOW_SERVICE);
             Realm realm = Realm.getDefaultInstance();
             WindowManager.LayoutParams layoutParams = setupWM(ctx);
             LayoutInflater layoutInflater = (LayoutInflater) ctx.getSystemService(LAYOUT_INFLATER_SERVICE);
             //Verificar si existe una ventana flotante visible y removerla
-            if(CallHandler.view !=null && CallHandler.view.isShown())
+            if(CallHandler.view !=null && CallHandler.view.isShown()) {
                 CallHandler.manager.removeView(CallHandler.view);
+                try {
+                    FirebaseAnalytics analytics = FirebaseAnalytics.getInstance(ctx);
+                    analytics.logEvent("remove_floatW", null);
+                }catch (Exception ignored){}
+            }
             CallHandler.view = layoutInflater.inflate(R.layout.floating_window_v2, null);
             setTouchListener(layoutParams);
             AppCompatImageView close = (AppCompatImageView) CallHandler.view.findViewById(R.id.close_floating);
@@ -242,7 +247,8 @@ public class CallHandler extends PhonecallReceiver {
     protected void onMissedCall(Context ctx, String number, Date start) {
         super.onMissedCall(ctx, number, start);
         try {
-            getads(ctx);
+            if(!Prefs.getBoolean("ads_removed", false))
+                getads(ctx);
             if(CallHandler.view !=null && CallHandler.view.isShown())
                 CallHandler.manager.removeView(CallHandler.view);
         }catch (Exception ignored){}
@@ -380,6 +386,10 @@ public class CallHandler extends PhonecallReceiver {
             int High = 8;
             int rnd = r.nextInt(High - Low) + Low;
             Prefs.putInt("show_after_missed", rnd);
+            try {
+                FirebaseAnalytics analytics = FirebaseAnalytics.getInstance(ctx);
+                analytics.logEvent("ads_after_missed_call", null);
+            }catch (Exception ignored){}
 
             InterstitialAd mInterstitialAd = new InterstitialAd(ctx);
             mInterstitialAd.setAdUnitId(ctx.getString(R.string.id_banner_interstical));
