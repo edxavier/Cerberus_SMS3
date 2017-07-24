@@ -1,45 +1,16 @@
 <resources>
-    <string name="FontLatoLight" translatable="false">Lato-Light.ttf</string>
-    <string name="FontLatoMedium" translatable="false">Lato-Medium.ttf</string>
-    <string name="Ailerons" translatable="false">Ailerons.otf</string>
-
-
-    <string name="FontRobotoBold" translatable="false">RobotoBold.ttf</string>
-    <string name="FontRobotoItalic" translatable="false">RobotoItalic.ttf</string>
-    <string name="FontRobotoLight" translatable="false">Roboto-Light.ttf</string>
-    <string name="FontRobotoMedium" translatable="false">Roboto-Medium.ttf</string>
-    <string name="FontRobotoRegular" translatable="false">RobotoRegular.ttf</string>
-    <string name="FontRobotoThin" translatable="false">Roboto-Thin.ttf</string>
-    <string name="FontRobotoCondensedRegular" translatable="false">RobotoCondensedRegular.ttf</string>
 
 
     <string name="app_name">Verifica Operador Nicaragua</string>
     <string name="dev_mail" translatable="false">edxavier05@gmail.com</string>
     <string name="action_settings">Preferencias</string>
 
-    <string name="drawer_op_lista_negra">Bloqueo sms</string>
-    <string name="empty_sms_bl_msg">No hay datos que mostrar \n Ingresa un número para bloquear los sms entrantes</string>
-    <string name="verifica_operador_msg">Introduce el número telefónico o nombre de contacto para verificar su operador</string>
-
 
     <string name="drawer_op_contactos">Contactos</string>
     <string name="drawer_op_inbox">Mensajes</string>
     <string name="drawer_op_call_log">Llamadas</string>
 
-    <string name="add_bl_tittle">Agregar número de:</string>
-    <string name="delete_blacklist">Eliminado de la lista: </string>
-    <string name="select_blacklist">Selecciona un registro </string>
-    <string name="added_blacklist"> ya fue añadido  anteriormente</string>
-    <string name="add_blacklist"> añadido </string>
-    <string name="continue_delete"> Continuar </string>
     <string name="notification"> Cerbero sms necesita ser tu aplicación de sms predeterminada para poder eliminar mensajes entrantes no deseados de: </string>
-
-    <string name="spiner_prompt_text" translatable="false">Metodo de entrada</string>
-    <string-array name="bl_entry_arrays">
-        <item>Contactos</item>
-        <item>Bandeja de entrada</item>
-        <item>Historial de llamadas</item>
-    </string-array>
 
     <string name="usa">Estados Unidos</string>
     <string name="ca" translatable="false">California</string>
@@ -48,57 +19,28 @@
     <string-array name="opciones_contacto">
         <item>Llamar</item>
         <item>Escribir</item>
-        <!--<item>Bloquear sms entrantes</item>
-        <item>Eliminar</item>-->
+        <!--<item>Bloquear sms entrantes</item>-->
+        <item>Eliminar registros</item>
     </string-array>
-
-    <string-array name="opciones_contacto2">
+    <string-array name="opciones_sms">
         <item>Llamar</item>
         <item>Escribir</item>
         <!--<item>Bloquear sms entrantes</item>-->
     </string-array>
 
-    <string-array name="opciones_blocksms">
-        <item>Desbloquear</item>
-    </string-array>
-
-    <string-array name="delete_contact_options">
-        <item>Eliminar de contactos del telefono</item>
-    </string-array>
-
-    <string-array name="save_contact_options">
-        <item>Guardar en contactos del telefono</item>
-    </string-array>
-
-
     <string name="drawer_operator_menu">Verifica Operador</string>
     <string name="drawer_help_menu">Acerca de</string>
-    <string name="Licence">
-        Verificar Operador Nicaragua se distribuye bajo una Licencia Creative Commons Atribución-NoComercial-CompartirIgual 4.0 Internacional.
-    </string>
-    <string name="version_warning">Establecer como aplicacion sms por defecto</string>
 
-    <string name="eliminar">Eliminar</string>
-    <string name="elimianr_msg">¿Eliminar la conversacion?</string>
-    <string name="eliminar_msg2">No fue posible eliminar la conversacion</string>
-
-    <string name="cargando">Cargando...</string>
     <string name="new_sms_dest">Nombre o número</string>
-    <string name="enviar">Enviar</string>
     <string name="cancelar">Cancelar</string>
-    <string name="para">Para:</string>
-    <string name="mensaje">Mensaje:</string>
     <string name="new_sms_body">Escribe tu mensaje</string>
-    <string name="numero_telef">Número telefonico o nombre de contacto</string>
 
-    <string name="hello_blank_fragment" translatable="false">Hello blank fragment</string>
     <string name="title_activity_new_black_list_entry">Nuevo mensaje</string>
     <string name="title_activity_detail_conversation" translatable="false">DetailConversation</string>
 
     <string name="id_banner1" translatable="false">ca-app-pub-9964109306515647/5364572210</string>
     <string name="id_banner_interstical" translatable="false">ca-app-pub-9964109306515647/2039253411</string>
     <string name="id_banner_native_small" translatable="false">ca-app-pub-9964109306515647/6089869010</string>
-    <string name="id_banner_native_medium" translatable="false">ca-app-pub-9964109306515647/4973062610</string>
 
     <string name="about">
         <b>Acerca de la aplicación</b>\n\n
@@ -127,39 +69,19 @@ encontrado.
     <string name="navigation_drawer_open" translatable="false">Open Drawer</string>
     <string name="navigation_drawer_close" translatable="false">Close Drawer</string>
     <string name="empty_contacts_msg">¡No hay contactos para mostrar! </string>
-    <string name="contacts_info_loading">Cargando contactos...</string>
     <string name="search_contact_toolbar">Buscar contacto</string>
     <string name="llamar">Llamar</string>
     <string name="escribir">Escribir</string>
-    <string name="new_contact">Nuevo contacto</string>
-    <string name="contact_name">Nombre</string>
-    <string name="name_hint">Nombres y apellidos</string>
-    <string name="save">Guardar</string>
-    <string name="phone_hint">Numero telefonico</string>
-    <string name="contact_saved_msg">¡Contacto guardado!</string>
-    <string name="delete_contact">¿Borrar</string>
-    <string name="delete_contact_warning">Esta operación borrara el contacto de la aplicación y de la agenda telefonica. Si este mismo contacto contine mas de un numero asociado todos seran eliminados. Si estas seguro de lo que deseas presiona en continuar.</string>
-    <string name="agree">Continuar</string>
     <string name="share_contact">Compartir</string>
     <string name="share_using">Compartir usando:</string>
-    <string name="more_detail">Detalles</string>
     <string name="save_info">¡Informacion!</string>
-    <string name="save_info_extended">El contacto fue creado tambien en tu lista de contactos</string>
-    <string name="delete_contact_error">Ha ocurrido un error al intentar eleminar el contacto de tu agenda telefonica.</string>
-    <string name="empty_contacts_list">¡Tu lista de contactos esta vacia!</string>
     <string name="no_read_perms">No se poseen permisos para leer contactos</string>
-    <string name="save_on_phone_agent">Guardar contacto en agenda del telefono</string>
-    <string name="contact_exist">¡Este número de teléfono ya existe en tu agenda!</string>
-    <string name="no_write_permissions">Sin permiso para crear o eliminar contactos</string>
     <string name="call_msg_atempt">Ingresa al menos 3 dígitos  para realizar llamada.</string>
     <string name="sms_msg_atempt">Ingrese al menos 3 dígitos para intentar enviar el SMS</string>
     <string name="empty_call_log_msg">No hay registros para mostrar</string>
     <string name="call_log_info_loading">Cargado registros de llamadas</string>
-    <string name="incoming_call_msg">Llamada de:</string>
-    <string name="outgoing_call_msg">Llamando a:</string>
     <string name="messages_info_loading">Cargando mensajes...</string>
     <string name="empty_messages_msg">¡No hay mensajes que mostrar!</string>
-    <string name="no_sms_perms">Sin permiso para leer mensajes</string>
     <string name="sync_contacts_msg">Sincronizando contactos...</string>
     <string name="contact_perms_info">La aplicación requiere leer tus contactos para poder sincronizase con tu agenda de contactos, esta información es únicamente para uso interno de la aplicación.</string>
     <string name="info">¡Informacion!</string>
@@ -168,13 +90,9 @@ encontrado.
     <string name="alert_info">La aplicación necesita permiso para poder mostrar una ventana que se dibuja sobre todas las demás al realizar o recibir una llamada, esta ventana te mostrara el operador del número con el cual te comunicarás.</string>
     <string name="perm_denied">¡Permiso denegado!</string>
     <string name="sms_perms_info">La aplicación requiere permiso para leer tus SMS, esta información es para uso interno de la aplicación únicamente.</string>
-    <string name="delete_records">Eliminar Registros</string>
-    <string name="delete_records_warning">Esta acción eliminara todos los registros de la aplicación. Si esto es lo que realmente desea presione: Continuar.</string>
     <string name="share_app_msg">\nIdentifica el operador al que pertenece un celular en Nicaragua de manera fácil con esta app. \n\n</string>
-    <string name="dialog_ok" translatable="false">OK</string>
     <string name="title_activity_main2" translatable="false">Main2Activity</string>
     <string name="section_format" translatable="false">Hello World from section: %1$d</string>
-    <string name="dialer_activity">Marcador Verificar Operador</string>
 
     <string name="share_app">Compartir</string>
     <string name="rate_app">Valorar</string>
@@ -200,6 +118,11 @@ encontrado.
     <string name="sms_chart_title">Mensajes por operador</string>
     <string name="app_info">App Info</string>
     <string name="resync">\"Sincronizar \"</string>
+    <string name="drawer_delete_calls">Eliminar registros</string>
+    <string name="delete_calls_content">Se eliminaran los registros de llamadas de la aplicación y del teléfono, ¿deseas continuar?</string>
+    <string name="delete_calls_fail">No se pudieron eliminar los registros</string>
+    <string name="delete_calls_exception">Ocurrió un error al intentar eliminar los registros</string>
+    <string name="version">Versión %s</string>
 
 
 </resources>

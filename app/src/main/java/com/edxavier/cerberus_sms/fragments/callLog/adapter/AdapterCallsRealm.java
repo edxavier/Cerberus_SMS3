@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.edxavier.cerberus_sms.R;
@@ -183,24 +184,47 @@ public class AdapterCallsRealm extends RecyclerView.Adapter<AdapterCallsRealm.Vi
                         .itemsCallback(new MaterialDialog.ListCallback() {
                             @Override
                             public void onSelection(MaterialDialog dialog, final View view, int which, CharSequence text) {
+                                try{
+                                    switch (which) {
+                                        case 0:
+                                            String uri = "tel:" + call.call_phone_number.replaceAll("\\s+", "");
+                                            Intent intent = new Intent(Intent.ACTION_CALL);
+                                            intent.setData(Uri.parse(uri));
+                                            try {
+                                                view.getContext().startActivity(intent);
+                                            }catch (Exception ignored){}
+                                            break;
+                                        case 1:
+                                            Intent intent2 = new Intent(Intent.ACTION_SENDTO,
+                                                    Uri.parse("smsto:" + call.call_phone_number.replaceAll("\\s+", "")));
+                                            intent2.putExtra("sms_body", "");
+                                            view.getContext().startActivity(intent2);
+                                            break;
+                                        case 2:
+                                            String name;
+                                            if(call.contact!=null)
+                                                name = call.contact.contact_name;
+                                            else
+                                                name = (call.call_phone_number);
+                                            MaterialDialog dlg = new MaterialDialog.Builder(v.getContext())
+                                                    .title(name)
+                                                    .content(v.getContext().getString(R.string.delete_calls_content))
+                                                    .positiveText(v.getContext().getString(R.string.accept))
+                                                    .negativeText(v.getContext().getString(R.string.cancelar))
+                                                    .positiveColor(v.getContext().getResources().getColor(R.color.md_red_700))
+                                                    .negativeColor(v.getContext().getResources().getColor(R.color.md_blue_grey_700))
+                                                    .onPositive((dialog1, which2) -> {
+                                                        boolean deleted = presenter.clearContactReacords(call.call_phone_number);
+                                                        if(!deleted) {
+                                                            Toast.makeText(v.getContext(),v.getContext().getString(R.string.delete_calls_fail),
+                                                                    Toast.LENGTH_LONG).show();
+                                                        }
+                                                    }).build();
+                                            dlg.show();
+                                            break;
 
-                                switch (which) {
-                                    case 0:
-                                        String uri = "tel:" + call.call_phone_number.replaceAll("\\s+", "");
-                                        Intent intent = new Intent(Intent.ACTION_CALL);
-                                        intent.setData(Uri.parse(uri));
-                                        try {
-                                            view.getContext().startActivity(intent);
-                                        }catch (Exception ignored){}
-                                        break;
-                                    case 1:
-                                        Intent intent2 = new Intent(Intent.ACTION_SENDTO,
-                                                Uri.parse("smsto:" + call.call_phone_number.replaceAll("\\s+", "")));
-                                        intent2.putExtra("sms_body", "");
-                                        view.getContext().startActivity(intent2);
-                                        break;
-
-                                }
+                                    }
+                                }catch (Exception ignored){}
                             }
                         })
                         .show();

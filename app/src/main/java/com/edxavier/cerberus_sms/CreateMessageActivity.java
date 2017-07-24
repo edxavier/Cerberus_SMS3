@@ -102,7 +102,7 @@ public class CreateMessageActivity extends AppCompatActivity implements AdapterV
                 finish();
                 return true;
 
-            case R.id.action_new_msg:
+            case R.id.home:
                 if(Utils.isInteger(autoComplete.getText().toString().replace("+",""))
                         && autoComplete.getText().toString().length()>=2) {
                     destino = autoComplete.getText().toString();

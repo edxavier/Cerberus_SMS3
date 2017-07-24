@@ -1,60 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="action_settings">Settings</string>
-    <string name="drawer_op_lista_negra">Sms black list</string>
-    <string name="add_bl_tittle">Add number from:</string>
-    <string name="added_blacklist">was already added</string>
-    <string name="delete_blacklist">Deleted from list</string>
     <string name="drawer_op_call_log">Calls</string>
     <string name="drawer_op_contactos">Contacts</string>
     <string name="drawer_op_inbox">Messages</string>
-    <string name="empty_sms_bl_msg">No data to show\n Add a number to block incoming sms</string>
-    <string name="select_blacklist">Select a record</string>
     <string name="title_activity_new_black_list_entry">New Message</string>
-    <string name="add_blacklist">added</string>
     <string name="drawer_help_menu">About</string>
     <string name="usa">United States</string>
-    <string name="verifica_operador_msg">Enter the phone number or contact name to verify your operator</string>
     <string name="notification">Cerberus SMS need to be your default SMS application to eliminate unwanted incoming messages:</string>
     <string name="drawer_operator_menu">Check Operator</string>
     <string name="app_name">Check Operator Nic</string>
-    <string name="cargando">Loading..</string>
 
     <string-array name="opciones_contacto">
         <item>Call</item>
         <item>Write</item>
-        <!--<item>Block incoming sms</item>
-        <item>Delete</item>-->
+        <!--<item>Block incoming sms</item>-->
+        <item>Delete history</item>
     </string-array>
 
-    <string-array name="opciones_contacto2">
+    <string-array name="opciones_sms">
         <item>Call</item>
         <item>Write</item>
         <!--<item>Block incoming sms</item>-->
     </string-array>
-
-    <string-array name="opciones_blocksms">
-        <item>Unlock</item>
-    </string-array>
-
-    <string-array name="delete_contact_options">
-        <item>Delete from Phone contact list</item>
-    </string-array>
-
-    <string-array name="save_contact_options">
-        <item>Save on Phone contact list</item>
-    </string-array>
-
-
-    <string name="numero_telef">Phone number or contact name</string>
     <string name="new_sms_dest">Name or number</string>
     <string name="new_sms_body">Write your message</string>
     <string name="cancelar">Cancel</string>
-    <string name="enviar">Send</string>
-    <string name="mensaje">Message:</string>
-    <string name="para">To:</string>
-    <string name="version_warning">Set as default sms application</string>
-    <string name="Licence">Cerberus sms by Eder Xavier Rojas L. is distributed under a Creative Commons Attribution-Noncommercial-Share Alike 4.0 International.</string>
 
     <string name="about">
        <b>About application</b>\n\n
@@ -78,61 +49,29 @@ found.
 
       The data used by the application, phone numbers specifically, are only for internal use by the application.
     </string>
-    <string name="elimianr_msg">Delete conversation?</string>
-    <string name="eliminar">Delete</string>
-    <string name="eliminar_msg2">It was not possible to eliminate the conversation</string>
     <string name="empty_contacts_msg">No contacts to display!</string>
-    <string name="contacts_info_loading">Loading contacts...</string>
     <string name="search_contact_toolbar">Search contact</string>
     <string name="llamar">Call</string>
     <string name="escribir">Write sms</string>
-    <string name="contact_name">Name</string>
-    <string name="name_hint">First and last name</string>
-    <string name="new_contact">New contact</string>
-    <string name="phone_hint">Phone number</string>
-    <string name="save">Save</string>
-    <string name="agree">Continue</string>
-    <string name="contact_saved_msg">Contact saved!</string>
-    <string name="delete_contact">Delete contact</string>
     <string name="share_contact">Share</string>
     <string name="share_using">Share using:</string>
-    <string name="delete_contact_warning">This will erase the contact of the application, if the same exists in your phone list will reappear the next time you load the contacts because the app syncs with your phone list, if you want to delete permanently, be sure to delete it first your original contacts list.</string>
-    <string name="empty_contacts_list">Your contact list is empty!</string>
     <string name="no_read_perms">No contacts read permissions!</string>
     <string name="save_info">Information!</string>
-    <string name="save_info_extended">The new contact was created on your phone contacts list</string>
-    <string name="delete_contact_error">An error occurred while trying to delete the contact from your phonebook</string>
-    <string name="more_detail">Details</string>
-    <string name="save_on_phone_agent">Save contact on phonebook</string>
-    <string name="contact_exist">This phone number already exist on your phonebook!</string>
-    <string name="no_write_permissions">No create o delete contacts persmissions!</string>
     <string name="call_log_info_loading">Loading call log..</string>
     <string name="call_msg_atempt">Enter at least 3 digits to make call.</string>
-    <string name="outgoing_call_msg">Calling to:</string>
-    <string name="incoming_call_msg">Call from:</string>
     <string name="empty_call_log_msg">No records to show!</string>
     <string name="empty_messages_msg">No messages to show!</string>
     <string name="messages_info_loading">Loading messages...</string>
-    <string name="no_sms_perms">No permissions to read messages!</string>
     <string name="sync_contacts_msg">Synchronizing contacts...</string>
     <string name="alert_info">The application needs permission to display a window that is drawn above all others when making or receiving a call, this window will show the operator the number with which you will communicate.</string>
     <string name="calls_perms_info">The application requires permission to synchronize with your call log. This information is only for internal use by the application. If you agree press OK.</string>
     <string name="contact_perms_info">The application requires read your contacts to sync with your phonebook, this information is only for internal use by the application.</string>
-    <string name="continue_delete">Continue</string>
-    <string name="delete_records">Delete Records</string>
-    <string name="delete_records_warning">This action will delete all records of the application. If this is what you really want press: Continue.</string>
     <string name="info">Infotmation</string>
     <string name="perm_denied">Permission denied!</string>
     <string name="share_app_msg">\nIdentifies the operator that owns a cell in Nicaragua easily with this app.\n\n</string>
     <string name="sms_msg_atempt">Enter at least 3 digits to try to send the SMS</string>
     <string name="sms_perms_info">The application requires permission to read your SMS, this information is for internal use only application.</string>
     <string name="sync_msg">Syncing ...</string>
-    <string name="dialer_activity">Dialer-Check operator</string>
-    <string-array name="bl_entry_arrays">
-        <item>Contacts</item>
-        <item>Inbox</item>
-        <item>Call log</item>
-    </string-array>
 
 
     <string name="share_app">Share</string>
@@ -158,5 +97,10 @@ found.
     <string name="sms_chart_title">Messages by operator</string>
     <string name="app_info">App Info</string>
     <string name="resync">Synchronize</string>
+    <string name="delete_calls_content">The application and phone call records will be deleted, do you want to continue?</string>
+    <string name="delete_calls_exception">Error occured while trying to delete records</string>
+    <string name="delete_calls_fail">Records could not be deleted</string>
+    <string name="drawer_delete_calls">Delete history</string>
+    <string name="version">Version %s</string>
 
 </resources>

@@ -15,5 +15,6 @@ public interface CallLogService {
     void onDestroy();
 
     void clearRecords();
-
+    boolean clearPhoneReacords();
+    boolean clearContactReacords(String number);
 }

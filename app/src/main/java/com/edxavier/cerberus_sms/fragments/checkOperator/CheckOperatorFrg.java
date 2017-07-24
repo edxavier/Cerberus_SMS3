@@ -26,7 +26,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -37,6 +36,7 @@ import android.view.ViewGroup;
 import android.widget.AutoCompleteTextView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
@@ -50,7 +50,6 @@ import com.edxavier.cerberus_sms.db.realm.ContactRealm;
 import com.edxavier.cerberus_sms.fragments.checkOperator.contracts.CheckOperatorPresenter;
 import com.edxavier.cerberus_sms.fragments.checkOperator.contracts.CheckOperatorView;
 import com.edxavier.cerberus_sms.fragments.checkOperator.di.CheckoperatorComponent;
-import com.edxavier.cerberus_sms.helpers.MyTextView;
 import com.edxavier.cerberus_sms.helpers.TextViewHelper;
 import com.edxavier.cerberus_sms.helpers.Utils;
 import com.google.android.gms.ads.AdListener;
@@ -96,11 +95,12 @@ public class CheckOperatorFrg extends Fragment implements CheckOperatorView, Tex
     @BindView(R.id.suggestions)
     ListView suggestions;
     @BindView(R.id.operator_name)
-    MyTextView operatorName;
+    TextView operatorName;
     @BindView(R.id.card_operator)
+
     CardView cardOperator;
     @BindView(R.id.country)
-    MyTextView country;
+    TextView country;
     @BindView(R.id.linear_operator_show)
     LinearLayout linearOperatorShow;
     @BindView(R.id.number_entry)

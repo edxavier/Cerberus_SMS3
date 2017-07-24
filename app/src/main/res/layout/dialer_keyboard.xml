@@ -56,10 +56,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content">
 
-                <com.edxavier.cerberus_sms.helpers.MyTextView
+                <TextView
                     android:id="@+id/operator_name"
                     android:text="Claro"
-                    app:font="@string/FontLatoLight"
+                    
                     android:textColor="@color/md_white_1000"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
@@ -68,11 +68,10 @@
         </LinearLayout>
 
 
-        <com.edxavier.cerberus_sms.helpers.MyTextView
+        <TextView
             android:id="@+id/country"
             android:layout_width="0dp"
             android:textColor="@color/md_blue_500"
-            app:font="@string/FontLatoMedium"
             android:gravity="center"
             android:layout_weight="1"
             android:layout_height="wrap_content" />
@@ -132,16 +131,16 @@
                 android:gravity="center"
                 android:layout_height="wrap_content">
 
-                <com.edxavier.cerberus_sms.helpers.MyTextView
-                    app:font="@string/FontLatoMedium"
+                <TextView
+
                     android:text="1"
                     android:textColor="@color/md_blue_grey_500"
                     android:textSize="22sp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
 
-                <com.edxavier.cerberus_sms.helpers.MyTextView
-                    app:font="@string/FontRobotoLight"
+                <TextView
+
                     android:text="____"
                     android:textSize="12sp"
                     android:layout_width="wrap_content"
@@ -162,16 +161,16 @@
                 android:gravity="center"
                 android:layout_height="wrap_content">
 
-                <com.edxavier.cerberus_sms.helpers.MyTextView
-                    app:font="@string/FontLatoMedium"
+                <TextView
+
                     android:text="2"
                     android:textColor="@color/md_blue_grey_500"
                     android:textSize="22sp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
 
-                <com.edxavier.cerberus_sms.helpers.MyTextView
-                    app:font="@string/FontRobotoLight"
+                <TextView
+
                     android:text="ABC"
                     android:textSize="12sp"
                     android:layout_width="wrap_content"
@@ -193,16 +192,16 @@
                 android:gravity="center"
                 android:layout_height="wrap_content">
 
-                <com.edxavier.cerberus_sms.helpers.MyTextView
-                    app:font="@string/FontLatoMedium"
+                <TextView
+
                     android:text="3"
                     android:textColor="@color/md_blue_grey_500"
                     android:textSize="22sp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
 
-                <com.edxavier.cerberus_sms.helpers.MyTextView
-                    app:font="@string/FontRobotoLight"
+                <TextView
+
                     android:text="DEF"
                     android:textSize="12sp"
                     android:layout_width="wrap_content"
@@ -230,16 +229,16 @@
                 android:gravity="center"
                 android:layout_height="wrap_content">
 
-                <com.edxavier.cerberus_sms.helpers.MyTextView
-                    app:font="@string/FontLatoMedium"
+                <TextView
+
                     android:textColor="@color/md_blue_grey_500"
                     android:text="4"
                     android:textSize="22sp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
 
-                <com.edxavier.cerberus_sms.helpers.MyTextView
-                    app:font="@string/FontRobotoLight"
+                <TextView
+
                     android:text="GHI"
                     android:textSize="12sp"
                     android:layout_width="wrap_content"
@@ -260,16 +259,16 @@
                 android:gravity="center"
                 android:layout_height="wrap_content">
 
-                <com.edxavier.cerberus_sms.helpers.MyTextView
-                    app:font="@string/FontLatoMedium"
+                <TextView
+
                     android:textColor="@color/md_blue_grey_500"
                     android:text="5"
                     android:textSize="22sp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
 
-                <com.edxavier.cerberus_sms.helpers.MyTextView
-                    app:font="@string/FontRobotoLight"
+                <TextView
+
                     android:text="JKL"
                     android:textSize="12sp"
                     android:layout_width="wrap_content"
@@ -291,16 +290,16 @@
                 android:gravity="center"
                 android:layout_height="wrap_content">
 
-                <com.edxavier.cerberus_sms.helpers.MyTextView
-                    app:font="@string/FontLatoMedium"
+                <TextView
+
                     android:textColor="@color/md_blue_grey_500"
                     android:text="6"
                     android:textSize="22sp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
 
-                <com.edxavier.cerberus_sms.helpers.MyTextView
-                    app:font="@string/FontRobotoLight"
+                <TextView
+
                     android:text="MNO"
                     android:textSize="12sp"
                     android:layout_width="wrap_content"
@@ -328,16 +327,16 @@
                 android:gravity="center"
                 android:layout_height="wrap_content">
 
-                <com.edxavier.cerberus_sms.helpers.MyTextView
-                    app:font="@string/FontLatoMedium"
+                <TextView
+
                     android:textColor="@color/md_blue_grey_500"
                     android:text="7"
                     android:textSize="22sp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
 
-                <com.edxavier.cerberus_sms.helpers.MyTextView
-                    app:font="@string/FontRobotoLight"
+                <TextView
+
                     android:text="PQRS"
                     android:textSize="12sp"
                     android:layout_width="wrap_content"
@@ -358,16 +357,16 @@
                 android:gravity="center"
                 android:layout_height="wrap_content">
 
-                <com.edxavier.cerberus_sms.helpers.MyTextView
-                    app:font="@string/FontLatoMedium"
+                <TextView
+
                     android:text="8"
                     android:textColor="@color/md_blue_grey_500"
                     android:textSize="22sp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
 
-                <com.edxavier.cerberus_sms.helpers.MyTextView
-                    app:font="@string/FontRobotoLight"
+                <TextView
+
                     android:textSize="12sp"
                     android:text="TUV"
                     android:layout_width="wrap_content"
@@ -389,16 +388,16 @@
                 android:gravity="center"
                 android:layout_height="wrap_content">
 
-                <com.edxavier.cerberus_sms.helpers.MyTextView
-                    app:font="@string/FontLatoMedium"
+                <TextView
+
                     android:text="9"
                     android:textColor="@color/md_blue_grey_500"
                     android:textSize="22sp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
 
-                <com.edxavier.cerberus_sms.helpers.MyTextView
-                    app:font="@string/FontRobotoLight"
+                <TextView
+
                     android:textSize="12sp"
                     android:text="WXYZ"
                     android:layout_width="wrap_content"
@@ -426,8 +425,8 @@
                 android:gravity="center"
                 android:layout_height="wrap_content">
 
-                <com.edxavier.cerberus_sms.helpers.MyTextView
-                    app:font="@string/FontLatoMedium"
+                <TextView
+
                     android:textColor="@color/md_blue_grey_500"
                     android:text="*"
                     android:textSize="32sp"
@@ -450,16 +449,16 @@
                 android:gravity="center"
                 android:layout_height="wrap_content">
 
-                <com.edxavier.cerberus_sms.helpers.MyTextView
-                    app:font="@string/FontLatoMedium"
+                <TextView
+
                     android:textColor="@color/md_blue_grey_500"
                     android:text="0"
                     android:textSize="22sp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
 
-                <com.edxavier.cerberus_sms.helpers.MyTextView
-                    app:font="@string/FontRobotoLight"
+                <TextView
+
                     android:text="+"
                     android:textSize="12sp"
                     android:layout_width="wrap_content"
@@ -481,16 +480,16 @@
                 android:gravity="center"
                 android:layout_height="wrap_content">
 
-                <com.edxavier.cerberus_sms.helpers.MyTextView
-                    app:font="@string/FontLatoMedium"
+                <TextView
+
                     android:textColor="@color/md_blue_grey_500"
                     android:text="#"
                     android:textSize="22sp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
 
-                <com.edxavier.cerberus_sms.helpers.MyTextView
-                    app:font="@string/FontRobotoLight"
+                <TextView
+
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
             </LinearLayout>

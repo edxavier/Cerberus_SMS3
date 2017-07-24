@@ -25,6 +25,7 @@ import android.view.View;
 import android.widget.AutoCompleteTextView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.DialogAction;
@@ -37,7 +38,6 @@ import com.edxavier.cerberus_sms.fragments.checkOperator.contracts.CheckOperator
 import com.edxavier.cerberus_sms.fragments.checkOperator.di.CheckoperatorComponent;
 import com.edxavier.cerberus_sms.fragments.contacts.ContactFragment;
 import com.edxavier.cerberus_sms.fragments.messages.MessagesFragment;
-import com.edxavier.cerberus_sms.helpers.MyTextView;
 import com.edxavier.cerberus_sms.helpers.PagerAdapter;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
@@ -48,7 +48,6 @@ import javax.inject.Inject;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import butterknife.OnClick;
 
 import static android.widget.Toast.LENGTH_LONG;
 import static android.widget.Toast.LENGTH_SHORT;
@@ -85,11 +84,11 @@ public class DialerActivity extends AppCompatActivity implements CheckOperatorVi
 
     public BottomSheetBehavior mbottomSheetBehavior;
     @BindView(R.id.operator_name)
-    MyTextView operatorName;
+    TextView operatorName;
     @BindView(R.id.card_operator)
     CardView cardOperator;
     @BindView(R.id.country)
-    MyTextView country;
+    TextView country;
     @BindView(R.id.number_entry)
     AutoCompleteTextView numberEntry;
     @BindView(R.id.backspace_arrow)

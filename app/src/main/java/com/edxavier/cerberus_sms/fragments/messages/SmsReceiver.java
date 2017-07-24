@@ -43,7 +43,12 @@ public class SmsReceiver extends BroadcastReceiver {
                 for (int n = 0; n < messages.length; n++) {
                     smsMessage[n] = SmsMessage.createFromPdu((byte[]) messages[n]);
                 }
-                String incomingNum = Utils.formatPhoneNumber(smsMessage[0].getOriginatingAddress());
+                String incomingNum;
+                try {
+                    incomingNum = Utils.formatPhoneNumber(smsMessage[0].getOriginatingAddress());
+                }catch (Exception e){
+                    incomingNum = "";
+                }
                 boolean isNumber = Utils.isPhoneNumber(incomingNum);
                 boolean isMarketNum = !incomingNum.startsWith("+505") && incomingNum.length() <= 4;
                 boolean isMarketNum2 = incomingNum.startsWith("+505") && incomingNum.replaceAll("\\s+","").trim().length() <= 8;
@@ -67,11 +72,12 @@ public class SmsReceiver extends BroadcastReceiver {
                         if (!messagesRealms.isEmpty()) {
                             theMessage = messagesRealms.first();
                             MessagesRealm finalTheMessage = theMessage;
+                            String finalIncomingNum = incomingNum;
                             realm.executeTransaction(realm1 -> {
-                                realm1.copyToRealm(new MessagesHistoryRealm(contact, incomingNum,
+                                realm1.copyToRealm(new MessagesHistoryRealm(contact, finalIncomingNum,
                                         finalOperator, finalSmsMessage[0].getMessageBody(), Constans.MESSAGE_TYPE_INBOX, "1", new Date()));
                                 finalTheMessage.contact = contact;
-                                finalTheMessage.sms_phone_number = incomingNum;
+                                finalTheMessage.sms_phone_number = finalIncomingNum;
                                 finalTheMessage.sms_text = finalSmsMessage[0].getMessageBody();
                                 finalTheMessage.sms_date = new Date();
                                 finalTheMessage.sms_operator = finalOperator;
@@ -80,10 +86,11 @@ public class SmsReceiver extends BroadcastReceiver {
                                 finalTheMessage.sms_count++;
                             });
                         }else {
+                            String finalIncomingNum1 = incomingNum;
                             realm.executeTransaction(realm1 -> {
-                                realm1.copyToRealm(new MessagesRealm(contact, incomingNum, finalOperator,
+                                realm1.copyToRealm(new MessagesRealm(contact, finalIncomingNum1, finalOperator,
                                         finalSmsMessage[0].getMessageBody(), Constans.MESSAGE_TYPE_INBOX, "1", new Date(), 1));
-                                realm1.copyToRealm(new MessagesHistoryRealm(contact, incomingNum,
+                                realm1.copyToRealm(new MessagesHistoryRealm(contact, finalIncomingNum1,
                                         finalOperator, finalSmsMessage[0].getMessageBody(), Constans.MESSAGE_TYPE_INBOX, "1", new Date()));
                             });
                         }

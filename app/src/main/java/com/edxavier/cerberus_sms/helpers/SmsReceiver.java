@@ -99,7 +99,7 @@ public class SmsReceiver extends BroadcastReceiver {
                         Notification
                             n = new Notification.Builder(context)
                                     .setContentTitle("Nuevo mensaje")
-                                    .setSmallIcon(R.drawable.sms_50)
+                                    .setSmallIcon(R.drawable.sms)
                                     .setContentIntent(pIntent)
                                     .addAction(R.drawable.ic_new_post_100, "Leer", pIntent)
                                     .setSound(soundUri)

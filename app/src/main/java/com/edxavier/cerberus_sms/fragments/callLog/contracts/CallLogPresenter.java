@@ -12,6 +12,8 @@ public interface CallLogPresenter {
     void getCallsFromRealm();
     void syncCalls();
     void clearRecords();
+    boolean clearPhoneReacords();
+    boolean clearContactReacords(String number);
 
 
 }

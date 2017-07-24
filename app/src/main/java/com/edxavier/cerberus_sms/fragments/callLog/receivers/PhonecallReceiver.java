@@ -31,14 +31,16 @@ import java.util.Date;
     @Override
     public void onReceive(Context context, Intent intent) {
         //We listen to two intents.  The new outgoing call only tells us of an outgoing call.  We use it to get the number.
-        Log.e("EDER", intent.getAction());
         if (intent.getAction().equals("android.intent.action.NEW_OUTGOING_CALL")) {
             savedNumber = intent.getExtras().getString("android.intent.extra.PHONE_NUMBER");
         }
         else{
-
-            String stateStr = intent.getExtras().getString(TelephonyManager.EXTRA_STATE);
-            String number = intent.getExtras().getString(TelephonyManager.EXTRA_INCOMING_NUMBER);
+            String stateStr = null;
+            String number = null;
+            try{
+                number = intent.getExtras().getString(TelephonyManager.EXTRA_INCOMING_NUMBER);
+                stateStr = intent.getExtras().getString(TelephonyManager.EXTRA_STATE);
+            }catch (Exception ignored){}
            
                 int state = 0;
                 if (stateStr != null && stateStr.equals(TelephonyManager.EXTRA_STATE_IDLE)) {

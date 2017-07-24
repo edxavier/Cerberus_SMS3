@@ -42,7 +42,7 @@ public class AcercadeFragment extends Fragment {
             PackageManager manager = getContext().getPackageManager();
             PackageInfo info = manager.getPackageInfo(
                     getContext().getPackageName(), 0);
-            version.setText("Version "+info.versionName);
+            version.setText( getString(R.string.version, info.versionName));
         }catch (Exception e){
             Toast.makeText(getContext(),e.getMessage(),Toast.LENGTH_LONG).show();
         }

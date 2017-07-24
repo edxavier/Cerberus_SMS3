@@ -41,7 +41,6 @@ import com.edxavier.cerberus_sms.fragments.callLog.CallLogFragment;
 import com.edxavier.cerberus_sms.fragments.checkOperator.CheckOperatorFrg;
 import com.edxavier.cerberus_sms.fragments.contacts.ContactFragment;
 import com.edxavier.cerberus_sms.fragments.messages.MessagesFragment;
-import com.edxavier.cerberus_sms.helpers.MyTextView;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.InterstitialAd;
@@ -72,11 +71,11 @@ public class DialerActivityV2 extends AppCompatActivity
     @BindView(R.id.suggestions)
     ListView suggestions;
     @BindView(R.id.operator_name)
-    MyTextView operatorName;
+    TextView operatorName;
     @BindView(R.id.card_operator)
     CardView cardOperator;
     @BindView(R.id.country)
-    MyTextView country;
+    TextView country;
     @BindView(R.id.linear_operator_show)
     LinearLayout linearOperatorShow;
     @BindView(R.id.number_entry)

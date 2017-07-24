@@ -20,7 +20,7 @@
 
             <ImageView
                 android:layout_width="80dp"
-                android:src="@drawable/material_sim_256"
+                android:src="@mipmap/ic_launcher"
                 android:layout_height="80dp" />
 
             <com.edxavier.cerberus_sms.helpers.TextViewHelper

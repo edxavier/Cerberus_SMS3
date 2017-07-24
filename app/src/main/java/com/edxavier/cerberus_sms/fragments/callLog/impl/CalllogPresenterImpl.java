@@ -61,4 +61,14 @@ public class CalllogPresenterImpl implements CallLogPresenter {
     public void clearRecords() {
         service.clearRecords();
     }
+
+    @Override
+    public boolean clearPhoneReacords() {
+       return service.clearPhoneReacords();
+    }
+
+    @Override
+    public boolean clearContactReacords(String number) {
+        return service.clearContactReacords(number);
+    }
 }

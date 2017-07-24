@@ -6,6 +6,7 @@ import android.content.ContextWrapper;
 import android.support.multidex.MultiDex;
 import android.support.v4.app.Fragment;
 
+import com.crashlytics.android.Crashlytics;
 import com.edxavier.cerberus_sms.db.realm.MigrationRealm;
 import com.edxavier.cerberus_sms.fragments.callLog.contracts.CallLogView;
 import com.edxavier.cerberus_sms.fragments.callLog.di.CallLogComponent;
@@ -27,6 +28,7 @@ import com.edxavier.cerberus_sms.mLibs.di.LibsModule;
 import com.google.android.gms.ads.MobileAds;
 import com.pixplicity.easyprefs.library.Prefs;
 
+import io.fabric.sdk.android.Fabric;
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
 
@@ -37,7 +39,8 @@ public class AppOperator extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        MobileAds.initialize(this, "ca-app-pub-9964109306515647~3887839019");
+        Fabric.with(this, new Crashlytics());
+        //MobileAds.initialize(this, "ca-app-pub-9964109306515647~3887839019");
         MultiDex.install(this);
         new Prefs.Builder()
                 .setContext(this)
@@ -52,7 +55,9 @@ public class AppOperator extends Application {
                 .schemaVersion(2) // Must be bumped when the schema changes
                 .migration(new MigrationRealm()) // Migration to run instead of throwing an exception
                 .build();
-        Realm.compactRealm(realmConfiguration);
+        try {
+            Realm.compactRealm(realmConfiguration);
+        }catch (Exception ignored){}
         Realm.setDefaultConfiguration(realmConfiguration);
 
         //startService(new Intent(this,MyOperatorService.class));

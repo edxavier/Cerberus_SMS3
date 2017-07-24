@@ -117,8 +117,11 @@ public class CallHandler extends PhonecallReceiver {
                                 msgText.setText(areaCode.area_name);
                                 break;
                         }
-                        if (areaCode.area_name.length()>0 || areaCode.country_name.length()>0)
-                            CallHandler.manager.addView(CallHandler.view, layoutParams);
+                        if (areaCode.area_name.length()>0 || areaCode.country_name.length()>0) {
+                            try {
+                                CallHandler.manager.addView(CallHandler.view, layoutParams);
+                            }catch (Exception ignored){};
+                        }
                     } else if (areaCode.area_name.length()>0){
                         msgText.setRobotoMedium();
                         msgText.setText(areaCode.area_name);
@@ -198,7 +201,9 @@ public class CallHandler extends PhonecallReceiver {
                                 break;
                         }
                         if (areaCode.area_name.length()>0 || areaCode.country_name.length()>0) {
-                            CallHandler.manager.addView(CallHandler.view, layoutParams);
+                            try {
+                                CallHandler.manager.addView(CallHandler.view, layoutParams);
+                            }catch (Exception ignored){};
                         }
                     } else if (areaCode.area_name.length()>0){
                         msgText.setText(areaCode.area_name);
@@ -210,7 +215,6 @@ public class CallHandler extends PhonecallReceiver {
                 }
             }
             realm.close();
-            Log.e("EDER", " realm.close");
         }
     }
 
@@ -348,31 +352,33 @@ public class CallHandler extends PhonecallReceiver {
            //Log.e("EDER_fecha", String.valueOf(call.call_date));
             //Log.e("EDER_start", String.valueOf(start));
         }
-        if(call==null) {
-            String finalOperator = operator;
-            realm2.executeTransaction(realm1 -> {
-                realm1.copyToRealm(new CallsRealm(Utils.getContact(number), number,
-                        duration,  type, start, 1, finalOperator));
-                realm1.copyToRealm(new CallsHistoryRealm(Utils.getContact(number), number,
-                        duration, type, start, finalOperator));
-            });
-        }else {
-            CallsRealm finalCall = call;
-            //Log.e("EDER","NUEVO Segundo" + call.call_phone_number);
-            String finalOperator1 = operator;
-            realm2.executeTransaction(realm1 -> {
-                realm1.copyToRealm(new CallsHistoryRealm(Utils.getContact(number), number,
+        try {
+            if (call == null) {
+                String finalOperator = operator;
+                realm2.executeTransaction(realm1 -> {
+                    realm1.copyToRealm(new CallsRealm(Utils.getContact(number), number,
+                            duration, type, start, 1, finalOperator));
+                    realm1.copyToRealm(new CallsHistoryRealm(Utils.getContact(number), number,
+                            duration, type, start, finalOperator));
+                });
+            } else {
+                CallsRealm finalCall = call;
+                //Log.e("EDER","NUEVO Segundo" + call.call_phone_number);
+                String finalOperator1 = operator;
+                realm2.executeTransaction(realm1 -> {
+                    realm1.copyToRealm(new CallsHistoryRealm(Utils.getContact(number), number,
                             duration, type, start, finalOperator1));
 
-                finalCall.calls_count += 1;
-                finalCall.contact = Utils.getContact(number);
-                finalCall.call_direction = type;
-                finalCall.call_date = start;
-                finalCall.call_duration = duration;
-                finalCall.call_operator = finalOperator1;
-             });
+                    finalCall.calls_count += 1;
+                    finalCall.contact = Utils.getContact(number);
+                    finalCall.call_direction = type;
+                    finalCall.call_date = start;
+                    finalCall.call_duration = duration;
+                    finalCall.call_operator = finalOperator1;
+                });
 
-        }
+            }
+        }catch (Exception ignored){}
         realm2.close();
     }
     public void getads(Context ctx){

@@ -5,6 +5,7 @@
 
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
+    <uses-permission android:name="android.permission.WRITE_CALL_LOG" />
     <uses-permission android:name="android.permission.WRITE_CONTACTS" />
     <uses-permission android:name="android.permission.READ_CALL_LOG" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
@@ -189,6 +190,9 @@
         <activity
             android:theme="@style/NewAppTheme"
             android:name=".activities.StatisticsActivity" />
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="4124b2e7a8f5eb8f27a14edcb51751f9b8e26cd9" />
     </application>
 
 </manifest>

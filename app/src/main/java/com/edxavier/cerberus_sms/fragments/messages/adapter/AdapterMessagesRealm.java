@@ -164,7 +164,7 @@ public class AdapterMessagesRealm extends RecyclerView.Adapter<AdapterMessagesRe
                 new MaterialDialog.Builder(v.getContext())
                         .title(name)
                         .typeface("Roboto-Medium.ttf", "Roboto-Regular.ttf")
-                        .items(R.array.opciones_contacto)
+                        .items(R.array.opciones_sms)
                         .itemsCallback(new MaterialDialog.ListCallback() {
                             @Override
                             public void onSelection(MaterialDialog dialog, final View view, int which, CharSequence text) {

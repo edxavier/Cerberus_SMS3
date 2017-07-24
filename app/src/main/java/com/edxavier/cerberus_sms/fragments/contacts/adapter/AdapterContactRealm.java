@@ -105,8 +105,8 @@ public class AdapterContactRealm extends RecyclerView.Adapter<AdapterContactReal
         //else
             //holder.contactAvatar.setImageDrawable(Utils.getAvatar(contact.contact_name));
 
-        holder.lblContactName.setRobotoBold();
-        holder.lblContactOperator.setRobotoBold();
+        //holder.lblContactName.setRobotoBold();
+        //holder.lblContactOperator.setRobotoBold();
         AreaCodeRealm areaCode = Utils.getOperadoraV4(contact.contact_phone_number, holder.itemView.getContext());
         if (areaCode != null) {
             holder.lblContactOperator.setText(contact.contact_operator);
