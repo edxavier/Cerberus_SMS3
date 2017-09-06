@@ -3,15 +3,22 @@ package com.edxavier.cerberus_sms.fragments.callLog.receivers;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Binder;
+import android.os.IBinder;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Toast;
 
+import com.edxavier.cerberus_sms.db.realm.BlackList;
+import com.edxavier.cerberus_sms.helpers.Utils;
 import com.google.firebase.crash.FirebaseCrash;
 
+import java.lang.reflect.Method;
 import java.util.Date;
+
+import io.realm.Realm;
 
 /**
  * Created by Eder Xavier Rojas on 19/07/2016.
@@ -32,7 +39,9 @@ import java.util.Date;
     public void onReceive(Context context, Intent intent) {
         //We listen to two intents.  The new outgoing call only tells us of an outgoing call.  We use it to get the number.
         if (intent.getAction().equals("android.intent.action.NEW_OUTGOING_CALL")) {
-            savedNumber = intent.getExtras().getString("android.intent.extra.PHONE_NUMBER");
+            try {
+                savedNumber = intent.getExtras().getString("android.intent.extra.PHONE_NUMBER");
+            }catch (Exception ignored){}
         }
         else{
             String stateStr = null;
@@ -40,8 +49,21 @@ import java.util.Date;
             try{
                 number = intent.getExtras().getString(TelephonyManager.EXTRA_INCOMING_NUMBER);
                 stateStr = intent.getExtras().getString(TelephonyManager.EXTRA_STATE);
+                //Si es llamada entrante, verificar si es un numero bloqueado
+                if (stateStr != null && stateStr.equals(TelephonyManager.EXTRA_STATE_RINGING)) {
+                    Realm rlm = Realm.getDefaultInstance();
+                    rlm.beginTransaction();
+                    BlackList entry = rlm.where(BlackList.class).equalTo("phone_number", Utils.formatPhoneNumber(number)).findFirst();
+                    if (entry != null) {
+                        disconnectPhoneItelephony(context);
+                        entry.block_calls_count += 1;
+                    }
+                    rlm.commitTransaction();
+                    rlm.close();
+
+                }
             }catch (Exception ignored){}
-           
+
                 int state = 0;
                 if (stateStr != null && stateStr.equals(TelephonyManager.EXTRA_STATE_IDLE)) {
                     state = TelephonyManager.CALL_STATE_IDLE;
@@ -102,4 +124,41 @@ import java.util.Date;
         }
         lastState = state;
     }
+
+
+
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    private void disconnectPhoneItelephony(Context context) {
+        try {
+            String serviceManagerName = "android.os.ServiceManager";
+            String serviceManagerNativeName = "android.os.ServiceManagerNative";
+            String telephonyName = "com.android.internal.telephony.ITelephony";
+            Class<?> telephonyClass;
+            Class<?> telephonyStubClass;
+            Class<?> serviceManagerClass;
+            Class<?> serviceManagerNativeClass;
+            Method telephonyEndCall;
+            Object telephonyObject;
+            Object serviceManagerObject;
+            telephonyClass = Class.forName(telephonyName);
+            telephonyStubClass = telephonyClass.getClasses()[0];
+            serviceManagerClass = Class.forName(serviceManagerName);
+            serviceManagerNativeClass = Class.forName(serviceManagerNativeName);
+            Method getService = // getDefaults[29];
+                    serviceManagerClass.getMethod("getService", String.class);
+            Method tempInterfaceMethod = serviceManagerNativeClass.getMethod("asInterface", IBinder.class);
+            Binder tmpBinder = new Binder();
+            tmpBinder.attachInterface(null, "fake");
+            serviceManagerObject = tempInterfaceMethod.invoke(null, tmpBinder);
+            IBinder retbinder = (IBinder) getService.invoke(serviceManagerObject, "phone");
+            Method serviceMethod = telephonyStubClass.getMethod("asInterface", IBinder.class);
+            telephonyObject = serviceMethod.invoke(null, retbinder);
+            telephonyEndCall = telephonyClass.getMethod("endCall");
+            telephonyEndCall.invoke(telephonyObject);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 }

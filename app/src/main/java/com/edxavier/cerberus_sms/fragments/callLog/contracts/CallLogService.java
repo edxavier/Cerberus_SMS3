@@ -9,12 +9,16 @@ import io.realm.RealmResults;
  */
 public interface CallLogService {
     boolean hasReadCalllogPermission();
+    boolean hasWriteCallLogPermission();
+
 
     void syncCallsToRealm();
     RealmResults<CallsRealm> getCallsFromRealm();
     void onDestroy();
 
     void clearRecords();
-    boolean clearPhoneReacords();
-    boolean clearContactReacords(String number);
+    int clearPhoneReacords();
+    int clearContactReacords(String number);
+    void addToBlackList(Integer[] which, String number);
+
 }

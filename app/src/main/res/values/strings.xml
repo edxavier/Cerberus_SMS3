@@ -19,13 +19,19 @@
     <string-array name="opciones_contacto">
         <item>Llamar</item>
         <item>Escribir</item>
-        <!--<item>Bloquear sms entrantes</item>-->
         <item>Eliminar registros</item>
+        <item>Bloquear</item>
     </string-array>
     <string-array name="opciones_sms">
         <item>Llamar</item>
         <item>Escribir</item>
+        <item>Bloquear</item>
         <!--<item>Bloquear sms entrantes</item>-->
+    </string-array>
+
+    <string-array name="block_options">
+        <item>Mensajes</item>
+        <item>LLamadas</item>
     </string-array>
 
     <string name="drawer_operator_menu">Verifica Operador</string>
@@ -123,6 +129,9 @@ encontrado.
     <string name="delete_calls_fail">No se pudieron eliminar los registros</string>
     <string name="delete_calls_exception">Ocurrió un error al intentar eliminar los registros</string>
     <string name="version">Versión %s</string>
+    <string name="no_write_perms">No se poseen los permisos necesarios para ejecutar la acción</string>
+    <string name="black_list">Lista negra</string>
+    <string name="ac_block">Bloquear</string>
 
 
 </resources>

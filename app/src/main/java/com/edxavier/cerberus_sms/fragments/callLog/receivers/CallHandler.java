@@ -349,8 +349,6 @@ public class CallHandler extends PhonecallReceiver {
         CallsRealm call = null;
         if(!calls.isEmpty()) {
             call = calls.first();
-           //Log.e("EDER_fecha", String.valueOf(call.call_date));
-            //Log.e("EDER_start", String.valueOf(start));
         }
         try {
             if (call == null) {

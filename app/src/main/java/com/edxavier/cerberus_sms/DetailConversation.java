@@ -128,9 +128,9 @@ public class DetailConversation extends AppCompatActivity implements View.OnClic
 
 //        adapter = new AdapterInbox(sms_list, R.layout.row_conversation_detail);
   //      scaleInAnimationAdapter = new ScaleInAnimationAdapter(adapter);
-        scaleInAnimationAdapter.setDuration(800);
-        scaleInAnimationAdapter.setInterpolator(new OvershootInterpolator());
-        mRecyclerView.setAdapter(scaleInAnimationAdapter);
+        //scaleInAnimationAdapter.setDuration(800);
+        //scaleInAnimationAdapter.setInterpolator(new OvershootInterpolator());
+        //mRecyclerView.setAdapter(scaleInAnimationAdapter);
 
 
 

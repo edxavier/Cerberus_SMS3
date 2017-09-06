@@ -11,6 +11,10 @@ import com.edxavier.cerberus_sms.db.realm.AreaCodeRealm;
 import com.edxavier.cerberus_sms.db.realm.ContactRealm;
 import com.google.firebase.crash.FirebaseCrash;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
 import io.realm.Realm;
 import io.realm.exceptions.RealmError;
 
@@ -265,6 +269,7 @@ public class Utils {
 
         return drawable;
     }
+
 
 }
 

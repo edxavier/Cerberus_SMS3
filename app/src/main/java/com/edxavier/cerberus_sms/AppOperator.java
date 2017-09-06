@@ -5,8 +5,12 @@ import android.app.Application;
 import android.content.ContextWrapper;
 import android.support.multidex.MultiDex;
 import android.support.v4.app.Fragment;
+import android.util.Log;
+import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
+import com.crashlytics.android.answers.Answers;
+import com.crashlytics.android.answers.CustomEvent;
 import com.edxavier.cerberus_sms.db.realm.MigrationRealm;
 import com.edxavier.cerberus_sms.fragments.callLog.contracts.CallLogView;
 import com.edxavier.cerberus_sms.fragments.callLog.di.CallLogComponent;
@@ -26,6 +30,7 @@ import com.edxavier.cerberus_sms.fragments.messages.di.MessageComponent;
 import com.edxavier.cerberus_sms.fragments.messages.di.MessageModule;
 import com.edxavier.cerberus_sms.mLibs.di.LibsModule;
 import com.google.android.gms.ads.MobileAds;
+import com.google.firebase.crash.FirebaseCrash;
 import com.pixplicity.easyprefs.library.Prefs;
 
 import io.fabric.sdk.android.Fabric;
@@ -40,6 +45,7 @@ public class AppOperator extends Application {
     public void onCreate() {
         super.onCreate();
         Fabric.with(this, new Crashlytics());
+        Fabric.with(this, new Answers());
         //MobileAds.initialize(this, "ca-app-pub-9964109306515647~3887839019");
         MultiDex.install(this);
         new Prefs.Builder()
@@ -50,15 +56,35 @@ public class AppOperator extends Application {
                 .build();
 
         Realm.init(this);
-        RealmConfiguration realmConfiguration = new RealmConfiguration
-                .Builder()
-                .schemaVersion(2) // Must be bumped when the schema changes
-                .migration(new MigrationRealm()) // Migration to run instead of throwing an exception
-                .build();
         try {
-            Realm.compactRealm(realmConfiguration);
-        }catch (Exception ignored){}
-        Realm.setDefaultConfiguration(realmConfiguration);
+            RealmConfiguration realmConfiguration = new RealmConfiguration
+                    .Builder()
+                    .schemaVersion(3) // Must be bumped when the schema changes
+                    //.migration(new MigrationRealm()) // Migration to run instead of throwing an exception
+                    .deleteRealmIfMigrationNeeded()
+                    .build();
+            Log.e("EDER", "after deleteRealmIfMigrationNeeded");
+            Realm.setDefaultConfiguration(realmConfiguration);
+            try {
+                Realm.compactRealm(realmConfiguration);
+            }catch (Exception ignored){
+                if(ignored.getMessage()!=null)
+                    Answers.getInstance().logCustom(new CustomEvent("Ex1: "+ignored.getMessage()));
+            }
+        }catch (RuntimeException ex){
+            FirebaseCrash.logcat(Log.ERROR, "RuntimeException", ex.getMessage());
+            if(ex.getMessage()!=null) {
+                Toast.makeText(this, ex.getMessage(), Toast.LENGTH_LONG).show();
+                Answers.getInstance().logCustom(new CustomEvent("RuntimeException: " + ex.getMessage()));
+            }
+            Toast.makeText(this,
+                    "Ha ocurrido un ERROR fatal, es posible que la app no sea compatible con tu dispositivo", Toast.LENGTH_LONG).show();
+        }catch (Exception e){
+            Toast.makeText(getApplicationContext(),"ERROR DESCONOCIDO", Toast.LENGTH_LONG).show();
+            if(e.getMessage()!=null) {
+                Answers.getInstance().logCustom(new CustomEvent("Exception: " + e.getMessage()));
+            }
+        }
 
         //startService(new Intent(this,MyOperatorService.class));
 

@@ -20,4 +20,10 @@
         android:icon="@drawable/ic_action_social_share_orange"
         android:title="@string/share_contact" />
 
+    <item
+        android:id="@+id/action_block_contact"
+        android:orderInCategory="102"
+        android:icon="@drawable/ic_block_orange"
+        android:title="@string/ac_block" />
+
 </menu>

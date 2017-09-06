@@ -6,6 +6,7 @@ import android.util.Log;
 import com.edxavier.cerberus_sms.R;
 import com.edxavier.cerberus_sms.db.realm.AreaCodeRealm;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 
 import io.realm.Realm;
@@ -15,58 +16,17 @@ import io.realm.Realm;
 public class InitAreaCode {
     public static void initAreaCodes(Context cntx){
 
+        InputStream inputStream = cntx.getResources().openRawResource(R.raw.usa_areas_codes);
+        CSVreader csvReader = new CSVreader(inputStream);
+        ArrayList<String[]> us_areas = csvReader.read();
 
         ArrayList<AreaCodeRealm> areaCodes = new ArrayList<AreaCodeRealm>();
-        //codigoPais, CodigoArea, Pais, Area, Operador
-        areaCodes.add(new AreaCodeRealm("+1","209",cntx.getResources().getString(R.string.usa),cntx.getResources().getString(R.string.ca),Constans.INTERNACIONAL));
-        areaCodes.add(new AreaCodeRealm("+1","213",cntx.getResources().getString(R.string.usa),cntx.getResources().getString(R.string.ca),Constans.INTERNACIONAL));
-        areaCodes.add(new AreaCodeRealm("+1","310",cntx.getResources().getString(R.string.usa),cntx.getResources().getString(R.string.ca),Constans.INTERNACIONAL));
-        areaCodes.add(new AreaCodeRealm("+1","323",cntx.getResources().getString(R.string.usa),cntx.getResources().getString(R.string.ca),Constans.INTERNACIONAL));
-        areaCodes.add(new AreaCodeRealm("+1","408",cntx.getResources().getString(R.string.usa),cntx.getResources().getString(R.string.ca),Constans.INTERNACIONAL));
+        String us = cntx.getResources().getString(R.string.usa);
 
-        areaCodes.add(new AreaCodeRealm("+1","415",cntx.getResources().getString(R.string.usa),cntx.getResources().getString(R.string.ca),Constans.INTERNACIONAL));
-        areaCodes.add(new AreaCodeRealm("+1","510",cntx.getResources().getString(R.string.usa),cntx.getResources().getString(R.string.ca),Constans.INTERNACIONAL));
-        areaCodes.add(new AreaCodeRealm("+1","530",cntx.getResources().getString(R.string.usa),cntx.getResources().getString(R.string.ca),Constans.INTERNACIONAL));
-        areaCodes.add(new AreaCodeRealm("+1","559",cntx.getResources().getString(R.string.usa),cntx.getResources().getString(R.string.ca),Constans.INTERNACIONAL));
-        areaCodes.add(new AreaCodeRealm("+1","562",cntx.getResources().getString(R.string.usa),cntx.getResources().getString(R.string.ca),Constans.INTERNACIONAL));
-
-        areaCodes.add(new AreaCodeRealm("+1","619",cntx.getResources().getString(R.string.usa),cntx.getResources().getString(R.string.ca),Constans.INTERNACIONAL));
-        areaCodes.add(new AreaCodeRealm("+1","626",cntx.getResources().getString(R.string.usa),cntx.getResources().getString(R.string.ca),Constans.INTERNACIONAL));
-        areaCodes.add(new AreaCodeRealm("+1","650",cntx.getResources().getString(R.string.usa),cntx.getResources().getString(R.string.ca),Constans.INTERNACIONAL));
-        areaCodes.add(new AreaCodeRealm("+1","661",cntx.getResources().getString(R.string.usa),cntx.getResources().getString(R.string.ca),Constans.INTERNACIONAL));
-        areaCodes.add(new AreaCodeRealm("+1","707",cntx.getResources().getString(R.string.usa),cntx.getResources().getString(R.string.ca),Constans.INTERNACIONAL));
-
-        areaCodes.add(new AreaCodeRealm("+1","714",cntx.getResources().getString(R.string.usa),cntx.getResources().getString(R.string.ca),Constans.INTERNACIONAL));
-        areaCodes.add(new AreaCodeRealm("+1","760",cntx.getResources().getString(R.string.usa),cntx.getResources().getString(R.string.ca),Constans.INTERNACIONAL));
-        areaCodes.add(new AreaCodeRealm("+1","805",cntx.getResources().getString(R.string.usa),cntx.getResources().getString(R.string.ca),Constans.INTERNACIONAL));
-        areaCodes.add(new AreaCodeRealm("+1","818",cntx.getResources().getString(R.string.usa),cntx.getResources().getString(R.string.ca),Constans.INTERNACIONAL));
-        areaCodes.add(new AreaCodeRealm("+1","831",cntx.getResources().getString(R.string.usa),cntx.getResources().getString(R.string.ca),Constans.INTERNACIONAL));
-
-        areaCodes.add(new AreaCodeRealm("+1","858",cntx.getResources().getString(R.string.usa),cntx.getResources().getString(R.string.ca),Constans.INTERNACIONAL));
-        areaCodes.add(new AreaCodeRealm("+1","909",cntx.getResources().getString(R.string.usa),cntx.getResources().getString(R.string.ca),Constans.INTERNACIONAL));
-        areaCodes.add(new AreaCodeRealm("+1","916",cntx.getResources().getString(R.string.usa),cntx.getResources().getString(R.string.ca),Constans.INTERNACIONAL));
-        areaCodes.add(new AreaCodeRealm("+1","925",cntx.getResources().getString(R.string.usa),cntx.getResources().getString(R.string.ca),Constans.INTERNACIONAL));
-        areaCodes.add(new AreaCodeRealm("+1","949",cntx.getResources().getString(R.string.usa),cntx.getResources().getString(R.string.ca),Constans.INTERNACIONAL));
-
-
-        areaCodes.add(new AreaCodeRealm("+1","305",cntx.getResources().getString(R.string.usa),cntx.getResources().getString(R.string.fl),Constans.INTERNACIONAL));
-        areaCodes.add(new AreaCodeRealm("+1","321",cntx.getResources().getString(R.string.usa),cntx.getResources().getString(R.string.fl),Constans.INTERNACIONAL));
-        areaCodes.add(new AreaCodeRealm("+1","352",cntx.getResources().getString(R.string.usa),cntx.getResources().getString(R.string.fl),Constans.INTERNACIONAL));
-        areaCodes.add(new AreaCodeRealm("+1","386",cntx.getResources().getString(R.string.usa),cntx.getResources().getString(R.string.fl),Constans.INTERNACIONAL));
-        areaCodes.add(new AreaCodeRealm("+1","407",cntx.getResources().getString(R.string.usa),cntx.getResources().getString(R.string.fl),Constans.INTERNACIONAL));
-        areaCodes.add(new AreaCodeRealm("+1","561",cntx.getResources().getString(R.string.usa),cntx.getResources().getString(R.string.fl),Constans.INTERNACIONAL));
-        areaCodes.add(new AreaCodeRealm("+1","727",cntx.getResources().getString(R.string.usa),cntx.getResources().getString(R.string.fl),Constans.INTERNACIONAL));
-        areaCodes.add(new AreaCodeRealm("+1","754",cntx.getResources().getString(R.string.usa),cntx.getResources().getString(R.string.fl),Constans.INTERNACIONAL));
-
-        areaCodes.add(new AreaCodeRealm("+1","772",cntx.getResources().getString(R.string.usa),cntx.getResources().getString(R.string.fl),Constans.INTERNACIONAL));
-        areaCodes.add(new AreaCodeRealm("+1","786",cntx.getResources().getString(R.string.usa),cntx.getResources().getString(R.string.fl),Constans.INTERNACIONAL));
-        areaCodes.add(new AreaCodeRealm("+1","813",cntx.getResources().getString(R.string.usa),cntx.getResources().getString(R.string.fl),Constans.INTERNACIONAL));
-        areaCodes.add(new AreaCodeRealm("+1","850",cntx.getResources().getString(R.string.usa),cntx.getResources().getString(R.string.fl),Constans.INTERNACIONAL));
-        areaCodes.add(new AreaCodeRealm("+1","863",cntx.getResources().getString(R.string.usa),cntx.getResources().getString(R.string.fl),Constans.INTERNACIONAL));
-        areaCodes.add(new AreaCodeRealm("+1","904",cntx.getResources().getString(R.string.usa),cntx.getResources().getString(R.string.fl),Constans.INTERNACIONAL));
-        areaCodes.add(new AreaCodeRealm("+1","941",cntx.getResources().getString(R.string.usa),cntx.getResources().getString(R.string.fl),Constans.INTERNACIONAL));
-        areaCodes.add(new AreaCodeRealm("+1","954",cntx.getResources().getString(R.string.usa),cntx.getResources().getString(R.string.fl),Constans.INTERNACIONAL));
-
+        for (String[] us_area : us_areas) {
+            //codigoPais, CodigoArea, Pais, Area, Operador
+            areaCodes.add(new AreaCodeRealm("+1",us_area[0], us,us_area[1],Constans.INTERNACIONAL));
+        }
 
         areaCodes.add(new AreaCodeRealm("+501","","Belice","",Constans.INTERNACIONAL));
         areaCodes.add(new AreaCodeRealm("+502","","Guatemala","",Constans.INTERNACIONAL));

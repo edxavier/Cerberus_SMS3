@@ -16,5 +16,6 @@ public interface CallLogView {
 
     void setCallsData(RealmResults<CallsRealm> callsData);
 
+    void requestPermission(String [] perms);
 
 }

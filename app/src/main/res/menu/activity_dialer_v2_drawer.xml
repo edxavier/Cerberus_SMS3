@@ -7,6 +7,11 @@
             android:icon="@drawable/ic_pie_chart"
             android:title="@string/statistics" />
         <item
+            android:id="@+id/nav_black_list"
+            android:icon="@drawable/ic_block"
+            android:title="@string/black_list" />
+
+    <item
             android:id="@+id/nav_remove_ads"
             android:icon="@drawable/ic_coins_on_hand"
             android:title="@string/remove_ads" />

@@ -16,11 +16,13 @@
         <item>Write</item>
         <!--<item>Block incoming sms</item>-->
         <item>Delete history</item>
+        <item>Block</item>
     </string-array>
 
     <string-array name="opciones_sms">
         <item>Call</item>
         <item>Write</item>
+        <item>Block</item>
         <!--<item>Block incoming sms</item>-->
     </string-array>
     <string name="new_sms_dest">Name or number</string>
@@ -102,5 +104,8 @@ found.
     <string name="delete_calls_fail">Records could not be deleted</string>
     <string name="drawer_delete_calls">Delete history</string>
     <string name="version">Version %s</string>
+    <string name="no_write_perms">You do not have the necessary permissions to execute the action</string>
+    <string name="black_list">Black list</string>
+    <string name="ac_block">Block</string>
 
 </resources>

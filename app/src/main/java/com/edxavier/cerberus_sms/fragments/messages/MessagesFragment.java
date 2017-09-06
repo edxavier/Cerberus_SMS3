@@ -18,6 +18,7 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.format.DateUtils;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -111,7 +112,6 @@ public class MessagesFragment extends Fragment implements MessagesView {
         if(!Prefs.getBoolean("ads_removed", false)) {
             setupAds();
         }
-
     }
 
     @Override

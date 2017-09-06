@@ -15,7 +15,7 @@ public class NotificationPendindIntentSetupDefaultSMS extends AppCompatActivity 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.sms_black_list_row);
+        setContentView(R.layout.black_list_row);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             Intent intent3 = new Intent(Telephony.Sms.Intents.ACTION_CHANGE_DEFAULT);
             intent3.putExtra(Telephony.Sms.Intents.EXTRA_PACKAGE_NAME, getPackageName());

@@ -19,7 +19,6 @@ public class CallsRealm extends RealmObject {
     public ContactRealm contact;
     @Index
     public String call_phone_number;
-    @Index
     public String call_operator;
     public int call_duration;
     public int call_direction;
@@ -43,27 +42,7 @@ public class CallsRealm extends RealmObject {
         this.call_operator = call_operator;
     }
 
-    public static void removeCall(String[] call_numbers){
-        //eliminar los cotnactos que estan en realm y no en el directorio telefonico
-        Realm realm = Realm.getDefaultInstance();
-        RealmResults<CallsRealm> res = realm.where(CallsRealm.class).not()
-                .in("call_phone_number", call_numbers)
-                .findAll();
-        //Log.e("EDER", String.valueOf(res.size()) + " contacts removed from realm");
-        realm.executeTransaction(realm1 -> {
-            res.deleteAllFromRealm();
-        });
-        realm.close();
-    }
 
-    public static long getCallsCount(String call_phone_number){
-        //eliminar los cotnactos que estan en realm y no en el directorio telefonico
-        Realm realm = Realm.getDefaultInstance();
-        long callsRealm = realm.where(CallsRealm.class)
-                .equalTo("call_phone_number", call_phone_number).count();
-        realm.close();
-        return callsRealm;
-    }
 
 
 }

@@ -8,12 +8,15 @@ public interface CallLogPresenter {
     void onPause();
     void onDestroy();
     boolean hasReadCalllogPermission();
+    boolean hasWriteCallLogPermission();
 
     void getCallsFromRealm();
     void syncCalls();
     void clearRecords();
-    boolean clearPhoneReacords();
-    boolean clearContactReacords(String number);
+    int clearPhoneReacords();
+    int clearContactReacords(String number);
 
+    void addToBlackList(Integer[] which, String number);
 
+    void requestPermission(String [] perms);
 }

@@ -211,6 +211,13 @@ public class CallLogFragment extends Fragment implements CallLogView {
     }
 
     @Override
+    public void requestPermission(String[] perms) {
+        requestPermissions(
+                new String[]{Manifest.permission.WRITE_CALL_LOG},
+                PERMISSIONS_REQUEST_READ_CALLS);
+    }
+
+    @Override
     public void onDestroyView() {
         super.onDestroyView();
     }
@@ -274,21 +281,28 @@ public class CallLogFragment extends Fragment implements CallLogView {
                 break;
             case R.id.action_delete_logs:
                 try {
-                    MaterialDialog dialog = new MaterialDialog.Builder(getContext())
-                            .title(R.string.drawer_delete_calls)
-                            .content(getString(R.string.delete_calls_content))
-                            .positiveText(getResources().getString(R.string.accept))
-                            .negativeText(getResources().getString(R.string.cancelar))
-                            .positiveColor(getContext().getResources().getColor(R.color.md_red_700))
-                            .negativeColor(getContext().getResources().getColor(R.color.md_blue_grey_700))
-                            .onPositive((dialog1, which) -> {
-                                boolean deleted = presenter.clearPhoneReacords();
-                                if(!deleted) {
-                                    Toast.makeText(getActivity(),getString(R.string.delete_calls_fail),
-                                            Toast.LENGTH_LONG).show();
-                                }
-                            }).build();
-                    dialog.show();
+                    if(presenter.hasWriteCallLogPermission()) {
+                        MaterialDialog dialog = new MaterialDialog.Builder(getContext())
+                                .title(R.string.drawer_delete_calls)
+                                .content(getString(R.string.delete_calls_content))
+                                .positiveText(getResources().getString(R.string.accept))
+                                .negativeText(getResources().getString(R.string.cancelar))
+                                .positiveColor(getContext().getResources().getColor(R.color.md_red_700))
+                                .negativeColor(getContext().getResources().getColor(R.color.md_blue_grey_700))
+                                .onPositive((dialog1, which) -> {
+                                    int deleted = presenter.clearPhoneReacords();
+                                    if (deleted==0) {
+                                        Toast.makeText(getActivity(), getString(R.string.delete_calls_fail),
+                                                Toast.LENGTH_LONG).show();
+                                    }else if(deleted==-1){
+                                        Toast.makeText(getActivity(), getString(R.string.no_write_perms),
+                                                Toast.LENGTH_LONG).show();
+                                    }
+                                }).build();
+                        dialog.show();
+                    }else {
+                       requestPermission(new String[]{Manifest.permission.WRITE_CALL_LOG});
+                    }
                 }catch (Exception e){
                     Toast.makeText(getActivity(),getString(R.string.delete_calls_exception),
                         Toast.LENGTH_LONG).show();

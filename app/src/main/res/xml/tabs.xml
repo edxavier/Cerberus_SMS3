@@ -3,7 +3,7 @@
 
     <tab
         id="@+id/tab_calls"
-        icon="@drawable/ic_phone_white_24dp"
+        icon="@drawable/ic_phone_call_button"
         title="@string/drawer_op_call_log" />
     <tab
         id="@+id/tab_contacts"

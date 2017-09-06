@@ -167,7 +167,7 @@ public class DialerActivity extends AppCompatActivity implements CheckOperatorVi
             slidingTabs.getTabAt(0).setText("");
             slidingTabs.getTabAt(1).setText("");
             slidingTabs.getTabAt(2).setText("");
-            slidingTabs.getTabAt(0).setIcon(R.drawable.ic_phone_white_24dp);
+            slidingTabs.getTabAt(0).setIcon(R.drawable.ic_phone_call_button);
             slidingTabs.getTabAt(1).setIcon(R.drawable.ic_users);
             slidingTabs.getTabAt(2).setIcon(R.drawable.ic_chat_speech_bubbles);
         } catch (Exception ignored) {

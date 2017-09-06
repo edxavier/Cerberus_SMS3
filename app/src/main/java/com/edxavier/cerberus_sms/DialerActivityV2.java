@@ -36,7 +36,8 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.anjlab.android.iab.v3.BillingProcessor;
 import com.anjlab.android.iab.v3.TransactionDetails;
 import com.balysv.materialripple.MaterialRippleLayout;
-import com.edxavier.cerberus_sms.activities.StatisticsActivity;
+import com.edxavier.cerberus_sms.activities.black_list.BlackListActivity;
+import com.edxavier.cerberus_sms.activities.statistics.StatisticsActivity;
 import com.edxavier.cerberus_sms.fragments.callLog.CallLogFragment;
 import com.edxavier.cerberus_sms.fragments.checkOperator.CheckOperatorFrg;
 import com.edxavier.cerberus_sms.fragments.contacts.ContactFragment;
@@ -239,6 +240,9 @@ public class DialerActivityV2 extends AppCompatActivity
         switch (id) {
             case R.id.nav_charts:
                 startActivity(new Intent(this, StatisticsActivity.class));
+                break;
+            case R.id.nav_black_list:
+                startActivity(new Intent(this, BlackListActivity.class));
                 break;
             case R.id.ac_drawer_app_info:
                 analytics.logEvent("click_app_info", null);

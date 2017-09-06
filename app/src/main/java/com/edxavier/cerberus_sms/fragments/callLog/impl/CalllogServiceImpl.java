@@ -11,6 +11,7 @@ import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 
 import com.edxavier.cerberus_sms.db.realm.AreaCodeRealm;
+import com.edxavier.cerberus_sms.db.realm.BlackList;
 import com.edxavier.cerberus_sms.db.realm.CallsHistoryRealm;
 import com.edxavier.cerberus_sms.db.realm.CallsRealm;
 import com.edxavier.cerberus_sms.db.realm.ContactRealm;
@@ -51,6 +52,16 @@ public class CalllogServiceImpl implements CallLogService {
         return hasPerm == PackageManager.PERMISSION_GRANTED;
     }
 
+    @Override
+    public boolean hasWriteCallLogPermission() {
+        int hasPerm = 0;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN) {
+            hasPerm = context.getPackageManager().checkPermission(Manifest.permission.WRITE_CALL_LOG,
+                    context.getPackageName());
+        }
+        return hasPerm == PackageManager.PERMISSION_GRANTED;
+    }
+
 
     @Override
     public void syncCallsToRealm() {
@@ -75,21 +86,28 @@ public class CalllogServiceImpl implements CallLogService {
                 int duration = cur.getInt(cur
                         .getColumnIndex(CallLog.Calls.DURATION));
 
+                // dar formato al numero
                 callNumber = Utils.formatPhoneNumber(callNumber);
+                //Obtener operador
                 AreaCodeRealm areaCodeRealm = Utils.getOperadoraV4(callNumber, context);
                 String operator = "";
                 if (areaCodeRealm != null)
                     operator = areaCodeRealm.area_operator;
                 else
                     operator = Constans.DESCONOCIDO;
+                //agregar numero a una lista
                 numbers.add(callNumber);
+                //verificar si existe un contacto con ese numero
                 ContactRealm contact = Utils.getContact(callNumber);
+                //obtener todas las llamadas de ese numero
                 RealmResults<CallsRealm> callsR = realm.where(CallsRealm.class)
                         .equalTo("call_phone_number", callNumber).findAllSorted("call_date", Sort.DESCENDING);
                 CallsRealm callLog = null;
+                //si hay resultados obtener el mas reciente
                 if (!callsR.isEmpty()) {
                     callLog = callsR.first();
                 }
+                // si no hubo resultado guardarlo
                 if (callLog == null) {
                     String finalCallNumber = callNumber;
                     String finalOperator = operator;
@@ -100,12 +118,12 @@ public class CalllogServiceImpl implements CallLogService {
                                 callType, fecha, finalOperator));
                     });
                 } else {
-                    //Log.e("EDER_date", String.valueOf(callLog.call_date));
-                    //Log.e("EDER_fecha", String.valueOf(fecha));
+                    //si hubo resultados verificar si es mas antigua que la entrada del registro del telefono
                     if (callLog.call_date.before(fecha)) {
                         String finalCallNumber1 = callNumber;
                         CallsRealm finalCallLog = callLog;
                         String finalOperator1 = operator;
+                        //guardar el registro en el historico y actualizar el resumen
                         realm.executeTransaction(realm1 -> {
                             realm1.copyToRealm(new CallsHistoryRealm(contact, finalCallNumber1,
                                     duration, callType, fecha, finalOperator1));
@@ -119,6 +137,7 @@ public class CalllogServiceImpl implements CallLogService {
                         });
 
                     } else {
+                        //si no solo actualiza datos de contact y oeprador
                         CallsRealm finalCallLog1 = callLog;
                         String finalOperator2 = operator;
                         realm.executeTransaction(realm1 -> {
@@ -127,11 +146,11 @@ public class CalllogServiceImpl implements CallLogService {
                         });
                     }
                 }
-                //calls.add(callLog);
             }
             if (cur != null) {
                 cur.close();
             }
+            //si habian registros de llamadas verificar si en realm tenemos alguno que ya no esten en el telefono
             if (!numbers.isEmpty()) {
                 String[] nums = new String[numbers.size()];
                 nums = numbers.toArray(nums);
@@ -141,11 +160,13 @@ public class CalllogServiceImpl implements CallLogService {
                 RealmResults<CallsHistoryRealm> res2 = realm.where(CallsHistoryRealm.class).not()
                         .in("call_phone_number", nums)
                         .findAll();  //Log.e("EDER", String.valueOf(res.size()) + " contacts removed from realmG");
+                //eliminar los numeros que estan en la app pero no en el telefono
                 realm.executeTransaction(realm1 -> {
                     res.deleteAllFromRealm();
                     res2.deleteAllFromRealm();
                 });
             } else {
+                //si no hay nada el el reg del telefono limpiar los de la app
                 realm.executeTransaction(realm1 -> {
                     realm1.delete(CallsHistoryRealm.class);
                     realm1.delete(CallsRealm.class);
@@ -187,17 +208,17 @@ public class CalllogServiceImpl implements CallLogService {
     }
 
     @Override
-    public boolean clearPhoneReacords() {
+    public int clearPhoneReacords() {
         if (ActivityCompat.checkSelfPermission(context, Manifest.permission.WRITE_CALL_LOG) == PackageManager.PERMISSION_GRANTED) {
-            context.getContentResolver().delete(CallLog.Calls.CONTENT_URI, null, null);
+            int dlt = context.getContentResolver().delete(CallLog.Calls.CONTENT_URI, null, null);
             clearRecords();
-            return true;
+            return dlt;
         }else
-            return false;
+            return -1;
     }
 
     @Override
-    public boolean clearContactReacords(String number) {
+    public int clearContactReacords(String number) {
         if (ActivityCompat.checkSelfPermission(context, Manifest.permission.WRITE_CALL_LOG) == PackageManager.PERMISSION_GRANTED) {
             int tot = context.getContentResolver().delete(CallLog.Calls.CONTENT_URI, CallLog.Calls.NUMBER +"=?", new String[]{ number});
             if(tot<=0){
@@ -216,9 +237,29 @@ public class CalllogServiceImpl implements CallLogService {
                     res2.deleteAllFromRealm();
                 });
             }
-            return tot>0;
+            return tot;
         }else
-            return false;
+            return -1;
+    }
+
+    @Override
+    public void addToBlackList(Integer[] which, String number) {
+        realmG.executeTransaction(realm -> {
+            BlackList entry = realm.where(BlackList.class).equalTo("phone_number", number).findFirst();
+            if(entry == null)
+                entry = new BlackList();
+            entry.block_incoming_sms = false;
+            entry.block_incoming_call = false;
+
+            for (Integer integer : which) {
+                if(integer==0)
+                    entry.block_incoming_sms = true;
+                else
+                    entry.block_incoming_call = true;
+            }
+            entry.phone_number = number;
+            realm.copyToRealmOrUpdate(entry);
+        });
     }
 
 }

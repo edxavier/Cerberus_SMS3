@@ -1,18 +1,22 @@
 package com.edxavier.cerberus_sms.fragments.callLog.adapter;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.provider.CallLog;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.AppCompatImageView;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.edxavier.cerberus_sms.R;
 import com.edxavier.cerberus_sms.db.realm.AreaCodeRealm;
@@ -55,10 +59,10 @@ public class AdapterCallsRealm extends RecyclerView.Adapter<AdapterCallsRealm.Vi
     public void onChange(RealmResults<CallsRealm> element) {
         notifyDataSetChanged();
         if(element.isEmpty())
-            view.showEmptyMsg(true);
+                view.showEmptyMsg(true);
         else
-            view.showEmptyMsg(false);
-    }
+                view.showEmptyMsg(false);
+}
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         @BindView(R.id.lbl_caller_name)
@@ -200,27 +204,51 @@ public class AdapterCallsRealm extends RecyclerView.Adapter<AdapterCallsRealm.Vi
                                             intent2.putExtra("sms_body", "");
                                             view.getContext().startActivity(intent2);
                                             break;
+                                        case 3:
+                                            new MaterialDialog.Builder(v.getContext())
+                                                    .title(R.string.ac_block)
+                                                    .items(R.array.block_options)
+                                                    .itemsCallbackMultiChoice(null, new MaterialDialog.ListCallbackMultiChoice() {
+                                                        @Override
+                                                        public boolean onSelection(MaterialDialog dialog, Integer[] which, CharSequence[] text) {
+                                                            if(which.length==0)
+                                                                Toast.makeText(v.getContext(), "Nada que bloquear", Toast.LENGTH_LONG).show();
+                                                            else
+                                                                presenter.addToBlackList(which, call.call_phone_number);
+                                                            return true;
+                                                        }
+                                                    })
+                                                    .positiveText(R.string.accept)
+                                                    .show();
+                                            break;
                                         case 2:
                                             String name;
                                             if(call.contact!=null)
                                                 name = call.contact.contact_name;
                                             else
                                                 name = (call.call_phone_number);
-                                            MaterialDialog dlg = new MaterialDialog.Builder(v.getContext())
-                                                    .title(name)
-                                                    .content(v.getContext().getString(R.string.delete_calls_content))
-                                                    .positiveText(v.getContext().getString(R.string.accept))
-                                                    .negativeText(v.getContext().getString(R.string.cancelar))
-                                                    .positiveColor(v.getContext().getResources().getColor(R.color.md_red_700))
-                                                    .negativeColor(v.getContext().getResources().getColor(R.color.md_blue_grey_700))
-                                                    .onPositive((dialog1, which2) -> {
-                                                        boolean deleted = presenter.clearContactReacords(call.call_phone_number);
-                                                        if(!deleted) {
-                                                            Toast.makeText(v.getContext(),v.getContext().getString(R.string.delete_calls_fail),
-                                                                    Toast.LENGTH_LONG).show();
-                                                        }
-                                                    }).build();
-                                            dlg.show();
+                                            if(presenter.hasWriteCallLogPermission()) {
+                                                MaterialDialog dlg = new MaterialDialog.Builder(v.getContext())
+                                                        .title(name)
+                                                        .content(v.getContext().getString(R.string.delete_calls_content))
+                                                        .positiveText(v.getContext().getString(R.string.accept))
+                                                        .negativeText(v.getContext().getString(R.string.cancelar))
+                                                        .positiveColor(v.getContext().getResources().getColor(R.color.md_red_700))
+                                                        .negativeColor(v.getContext().getResources().getColor(R.color.md_blue_grey_700))
+                                                        .onPositive((dialog1, which2) -> {
+                                                            int deleted = presenter.clearContactReacords(call.call_phone_number);
+                                                            if (deleted == 0) {
+                                                                Toast.makeText(v.getContext(), v.getContext().getString(R.string.delete_calls_fail),
+                                                                        Toast.LENGTH_LONG).show();
+                                                            } else if (deleted == -1) {
+                                                                Toast.makeText(v.getContext(), v.getContext().getString(R.string.no_write_perms),
+                                                                        Toast.LENGTH_LONG).show();
+                                                            }
+                                                        }).build();
+                                                dlg.show();
+                                            }else {
+                                                presenter.requestPermission(new String[]{Manifest.permission.WRITE_CALL_LOG});
+                                            }
                                             break;
 
                                     }

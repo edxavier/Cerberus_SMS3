@@ -2,14 +2,19 @@ package com.edxavier.cerberus_sms.fragments.messages.adapter;
 
 import android.content.Intent;
 import android.net.Uri;
+import android.support.v7.widget.AppCompatImageView;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
+import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.edxavier.cerberus_sms.CreateMessageActivity;
+import com.edxavier.cerberus_sms.DetailConversation;
 import com.edxavier.cerberus_sms.R;
 import com.edxavier.cerberus_sms.db.realm.AreaCodeRealm;
 import com.edxavier.cerberus_sms.db.realm.MessagesRealm;
@@ -60,27 +65,29 @@ public class AdapterMessagesRealm extends RecyclerView.Adapter<AdapterMessagesRe
         // each data item is just a string in this case
 
         @BindView(R.id.sender_name)
-        TextViewHelper senderName;
+        TextView senderName;
         @BindView(R.id.conversation_sms_count)
-        TextViewHelper conversationSmsCount;
-        @BindView(R.id.new_messages)
-        TextViewHelper newMessages;
-        @BindView(R.id.card_new_messages)
-        CardView cardNewMessages;
+        TextView conversationSmsCount;
+        //@BindView(R.id.new_messages)
+        //TextViewHelper newMessages;
+        //@BindView(R.id.card_new_messages)
+        //CardView cardNewMessages;
         @BindView(R.id.lbl_sms_sender_number)
-        TextViewHelper lblSmsSenderNumber;
+        TextView lblSmsSenderNumber;
         @BindView(R.id.msg_body)
-        TextViewHelper msgBody;
-        @BindView(R.id.lbl_contact_country)
-        TextViewHelper lblContactCountry;
+        TextView msgBody;
+        //@BindView(R.id.lbl_contact_country)
+        //TextViewHelper lblContactCountry;
         @BindView(R.id.lbl_sms_date)
-        TextViewHelper lblSmsDate;
-        @BindView(R.id.lbl_sms_time)
-        TextViewHelper lblSmsTime;
+        TextView lblSmsDate;
+        //@BindView(R.id.lbl_sms_time)
+        //TextViewHelper lblSmsTime;
         @BindView(R.id.lbl_sms_operator)
-        TextViewHelper lblSmsOperator;
-        @BindView(R.id.img_send_failures)
-        ImageView imgSendFailures;
+        TextView lblSmsOperator;
+        //@BindView(R.id.img_send_failures)
+        //ImageView imgSendFailures;
+        @BindView(R.id.avatar_operator)
+        AppCompatImageView avatar_operator;
         @BindView(R.id.sms_bl_cardviewRow)
         CardView smsBlCardviewRow;
 
@@ -93,7 +100,7 @@ public class AdapterMessagesRealm extends RecyclerView.Adapter<AdapterMessagesRe
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.row_inbox, parent, false);
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.row_inbox_v2, parent, false);
         return new ViewHolder(v);
     }
 
@@ -107,7 +114,6 @@ public class AdapterMessagesRealm extends RecyclerView.Adapter<AdapterMessagesRe
             name = (resume.sms_phone_number);
 
         holder.senderName.setText(name);
-        holder.senderName.setRobotoBold();
         holder.conversationSmsCount.setText("("+String.valueOf(resume.sms_count)+")");
         holder.lblSmsSenderNumber.setText(resume.sms_phone_number);
         holder.msgBody.setText(resume.sms_text);
@@ -115,8 +121,10 @@ public class AdapterMessagesRealm extends RecyclerView.Adapter<AdapterMessagesRe
         SimpleDateFormat date_format = new SimpleDateFormat("dd-MMM-yy", Locale.getDefault());
 
         if (resume.sms_date != null) {
-            holder.lblSmsDate.setText(date_format.format(resume.sms_date));
-            holder.lblSmsTime.setText(time_format.format(resume.sms_date));
+            CharSequence d = DateUtils.getRelativeTimeSpanString(resume.sms_date.getTime(), System.currentTimeMillis(), DateUtils.MINUTE_IN_MILLIS);
+            //holder.lblSmsDate.setText(date_format.format(d));
+            holder.lblSmsDate.setText(d);
+            //holder.lblSmsTime.setText(time_format.format(resume.sms_date));
         }
         boolean isNumber = Utils.isPhoneNumber(resume.sms_phone_number);
         boolean isMarketNum = !resume.sms_phone_number.startsWith("+505") && resume.sms_phone_number.length() <= 4;
@@ -125,28 +133,33 @@ public class AdapterMessagesRealm extends RecyclerView.Adapter<AdapterMessagesRe
         if(!(isMarketNum || isMarketNum2) && isNumber) {
             AreaCodeRealm areaCode = Utils.getOperadoraV4(resume.sms_phone_number, holder.itemView.getContext());
             if (areaCode != null) {
-                holder.lblSmsOperator.setRobotoBold();
-                holder.lblSmsOperator.setText(areaCode.area_operator);
+               holder.lblSmsOperator.setText(areaCode.area_operator);
                 switch (areaCode.area_operator) {
                     case CLARO:
                         holder.lblSmsOperator.setTextColor(holder.itemView.getResources().getColor(R.color.md_red_700));
+                        holder.avatar_operator.setImageResource(R.drawable.ic_user_red);
                         break;
                     case MOVISTAR:
                         holder.lblSmsOperator.setTextColor(holder.itemView.getResources().getColor(R.color.md_green_700));
+                        holder.avatar_operator.setImageResource(R.drawable.ic_user_green);
                         break;
                     case COOTEL:
                         holder.lblSmsOperator.setTextColor(holder.itemView.getResources().getColor(R.color.md_amber_700));
+                        holder.avatar_operator.setImageResource(R.drawable.ic_user_orange);
                         break;
                     case CONVENCIONAL:
                         holder.lblSmsOperator.setTextColor(holder.itemView.getResources().getColor(R.color.md_blue_700));
-                        holder.lblSmsOperator.setText(areaCode.area_operator+"\n"+areaCode.area_name);
+                        holder.lblSmsOperator.setText(areaCode.area_name);
+                        holder.avatar_operator.setImageResource(R.drawable.ic_user_blue);
                         break;
                     case INTERNACIONAL:
                         holder.lblSmsOperator.setTextColor(holder.itemView.getResources().getColor(R.color.md_purple_700));
-                        holder.lblSmsOperator.setText(areaCode.area_operator+"\n"+areaCode.area_name);
+                        holder.lblSmsOperator.setText(areaCode.country_name+"-"+areaCode.area_name);
+                        holder.avatar_operator.setImageResource(R.drawable.ic_user_purple);
                         break;
                     default:
                         holder.lblSmsOperator.setTextColor(holder.itemView.getResources().getColor(R.color.md_grey_700));
+                        holder.avatar_operator.setImageResource(R.drawable.ic_user_unkown);
                         break;
                 }
                 //else
@@ -158,9 +171,14 @@ public class AdapterMessagesRealm extends RecyclerView.Adapter<AdapterMessagesRe
             holder.lblSmsOperator.setText("");
         }
 
-        holder.smsBlCardviewRow.setOnClickListener(new View.OnClickListener() {
+        holder.smsBlCardviewRow.setOnClickListener(v -> {
+            Intent myIntent = new Intent(v.getContext(), DetailConversation.class);
+            v.getContext().startActivity(myIntent);
+        });
+
+        holder.smsBlCardviewRow.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
-            public void onClick(View v) {
+            public boolean onLongClick(View v) {
                 new MaterialDialog.Builder(v.getContext())
                         .title(name)
                         .typeface("Roboto-Medium.ttf", "Roboto-Regular.ttf")
@@ -189,6 +207,7 @@ public class AdapterMessagesRealm extends RecyclerView.Adapter<AdapterMessagesRe
                             }
                         })
                         .show();
+                return true;
             }
         });
 

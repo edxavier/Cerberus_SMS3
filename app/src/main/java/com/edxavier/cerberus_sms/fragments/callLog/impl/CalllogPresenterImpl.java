@@ -41,6 +41,11 @@ public class CalllogPresenterImpl implements CallLogPresenter {
         return service.hasReadCalllogPermission();
     }
 
+    @Override
+    public boolean hasWriteCallLogPermission() {
+        return service.hasWriteCallLogPermission();
+    }
+
 
     @Override
     public void getCallsFromRealm() {
@@ -63,12 +68,22 @@ public class CalllogPresenterImpl implements CallLogPresenter {
     }
 
     @Override
-    public boolean clearPhoneReacords() {
+    public int clearPhoneReacords() {
        return service.clearPhoneReacords();
     }
 
     @Override
-    public boolean clearContactReacords(String number) {
+    public int clearContactReacords(String number) {
         return service.clearContactReacords(number);
+    }
+
+    @Override
+    public void addToBlackList(Integer[] which, String number) {
+        service.addToBlackList(which, number);
+    }
+
+    @Override
+    public void requestPermission(String[] perms) {
+
     }
 }
