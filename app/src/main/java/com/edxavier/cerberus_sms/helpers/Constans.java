@@ -12,22 +12,12 @@ public class Constans {
     public static final String INTERNACIONAL    = "Exterior";
     public static final String DESCONOCIDO    = "Desconocido";
 
-
-    public static final int BELICE    = 501;
-    public static final int GUATEMALA    = 502;
-    public static final int ELSALVADOR    = 503;
-    public static final int HONDURAS    = 504;
-    public static final int NICARAGUA    = 505;
-    public static final int COSTARICA    = 506;
-    public static final int PANAMA   = 507;
+    public static final int BLOCK_NONE    = 0;
+    public static final int BLOCK_MESSAGES    = 1;
+    public static final int BLOCK_CALLS    = 2;
+    public static final int BLOCK_BOTH    = 3;
 
 
-    public static final int MANAGUA    = 22;
-    public static final int LEON   = 23;
-    public static final int CHINANDEGA   = 234;
-    public static final int CHONTALES   = 251;
-    public static final int MASAYA   = 252;
-    public static final int BOACO   = 254;
 
     public static final int MESSAGE_READ    = 1;
     public static final int MESSAGE_UNREAD    = 0;

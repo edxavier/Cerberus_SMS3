@@ -71,4 +71,9 @@ public class ContactsPresenterImpl implements ContactsPresenter {
     public void syncContacts() {
         service.syncContactsToRealm();
     }
+
+    @Override
+    public void sendToBlackList(int options, String number) {
+        service.sendToBlackList(options, number);
+    }
 }

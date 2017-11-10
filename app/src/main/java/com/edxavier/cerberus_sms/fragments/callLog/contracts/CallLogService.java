@@ -19,6 +19,5 @@ public interface CallLogService {
     void clearRecords();
     int clearPhoneReacords();
     int clearContactReacords(String number);
-    void addToBlackList(Integer[] which, String number);
-
+    void sendToBlackList(int options, String number);
 }

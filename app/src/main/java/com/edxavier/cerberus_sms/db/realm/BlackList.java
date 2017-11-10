@@ -19,6 +19,7 @@ public class BlackList extends RealmObject {
     public boolean block_incoming_call;
     public int block_sms_count = 0;
     public int block_calls_count = 0;
+    public boolean notification_disabled = false;
 
 
     public BlackList() {

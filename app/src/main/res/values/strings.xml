@@ -26,12 +26,20 @@
         <item>Llamar</item>
         <item>Escribir</item>
         <item>Bloquear</item>
+        <item>Eliminar registros</item>
+
         <!--<item>Bloquear sms entrantes</item>-->
     </string-array>
 
     <string-array name="block_options">
+        <item>Ninguno</item>
         <item>Mensajes</item>
         <item>LLamadas</item>
+        <item>Ambos</item>
+    </string-array>
+    <string-array name="notifications_options">
+        <item>Habilitadas</item>
+        <item>Deshabilitadas</item>
     </string-array>
 
     <string name="drawer_operator_menu">Verifica Operador</string>
@@ -86,13 +94,13 @@ encontrado.
     <string name="sms_msg_atempt">Ingrese al menos 3 dígitos para intentar enviar el SMS</string>
     <string name="empty_call_log_msg">No hay registros para mostrar</string>
     <string name="call_log_info_loading">Cargado registros de llamadas</string>
-    <string name="messages_info_loading">Cargando mensajes...</string>
+    <string name="messages_info_loading">Cargando mensajes…</string>
     <string name="empty_messages_msg">¡No hay mensajes que mostrar!</string>
-    <string name="sync_contacts_msg">Sincronizando contactos...</string>
+    <string name="sync_contacts_msg">Sincronizando contactos…</string>
     <string name="contact_perms_info">La aplicación requiere leer tus contactos para poder sincronizase con tu agenda de contactos, esta información es únicamente para uso interno de la aplicación.</string>
     <string name="info">¡Informacion!</string>
     <string name="calls_perms_info">La aplicación requiere permiso para sincronizarse con su registro de llamadas. Esta información es únicamente para uso interno de la aplicación. Si está de acuerdo presione Aceptar.</string>
-    <string name="sync_msg">Sincronizando...</string>
+    <string name="sync_msg">Sincronizando…</string>
     <string name="alert_info">La aplicación necesita permiso para poder mostrar una ventana que se dibuja sobre todas las demás al realizar o recibir una llamada, esta ventana te mostrara el operador del número con el cual te comunicarás.</string>
     <string name="perm_denied">¡Permiso denegado!</string>
     <string name="sms_perms_info">La aplicación requiere permiso para leer tus SMS, esta información es para uso interno de la aplicación únicamente.</string>
@@ -132,6 +140,19 @@ encontrado.
     <string name="no_write_perms">No se poseen los permisos necesarios para ejecutar la acción</string>
     <string name="black_list">Lista negra</string>
     <string name="ac_block">Bloquear</string>
+    <string name="default_sms_app_warning">Para poder bloquear los SMS de números no deseados, establece Verifica Operador Nicaragua como tu aplicación SMS predeterminada.</string>
+    <string name="messages_hint">Escribe tu mensaje</string>
+    <string name="send_fail">¡Fallo envío!</string>
+    <string name="sending">Enviando…</string>
+    <string name="ac_notifications">Notificaciones</string>
+    <string name="drawer_mark_readed">Marcar todo como leído</string>
+    <string name="notice">Aviso!</string>
+    <string name="search_contact">Buscar contacto</string>
+    <string name="sent_dest_required">Ingrese un número destino</string>
+    <string name="ads_notice">Espacio publicitario…</string>
+    <string name="delete_sms_content" >Se eliminaran los registros de mensajes de la aplicación y del teléfono, ¿deseas continuar?</string>
+    <string name="sms_warn1">Solo puede ejecutar esta acción si Verifica Operador es tu aplicación SMS por predeterminada</string>
+    <string name="accept">Aceptar</string>
 
 
 </resources>

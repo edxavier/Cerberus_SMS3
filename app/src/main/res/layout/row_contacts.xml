@@ -7,7 +7,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginBottom="@dimen/card_view_margin_bottom"
-    card_view:cardBackgroundColor="@color/md_grey_50"
+    card_view:cardBackgroundColor="@color/md_white_1000"
     card_view:cardElevation="2dp"
     card_view:contentPadding="4dp"
     card_view:cardCornerRadius="3dp">
@@ -23,17 +23,17 @@
                 xmlns:app="http://schemas.android.com/apk/res-auto"
                 android:id="@+id/profile_image"
                 android:layout_gravity="center"
-                android:layout_width="54dp"
-                android:layout_height="54dp"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
                 android:visibility="gone"
                 app:civ_border_width="0dp" />
 
            <android.support.v7.widget.AppCompatImageView
-                android:layout_width="60dp"
-                android:layout_height="60dp"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
                 android:layout_gravity="center"
                 android:id="@+id/contact_avatar"
-                android:src="@drawable/ic_contacts_filled_100"/>
+                card_view:srcCompat="@drawable/ic_user_blue"/>
 
 
             <LinearLayout
@@ -43,23 +43,24 @@
                 android:orientation="vertical"
                 android:padding="8dp">
 
-                <com.edxavier.cerberus_sms.helpers.TextViewHelper
+                <TextView
                     android:id="@+id/lbl_contact_name"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textSize="16sp"
+                    android:textStyle="bold"
                     android:textColor="@color/md_teal_800"
                     android:text="Eder Xavier Rojas"
                     />
 
-                <com.edxavier.cerberus_sms.helpers.TextViewHelper
+                <TextView
                     android:id="@+id/lbl_contact_number"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="8494 3267"
                     />
 
-                <com.edxavier.cerberus_sms.helpers.TextViewHelper
+                <TextView
                     android:id="@+id/lbl_contact_country"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -78,7 +79,7 @@
                 android:gravity="end"
                 android:padding="4dp">
 
-                <com.edxavier.cerberus_sms.helpers.TextViewHelper
+                <TextView
                     android:id="@+id/lbl_contact_operator"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

@@ -42,6 +42,7 @@ import com.edxavier.cerberus_sms.fragments.contacts.adapter.AdapterContactRealm;
 import com.edxavier.cerberus_sms.fragments.contacts.contracts.ContactsPresenter;
 import com.edxavier.cerberus_sms.fragments.contacts.contracts.ContactsView;
 import com.edxavier.cerberus_sms.fragments.contacts.di.ContactsComponent;
+import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.firebase.analytics.FirebaseAnalytics;
@@ -87,7 +88,7 @@ public class ContactFragment extends Fragment implements ContactsView {
     FirebaseAnalytics analytics;
 
     @BindView(R.id._recycler_contacts_list)
-    RecyclerView RecyclerContactsList;
+    public RecyclerView RecyclerContactsList;
     @BindView(R.id.empty_list_layout)
     LinearLayout emptyListLayout;
     @BindView(R.id.adView)
@@ -150,7 +151,16 @@ public class ContactFragment extends Fragment implements ContactsView {
     }
 
     private void setupAds() {
-        AdRequest adRequest = new AdRequest.Builder().build();
+        AdRequest adRequest = new AdRequest.Builder()
+                //.addTestDevice("0B307F34E3DDAF6C6CAB28FAD4084125")
+                .build();
+        adView.setAdListener(new AdListener() {
+            @Override
+            public void onAdLoaded() {
+                super.onAdLoaded();
+                RecyclerContactsList.setPadding(0,0,0,90);
+            }
+        });
         adView.loadAd(adRequest);
     }
 

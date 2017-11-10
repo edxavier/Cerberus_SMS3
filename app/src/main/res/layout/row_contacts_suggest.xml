@@ -34,7 +34,7 @@
                 android:layout_height="60dp"
                 android:layout_gravity="center"
                 android:id="@+id/contact_avatar"
-                android:src="@drawable/ic_contacts_filled_100"/>
+                card_view:srcCompat="@drawable/ic_user_blue"/>
 
 
             <LinearLayout

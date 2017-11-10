@@ -2,14 +2,14 @@ package com.edxavier.cerberus_sms.fragments.callLog;
 
 
 import android.Manifest;
-import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Rect;
-import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.Telephony;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
@@ -18,6 +18,7 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -31,9 +32,11 @@ import android.widget.Toast;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.crashlytics.android.answers.Answers;
+import com.crashlytics.android.answers.ContentViewEvent;
+import com.crashlytics.android.answers.CustomEvent;
 import com.edxavier.cerberus_sms.AppOperator;
 import com.edxavier.cerberus_sms.BuildConfig;
-import com.edxavier.cerberus_sms.DialerActivityV2;
 import com.edxavier.cerberus_sms.R;
 import com.edxavier.cerberus_sms.db.realm.CallsRealm;
 import com.edxavier.cerberus_sms.fragments.callLog.adapter.AdapterCallsRealm;
@@ -41,6 +44,8 @@ import com.edxavier.cerberus_sms.fragments.callLog.contracts.CallLogPresenter;
 import com.edxavier.cerberus_sms.fragments.callLog.contracts.CallLogView;
 import com.edxavier.cerberus_sms.fragments.callLog.di.CallLogComponent;
 import com.edxavier.cerberus_sms.helpers.TextViewHelper;
+import com.edxavier.cerberus_sms.helpers.Utils;
+import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.firebase.analytics.FirebaseAnalytics;
@@ -54,12 +59,15 @@ import io.realm.RealmResults;
 import jp.wasabeef.recyclerview.adapters.SlideInBottomAnimationAdapter;
 import jp.wasabeef.recyclerview.animators.LandingAnimator;
 
+import static android.app.Activity.RESULT_OK;
+
 /**
  * A simple {@link Fragment} subclass.
  */
 public class CallLogFragment extends Fragment implements CallLogView {
 
     private static final int PERMISSIONS_REQUEST_READ_CALLS = 1;
+    private static final int REQUEST_CODE_SMS_DEFAULT_DIALOG = 11;
     @Inject
     CallLogPresenter presenter;
     @Inject
@@ -79,16 +87,17 @@ public class CallLogFragment extends Fragment implements CallLogView {
     @BindView(R.id.empty_list_layout)
     LinearLayout emptyListLayout;
     @BindView(R.id.recycler_call_list)
-    RecyclerView recyclerCallList;
+    public RecyclerView recyclerCallList;
     @BindView(R.id.loading_layout)
     LinearLayout loadingLayout;
     @BindView(R.id.container)
     FrameLayout container;
+    @BindView(R.id.warning)
+    LinearLayout warning;
 
     public CallLogFragment() {
         // Required empty public constructor
     }
-
 
 
     @Override
@@ -112,8 +121,59 @@ public class CallLogFragment extends Fragment implements CallLogView {
         setupInjection();
         setupRecycler();
         loadCalllog();
-        if(!Prefs.getBoolean("ads_removed", false)) {
+        if (!Prefs.getBoolean("ads_removed", false)) {
             setupAds();
+        }
+        checkSMSsettings();
+
+    }
+
+    public void checkSMSsettings() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            if (Utils.thereAreBlockedSmsNumbers() && !Utils.isDefaultSmsApp(getContext())) {
+                if(adView.isShown())
+                    recyclerCallList.setPadding(0, 100, 0, 90);
+                else
+                    recyclerCallList.setPadding(0, 100, 0, 0);
+                warning.setVisibility(View.VISIBLE);
+            }else {
+                if(adView.isShown())
+                    recyclerCallList.setPadding(0, 0, 0, 90);
+                else
+                    recyclerCallList.setPadding(0, 0, 0, 0);
+                warning.setVisibility(View.GONE);
+            }
+        }
+
+        warning.setOnClickListener(v -> {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                if(!Telephony.Sms.getDefaultSmsPackage(getContext()).equals(getContext().getPackageName())) {
+                    //Store default sms package name
+                    Intent intent = new Intent(Telephony.Sms.Intents.ACTION_CHANGE_DEFAULT);
+                    intent.putExtra(Telephony.Sms.Intents.EXTRA_PACKAGE_NAME,
+                            getContext().getPackageName());
+                    //startActivity(intent);
+                    startActivityForResult(intent, REQUEST_CODE_SMS_DEFAULT_DIALOG);
+                }
+            }
+        });
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_CODE_SMS_DEFAULT_DIALOG) {
+            // Make sure the request was successful
+            if (resultCode == RESULT_OK) {
+                recyclerCallList.setPadding(0, 0, 0, 0);
+                warning.setVisibility(View.GONE);
+                try {
+                    Answers.getInstance().logContentView(new ContentViewEvent()
+                            .putContentName("Default SMS app")
+                            .putContentId("setDefaultAppDialog")
+                            .putContentType("Change default app"));
+                }catch (Exception ignored){}
+            }
         }
 
     }
@@ -124,7 +184,6 @@ public class CallLogFragment extends Fragment implements CallLogView {
         CallLogComponent component = app.getCallLogComponent(this, this);
         component.inject(this);
     }
-
 
 
     @Override
@@ -156,9 +215,25 @@ public class CallLogFragment extends Fragment implements CallLogView {
         }
     }
 
+
+
     @Override
     public void setupAds() {
-        AdRequest adRequest = new AdRequest.Builder().build();
+        AdRequest adRequest = new AdRequest.Builder()
+                //.addTestDevice("0B307F34E3DDAF6C6CAB28FAD4084125")
+                .build();
+        adView.setAdListener(new AdListener() {
+            @Override
+            public void onAdLoaded() {
+                super.onAdLoaded();
+                if (Utils.thereAreBlockedSmsNumbers() && !Utils.isDefaultSmsApp(getContext())) {
+                    recyclerCallList.setPadding(0, 100, 0, 90);
+                    warning.setVisibility(View.VISIBLE);
+                } else {
+                    recyclerCallList.setPadding(0,0,0, 90);
+                }
+            }
+        });
         adView.loadAd(adRequest);
     }
 
@@ -181,9 +256,8 @@ public class CallLogFragment extends Fragment implements CallLogView {
     }
 
 
-
     private void setupRecycler() {
-        int orientation=this.getResources().getConfiguration().orientation;
+        int orientation = this.getResources().getConfiguration().orientation;
         if (orientation == Configuration.ORIENTATION_PORTRAIT) {
             //Normal
             recyclerCallList.setLayoutManager(new LinearLayoutManager(getActivity()));
@@ -212,14 +286,17 @@ public class CallLogFragment extends Fragment implements CallLogView {
 
     @Override
     public void requestPermission(String[] perms) {
-        requestPermissions(
-                new String[]{Manifest.permission.WRITE_CALL_LOG},
-                PERMISSIONS_REQUEST_READ_CALLS);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            requestPermissions(
+                    new String[]{Manifest.permission.WRITE_CALL_LOG},
+                    PERMISSIONS_REQUEST_READ_CALLS);
+        }
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+
     }
 
     @Override
@@ -232,6 +309,7 @@ public class CallLogFragment extends Fragment implements CallLogView {
     public void onResume() {
         super.onResume();
         presenter.onResume();
+        checkSMSsettings();
     }
 
     @Override
@@ -272,6 +350,8 @@ public class CallLogFragment extends Fragment implements CallLogView {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_resync:
+                Answers.getInstance().logCustom(new CustomEvent("Sincronizar Registros")
+                        .putCustomAttribute("Tipo", "Llamadas"));
                 if (presenter.hasReadCalllogPermission()) {
                     Toast.makeText(getActivity(), getActivity().getString(R.string.sync_msg),
                             Toast.LENGTH_LONG).show();
@@ -281,7 +361,7 @@ public class CallLogFragment extends Fragment implements CallLogView {
                 break;
             case R.id.action_delete_logs:
                 try {
-                    if(presenter.hasWriteCallLogPermission()) {
+                    if (presenter.hasWriteCallLogPermission()) {
                         MaterialDialog dialog = new MaterialDialog.Builder(getContext())
                                 .title(R.string.drawer_delete_calls)
                                 .content(getString(R.string.delete_calls_content))
@@ -290,22 +370,24 @@ public class CallLogFragment extends Fragment implements CallLogView {
                                 .positiveColor(getContext().getResources().getColor(R.color.md_red_700))
                                 .negativeColor(getContext().getResources().getColor(R.color.md_blue_grey_700))
                                 .onPositive((dialog1, which) -> {
+                                    Answers.getInstance().logCustom(new CustomEvent("Eliminar Registros")
+                                            .putCustomAttribute("Tipo", "Llamadas"));
                                     int deleted = presenter.clearPhoneReacords();
-                                    if (deleted==0) {
+                                    if (deleted == 0) {
                                         Toast.makeText(getActivity(), getString(R.string.delete_calls_fail),
                                                 Toast.LENGTH_LONG).show();
-                                    }else if(deleted==-1){
+                                    } else if (deleted == -1) {
                                         Toast.makeText(getActivity(), getString(R.string.no_write_perms),
                                                 Toast.LENGTH_LONG).show();
                                     }
                                 }).build();
                         dialog.show();
-                    }else {
-                       requestPermission(new String[]{Manifest.permission.WRITE_CALL_LOG});
+                    } else {
+                        requestPermission(new String[]{Manifest.permission.WRITE_CALL_LOG});
                     }
-                }catch (Exception e){
-                    Toast.makeText(getActivity(),getString(R.string.delete_calls_exception),
-                        Toast.LENGTH_LONG).show();
+                } catch (Exception e) {
+                    Toast.makeText(getActivity(), getString(R.string.delete_calls_exception),
+                            Toast.LENGTH_LONG).show();
                 }
                 break;
             case R.id.action_help:
@@ -318,8 +400,8 @@ public class CallLogFragment extends Fragment implements CallLogView {
                 try {
                     TextViewHelper version = (TextViewHelper) dialog.getCustomView().findViewById(R.id.app_version);
                     version.setText(BuildConfig.VERSION_NAME);
-                }catch (Exception e){
-                    Toast.makeText(getContext(),e.getMessage(),Toast.LENGTH_LONG).show();
+                } catch (Exception e) {
+                    Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_LONG).show();
                 }
                 dialog.show();
                 break;

@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.provider.CallLog;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.AppCompatImageView;
@@ -20,6 +21,7 @@ import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.edxavier.cerberus_sms.R;
 import com.edxavier.cerberus_sms.db.realm.AreaCodeRealm;
+import com.edxavier.cerberus_sms.db.realm.BlackList;
 import com.edxavier.cerberus_sms.db.realm.CallsRealm;
 import com.edxavier.cerberus_sms.fragments.callLog.contracts.CallLogPresenter;
 import com.edxavier.cerberus_sms.fragments.callLog.contracts.CallLogView;
@@ -32,8 +34,12 @@ import java.util.Locale;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.realm.Realm;
 import io.realm.RealmChangeListener;
 import io.realm.RealmResults;
+
+import static com.edxavier.cerberus_sms.helpers.Constans.BLOCK_NONE;
+import static com.edxavier.cerberus_sms.helpers.Constans.DESCONOCIDO;
 
 /**
  * Created by Eder Xavier Rojas on 12/07/2016.
@@ -109,31 +115,31 @@ public class AdapterCallsRealm extends RecyclerView.Adapter<AdapterCallsRealm.Vi
     public void onBindViewHolder(final ViewHolder holder, final int position) {
         CallsRealm call = calls.get(position);
         SimpleDateFormat time_format = new SimpleDateFormat("dd-MMM-yy hh:mm a", Locale.getDefault());
-        holder.lblCallDatetime.setText(time_format.format(call.call_date));
+        holder.lblCallDatetime.setText(time_format.format(call.entries.last().call_date));
         String name;
         if(call.contact!=null)
             name = call.contact.contact_name;
         else
             name = (call.call_phone_number);
         holder.lblCallerName.setText(name);
-        holder.call_count.setImageDrawable(Utils.getAvatar(String.valueOf(call.calls_count)));
+        holder.call_count.setImageDrawable(Utils.getAvatar(String.valueOf(call.entries.size())));
         holder.lblCallerNumber.setText(call.call_phone_number);
-        holder.lblCallDuration.setText(Utils.getDurationString(call.call_duration));
-        if (call.call_direction == CallLog.Calls.OUTGOING_TYPE) {
+        holder.lblCallDuration.setText(Utils.getDurationString(call.entries.last().call_duration));
+        if (call.entries.last().call_direction == CallLog.Calls.OUTGOING_TYPE) {
             holder.lblCallerName.setTextColor(holder.itemView.getResources().getColor(R.color.md_blue_grey_700));
-            holder.callType.setImageResource(R.drawable.ic_action_communication_call_made);
-        } else if (call.call_direction == CallLog.Calls.INCOMING_TYPE) {
-            holder.callType.setImageResource(R.drawable.ic_action_communication_call_received);
+            holder.callType.setImageResource(R.drawable.ic_call_made);
+        } else if (call.entries.last().call_direction == CallLog.Calls.INCOMING_TYPE) {
+            holder.callType.setImageResource(R.drawable.ic_call_received);
             holder.lblCallerName.setTextColor(holder.itemView.getResources().getColor(R.color.md_teal_700));
-        } else if (call.call_direction == CallLog.Calls.MISSED_TYPE) {
-            holder.callType.setImageResource(R.drawable.ic_action_communication_call_missed);
+        } else if (call.entries.last().call_direction == CallLog.Calls.MISSED_TYPE) {
+            holder.callType.setImageResource(R.drawable.ic_call_missed);
             holder.lblCallerName.setTextColor(holder.itemView.getResources().getColor(R.color.md_red_500));
         }
 
-        holder.lblCallOperator.setRobotoBold();
+        //holder.lblCallOperator.setRobotoBold();
         AreaCodeRealm areaCode = Utils.getOperadoraV4(call.call_phone_number, holder.itemView.getContext());
-        if (areaCode != null && call.call_phone_number.length() > 4) {
-            holder.lblCallOperator.setText(call.call_operator);
+        if (areaCode != null) {
+            holder.lblCallOperator.setText(areaCode.area_operator);
             holder.lblCallAreaName.setVisibility(View.VISIBLE);
             //holder.lblCallOperator.setVisibility(View.VISIBLE);
             holder.lblCallAreaName.setText(areaCode.country_name);
@@ -173,7 +179,7 @@ public class AdapterCallsRealm extends RecyclerView.Adapter<AdapterCallsRealm.Vi
         } else {
             holder.lblCallAreaName.setVisibility(View.GONE);
             holder.lblCallOperator.setTextColor(holder.itemView.getResources().getColor(R.color.md_grey_700));
-            holder.lblCallOperator.setText(call.call_operator);
+            holder.lblCallOperator.setText(DESCONOCIDO);
             holder.lblCallAreaName.setText("");
             holder.operator_avatar.setImageResource(R.drawable.ic_user_unkown);
         }
@@ -183,7 +189,6 @@ public class AdapterCallsRealm extends RecyclerView.Adapter<AdapterCallsRealm.Vi
             public void onClick(View v) {
                 new MaterialDialog.Builder(v.getContext())
                         .title(name)
-                        .typeface("Roboto-Medium.ttf", "Roboto-Regular.ttf")
                         .items(R.array.opciones_contacto)
                         .itemsCallback(new MaterialDialog.ListCallback() {
                             @Override
@@ -203,23 +208,6 @@ public class AdapterCallsRealm extends RecyclerView.Adapter<AdapterCallsRealm.Vi
                                                     Uri.parse("smsto:" + call.call_phone_number.replaceAll("\\s+", "")));
                                             intent2.putExtra("sms_body", "");
                                             view.getContext().startActivity(intent2);
-                                            break;
-                                        case 3:
-                                            new MaterialDialog.Builder(v.getContext())
-                                                    .title(R.string.ac_block)
-                                                    .items(R.array.block_options)
-                                                    .itemsCallbackMultiChoice(null, new MaterialDialog.ListCallbackMultiChoice() {
-                                                        @Override
-                                                        public boolean onSelection(MaterialDialog dialog, Integer[] which, CharSequence[] text) {
-                                                            if(which.length==0)
-                                                                Toast.makeText(v.getContext(), "Nada que bloquear", Toast.LENGTH_LONG).show();
-                                                            else
-                                                                presenter.addToBlackList(which, call.call_phone_number);
-                                                            return true;
-                                                        }
-                                                    })
-                                                    .positiveText(R.string.accept)
-                                                    .show();
                                             break;
                                         case 2:
                                             String name;
@@ -247,12 +235,45 @@ public class AdapterCallsRealm extends RecyclerView.Adapter<AdapterCallsRealm.Vi
                                                         }).build();
                                                 dlg.show();
                                             }else {
-                                                presenter.requestPermission(new String[]{Manifest.permission.WRITE_CALL_LOG});
+                                                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                                                    presenter.requestPermission(new String[]{Manifest.permission.WRITE_CALL_LOG});
+                                                }
                                             }
                                             break;
+                                        case 3:
+                                            Realm realm = Realm.getDefaultInstance();
+                                            int op = BLOCK_NONE;
+                                            BlackList entry = realm.where(BlackList.class).equalTo("phone_number", call.call_phone_number).findFirst();
+                                            if(entry!=null){
+                                                if(entry.block_incoming_call && entry.block_incoming_sms)
+                                                    op = Constans.BLOCK_BOTH;
+                                                else if(entry.block_incoming_call && !entry.block_incoming_sms)
+                                                    op = Constans.BLOCK_CALLS;
+                                                else if(!entry.block_incoming_call && entry.block_incoming_sms)
+                                                    op = Constans.BLOCK_MESSAGES;
+
+                                            }
+                                            realm.close();
+                                            new MaterialDialog.Builder(v.getContext())
+                                                    .title(R.string.ac_block)
+                                                    .items(R.array.block_options)
+                                                    .itemsCallbackSingleChoice(op, new MaterialDialog.ListCallbackSingleChoice() {
+                                                        @Override
+                                                        public boolean onSelection(MaterialDialog dialog, View view, int which, CharSequence text) {
+                                                            presenter.sendToBlackList(which, call.call_phone_number);
+                                                            return true;
+                                                        }
+                                                    })
+                                                    .positiveText(R.string.accept)
+                                                    .negativeText(R.string.cancelar)
+                                                    .show();
+                                            break;
+
 
                                     }
-                                }catch (Exception ignored){}
+                                }catch (Exception ignored){
+                                    Log.e("EDER", "Switch errror " + ignored.getMessage());
+                                }
                             }
                         })
                         .show();

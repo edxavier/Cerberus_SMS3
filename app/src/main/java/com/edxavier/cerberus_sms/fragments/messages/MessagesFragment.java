@@ -2,6 +2,7 @@ package com.edxavier.cerberus_sms.fragments.messages;
 
 
 import android.Manifest;
+import android.app.NotificationManager;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -9,16 +10,19 @@ import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Rect;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.Telephony;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.format.DateUtils;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -32,9 +36,12 @@ import android.widget.LinearLayout;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.crashlytics.android.answers.Answers;
+import com.crashlytics.android.answers.ContentViewEvent;
+import com.crashlytics.android.answers.CustomEvent;
 import com.edxavier.cerberus_sms.AppOperator;
 import com.edxavier.cerberus_sms.BuildConfig;
-import com.edxavier.cerberus_sms.DialerActivityV2;
+import com.edxavier.cerberus_sms.CreateMessageActivity;
 import com.edxavier.cerberus_sms.R;
 import com.edxavier.cerberus_sms.db.realm.MessagesRealm;
 import com.edxavier.cerberus_sms.fragments.messages.adapter.AdapterMessagesRealm;
@@ -42,6 +49,8 @@ import com.edxavier.cerberus_sms.fragments.messages.contracts.MessagesPresenter;
 import com.edxavier.cerberus_sms.fragments.messages.contracts.MessagesView;
 import com.edxavier.cerberus_sms.fragments.messages.di.MessageComponent;
 import com.edxavier.cerberus_sms.helpers.TextViewHelper;
+import com.edxavier.cerberus_sms.helpers.Utils;
+import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.firebase.analytics.FirebaseAnalytics;
@@ -54,6 +63,9 @@ import butterknife.ButterKnife;
 import io.realm.RealmResults;
 import jp.wasabeef.recyclerview.adapters.SlideInBottomAnimationAdapter;
 import jp.wasabeef.recyclerview.animators.FlipInBottomXAnimator;
+
+import static android.app.Activity.RESULT_OK;
+import static android.content.Context.NOTIFICATION_SERVICE;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -69,7 +81,7 @@ public class MessagesFragment extends Fragment implements MessagesView {
 
 
     @BindView(R.id.recyclerMessages)
-    RecyclerView recyclerMessages;
+    public RecyclerView recyclerMessages;
     @BindView(R.id.swipeMessages)
     SwipeRefreshLayout swipeMessages;
     @BindView(R.id.loading_layout)
@@ -80,11 +92,15 @@ public class MessagesFragment extends Fragment implements MessagesView {
     public AdView adView;
     @BindView(R.id.container)
     FrameLayout container;
-
+    @BindView(R.id.warning)
+    LinearLayout warning;
     AdapterMessagesRealm adapter;
     SlideInBottomAnimationAdapter slideAdapter;
+    private static final int REQUEST_CODE_SMS_DEFAULT_DIALOG = 11;
+    @BindView(R.id.fab_createevent)
+    FloatingActionButton fabCreateevent;
 
-
+    Menu menu;
     public MessagesFragment() {
         // Required empty public constructor
     }
@@ -109,9 +125,85 @@ public class MessagesFragment extends Fragment implements MessagesView {
         });
         setupInjection();
         loadSMS();
-        if(!Prefs.getBoolean("ads_removed", false)) {
+        if (!Prefs.getBoolean("ads_removed", false)) {
             setupAds();
         }
+        checkSMSsettings();
+        fabCreateevent.setOnClickListener(v -> {
+            Intent myIntent = new Intent(v.getContext(), CreateMessageActivity.class);
+            getContext().startActivity(myIntent);
+        });
+        recyclerMessages.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+
+                if (dy > 0) {
+                    // Scroll Down
+                    if (fabCreateevent.isShown()) {
+                        fabCreateevent.hide();
+                    }
+                } else if (dy < 0) {
+                    // Scroll Up
+                    if (!fabCreateevent.isShown()) {
+                        fabCreateevent.show();
+                    }
+                }
+            }
+        });
+    }
+
+    public void checkSMSsettings() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            if (Utils.thereAreBlockedSmsNumbers() && !Utils.isDefaultSmsApp(getContext())) {
+                recyclerMessages.setPadding(0, 100, 0, 0);
+                warning.setVisibility(View.VISIBLE);
+            } else {
+                if(adView.isShown())
+                    recyclerMessages.setPadding(0, 0, 0, 90);
+                else
+                    recyclerMessages.setPadding(0, 0, 0, 0);
+                warning.setVisibility(View.GONE);
+            }
+        }
+
+        warning.setOnClickListener(v -> {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                if (!Telephony.Sms.getDefaultSmsPackage(getContext()).equals(getContext().getPackageName())) {
+                    //Store default sms package name
+                    Intent intent = new Intent(Telephony.Sms.Intents.ACTION_CHANGE_DEFAULT);
+                    intent.putExtra(Telephony.Sms.Intents.EXTRA_PACKAGE_NAME,
+                            getContext().getPackageName());
+                    //startActivity(intent);
+                    startActivityForResult(intent, REQUEST_CODE_SMS_DEFAULT_DIALOG);
+                }
+            }
+        });
+    }
+
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_CODE_SMS_DEFAULT_DIALOG) {
+            // Make sure the request was successful
+            if (resultCode == RESULT_OK) {
+                recyclerMessages.setPadding(0, 0, 0, 0);
+                warning.setVisibility(View.GONE);
+                if(menu!=null){
+                    MenuItem item = menu.findItem(R.id.action_delete_logs);
+                    if(item!=null)
+                        item.setVisible(true);
+                }
+                try {
+                    Answers.getInstance().logContentView(new ContentViewEvent()
+                            .putContentName("Default SMS app")
+                            .putContentId("setDefaultAppDialog")
+                            .putContentType("Change default app"));
+                }catch (Exception ignored){}
+            }
+        }
+
     }
 
     @Override
@@ -123,11 +215,10 @@ public class MessagesFragment extends Fragment implements MessagesView {
 
     @Override
     public void loadSMS() {
-        if(presenter.hasReadSMSPermission()){
+        if (presenter.hasReadSMSPermission()) {
             presenter.syncMessages();
             presenter.getMessagesFromRealm();
-        }
-        else {
+        } else {
             new MaterialDialog.Builder(getContext())
                     .title(R.string.save_info)
                     .content(R.string.sms_perms_info)
@@ -144,7 +235,7 @@ public class MessagesFragment extends Fragment implements MessagesView {
                         @Override
                         public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
                             showEmptyMsg(true);
-                            Snackbar.make(container,getResources().getString(R.string.no_read_perms),
+                            Snackbar.make(container, getResources().getString(R.string.no_read_perms),
                                     Snackbar.LENGTH_INDEFINITE).show();
                         }
                     })
@@ -155,9 +246,19 @@ public class MessagesFragment extends Fragment implements MessagesView {
 
     @Override
     public void setupAds() {
-        AdRequest adRequest = new AdRequest.Builder().build();
+        AdRequest adRequest = new AdRequest.Builder()
+                //.addTestDevice("0B307F34E3DDAF6C6CAB28FAD4084125")
+                .build();
+        adView.setAdListener(new AdListener() {
+            @Override
+            public void onAdLoaded() {
+                super.onAdLoaded();
+                recyclerMessages.setPadding(0,0,0,90);
+            }
+        });
         adView.loadAd(adRequest);
     }
+
     @Override
     public void showEmptyMsg(boolean show) {
         if (show) {
@@ -179,17 +280,16 @@ public class MessagesFragment extends Fragment implements MessagesView {
 
     @Override
     public void setMessages(RealmResults<MessagesRealm> messages) {
-        int orientation=this.getResources().getConfiguration().orientation;
-        if(orientation== Configuration.ORIENTATION_PORTRAIT){
+        int orientation = this.getResources().getConfiguration().orientation;
+        if (orientation == Configuration.ORIENTATION_PORTRAIT) {
             recyclerMessages.setLayoutManager(new LinearLayoutManager(getActivity()));
-        }
-        else{
+        } else {
             recyclerMessages.setLayoutManager(new GridLayoutManager(getActivity(), 2));
             recyclerMessages.addItemDecoration(new GridSpacingItemDecoration(2, dpToPx(10), true));
         }
         //recyclerMessages.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerMessages.setHasFixedSize(true);
-        adapter = new AdapterMessagesRealm(messages, this);
+        adapter = new AdapterMessagesRealm(messages, this, presenter);
         slideAdapter = new SlideInBottomAnimationAdapter(adapter);
         slideAdapter.setDuration(500);
         slideAdapter.setInterpolator(new OvershootInterpolator(1f));
@@ -203,6 +303,7 @@ public class MessagesFragment extends Fragment implements MessagesView {
     public void onDestroyView() {
         super.onDestroyView();
     }
+
     @Override
     public void onDestroy() {
         presenter.onDestroy();
@@ -213,6 +314,7 @@ public class MessagesFragment extends Fragment implements MessagesView {
     public void onResume() {
         super.onResume();
         presenter.onResume();
+        checkSMSsettings();
     }
 
     @Override
@@ -233,7 +335,7 @@ public class MessagesFragment extends Fragment implements MessagesView {
                     // contacts-related task you need to do.
                     Snackbar.make(container, getResources().getString(R.string.sync_msg), Snackbar.LENGTH_SHORT).show();
                     loadSMS();
-                }else {
+                } else {
                     showEmptyMsg(true);
                     Snackbar.make(container, getResources().getString(R.string.perm_denied), Snackbar.LENGTH_SHORT).show();
                 }
@@ -245,45 +347,50 @@ public class MessagesFragment extends Fragment implements MessagesView {
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.menu_delete_records, menu);
+        inflater.inflate(R.menu.menu_msgs, menu);
+        this.menu = menu;
+        if(!Utils.isDefaultSmsApp(getContext())) {
+            MenuItem item = menu.findItem(R.id.action_delete_logs);
+            item.setVisible(false);
+        }
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-           case R.id.action_rate:
-                analytics.logEvent("rate_fab_button", null);
-                Uri uri = Uri.parse("market://details?id=" + getContext().getPackageName());
-                Intent goToMarket = new Intent(Intent.ACTION_VIEW, uri);
-                // To count with Play market backstack, After pressing back button,
-                // to taken back to our application, we need to refresh following flags to intent.
-                goToMarket.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY |
-                        Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET |
-                        Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
-                try {
-                    startActivity(goToMarket);
-                } catch (ActivityNotFoundException e) {
-                    startActivity(new Intent(Intent.ACTION_VIEW,
-                            Uri.parse("http://play.google.com/store/apps/details?id=" + getContext().getPackageName())));
-                }
+            case R.id.action_resync:
+                Answers.getInstance().logCustom(new CustomEvent("Sincronizar Registros")
+                        .putCustomAttribute("Tipo", "Mensajes"));
+                presenter.clearRecords();
+                presenter.syncMessages();
                 break;
-            case R.id.action_share:
-                try {
-                    analytics.logEvent("share_fab_button", null);
-                    Intent i = new Intent(Intent.ACTION_SEND);
-                    i.setType("text/plain");
-                    i.putExtra(Intent.EXTRA_SUBJECT, getResources().getString(R.string.app_name));
-                    String sAux = getResources().getString(R.string.share_app_msg);
-                    sAux = sAux + "https://play.google.com/store/apps/details?id="+ getContext().getPackageName()+" \n\n";
-                    i.putExtra(Intent.EXTRA_TEXT, sAux);
-                    startActivity(Intent.createChooser(i, getResources().getString(R.string.share_using)));
-                } catch(Exception ignored) {}
+            case R.id.action_delete_logs:
+                    MaterialDialog dlg = new MaterialDialog.Builder(getContext())
+                            .title(R.string.notice)
+                            .content("Esta accion eliminara todos los sms tanto de la aplicacion como del telefono, deseas continuar?")
+                            .positiveText(R.string.accept)
+                            .negativeText(R.string.cancelar)
+                            .onPositive((dialog1, which) -> {
+                                Answers.getInstance().logCustom(new CustomEvent("Eliminar Registros")
+                                        .putCustomAttribute("Tipo", "Mensajes"));
+                                presenter.clearRecords();
+                                presenter.clearPhoneReacords();
+                            })
+                            .build();
+                    dlg.show();
+                break;
+            case R.id.action_mark_all_as_readed:
+                presenter.markAllAsRead();
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    NotificationManagerCompat managerCompat = NotificationManagerCompat.from(getContext());
+                    managerCompat.cancelAll();
+                }
                 break;
             case R.id.action_help:
                 MaterialDialog dialog = new MaterialDialog.Builder(getContext())
                         .title(R.string.drawer_help_menu)
                         .customView(R.layout.fragment_acercade, true)
-                        .positiveText("OK")
+                        .positiveText(R.string.accept)
                         .positiveColor(getContext().getResources().getColor(R.color.md_orange_700))
                         .build();
                 TextViewHelper version = (TextViewHelper) dialog.getCustomView().findViewById(R.id.app_version);
@@ -338,4 +445,10 @@ public class MessagesFragment extends Fragment implements MessagesView {
         Resources r = getResources();
         return Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, r.getDisplayMetrics()));
     }
+
+
+    public int getUnreadedMessages(){
+        return presenter.getUnreadedMsgs();
+    }
+
 }

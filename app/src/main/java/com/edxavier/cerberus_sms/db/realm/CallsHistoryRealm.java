@@ -8,6 +8,7 @@ import io.realm.Realm;
 import io.realm.RealmObject;
 import io.realm.RealmResults;
 import io.realm.annotations.Index;
+import io.realm.annotations.LinkingObjects;
 import io.realm.annotations.PrimaryKey;
 
 // Created by Eder Xavier Rojas on 12/11/2016.
@@ -18,7 +19,6 @@ public class CallsHistoryRealm extends RealmObject {
     public ContactRealm contact;
     @Index
     public String call_phone_number;
-    @Index
     public String call_operator;
     public int call_duration;
     public int call_direction;
@@ -29,7 +29,7 @@ public class CallsHistoryRealm extends RealmObject {
         this.id = UUIDGenerator.nextUUID();
     }
 
-    public CallsHistoryRealm(ContactRealm contact, String call_phone_number, int call_duration,
+    public CallsHistoryRealm( ContactRealm contact, String call_phone_number, int call_duration,
                              int call_direction, Date call_date, String call_operator) {
         this.id = UUIDGenerator.nextUUID();
         this.contact = contact;

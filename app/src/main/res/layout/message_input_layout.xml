@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:fab="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/tools"
+    android:orientation="horizontal"
+    android:gravity="bottom"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <EditText
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="4dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginLeft="10dp"
+        android:background="@drawable/out_going_msg"
+        android:padding="8dp"
+        android:id="@+id/txt_message_body"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:maxLength="160"
+        style="@style/TextAppearance.AppCompat.Body1"
+        android:hint="@string/messages_hint"
+         />
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab_sent_message"
+        fab:fabSize="mini"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="8dp"
+        fab:srcCompat="@drawable/ic_send_white"
+        app:borderWidth="2dp" />
+
+</LinearLayout>

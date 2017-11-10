@@ -23,8 +23,23 @@
         <item>Call</item>
         <item>Write</item>
         <item>Block</item>
+        <item>Delete messages</item>
+
         <!--<item>Block incoming sms</item>-->
     </string-array>
+
+    <string-array name="block_options">
+        <item>None</item>
+        <item>Messages</item>
+        <item>Calls</item>
+        <item>Both</item>
+    </string-array>
+    <string-array name="notifications_options">
+        <item>Enabled</item>
+        <item>Disabled</item>
+    </string-array>
+
+
     <string name="new_sms_dest">Name or number</string>
     <string name="new_sms_body">Write your message</string>
     <string name="cancelar">Cancel</string>
@@ -107,5 +122,17 @@ found.
     <string name="no_write_perms">You do not have the necessary permissions to execute the action</string>
     <string name="black_list">Black list</string>
     <string name="ac_block">Block</string>
+    <string name="default_sms_app_warning">In order to block SMS from unwanted numbers, set Verify Operator Nic as your default SMS application.</string>
+    <string name="send_fail">Send failure</string>
+    <string name="sending">Sending...</string>
+    <string name="messages_hint">Write your message</string>
+    <string name="ac_notifications">Notifications</string>
+    <string name="drawer_mark_readed">Mark all as read</string>
+    <string name="notice">Notice</string>
+    <string name="search_contact">Search contact</string>
+    <string name="sent_dest_required">Enter destination number</string>
+    <string name="ads_notice">Advertising space…</string>
+    <string name="delete_sms_content">The application and phone message logs will be deleted, do you want to continue?</string>
+    <string name="sms_warn1">You can only perform this action if Check Operator is your SMS application by default</string>
 
 </resources>

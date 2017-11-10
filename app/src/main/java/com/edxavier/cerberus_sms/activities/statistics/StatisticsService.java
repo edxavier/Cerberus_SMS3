@@ -2,6 +2,7 @@ package com.edxavier.cerberus_sms.activities.statistics;
 
 import com.edxavier.cerberus_sms.db.realm.CallsHistoryRealm;
 import com.edxavier.cerberus_sms.db.realm.ContactRealm;
+import com.edxavier.cerberus_sms.db.realm.MessagesHistoryRealm;
 import com.edxavier.cerberus_sms.db.realm.MessagesRealm;
 import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.data.PieEntry;
@@ -22,7 +23,7 @@ public interface StatisticsService {
     RealmResults<CallsHistoryRealm> getIncomingCallsOperators();
 
     RealmResults<ContactRealm> getContactsOperators();
-    RealmResults<MessagesRealm> getSmsOperators();
+    RealmResults<MessagesHistoryRealm> getSmsOperators();
 
 
     ArrayList<PieEntry>getCallEntries();

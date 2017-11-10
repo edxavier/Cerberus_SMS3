@@ -14,6 +14,8 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.Toast;
 
+import com.crashlytics.android.answers.Answers;
+import com.crashlytics.android.answers.CustomEvent;
 import com.edxavier.cerberus_sms.R;
 import com.edxavier.cerberus_sms.db.realm.AreaCodeRealm;
 import com.edxavier.cerberus_sms.db.realm.CallsHistoryRealm;
@@ -39,6 +41,7 @@ import static android.content.Context.LAYOUT_INFLATER_SERVICE;
 import static com.edxavier.cerberus_sms.helpers.Constans.CLARO;
 import static com.edxavier.cerberus_sms.helpers.Constans.CONVENCIONAL;
 import static com.edxavier.cerberus_sms.helpers.Constans.COOTEL;
+import static com.edxavier.cerberus_sms.helpers.Constans.DESCONOCIDO;
 import static com.edxavier.cerberus_sms.helpers.Constans.INTERNACIONAL;
 import static com.edxavier.cerberus_sms.helpers.Constans.MOVISTAR;
 
@@ -52,169 +55,196 @@ public class CallHandler extends PhonecallReceiver {
     @Override
     protected void onIncomingCallStarted(Context ctx, String number, Date start) {
         super.onIncomingCallStarted(ctx, number, start);
-        if(checkDrawPermission(ctx)) {
-            if(CallHandler.manager==null)
-                CallHandler.manager = (WindowManager) ctx.getSystemService(Context.WINDOW_SERVICE);
-            Realm realm = Realm.getDefaultInstance();
-            WindowManager.LayoutParams layoutParams = setupWM(ctx);
-            LayoutInflater layoutInflater = (LayoutInflater) ctx.getSystemService(LAYOUT_INFLATER_SERVICE);
-            //Verificar si existe una ventana flotante visible y removerla
-            if(CallHandler.view !=null && CallHandler.view.isShown()) {
-                CallHandler.manager.removeView(CallHandler.view);
-                try {
-                    FirebaseAnalytics analytics = FirebaseAnalytics.getInstance(ctx);
-                    analytics.logEvent("remove_floatW", null);
-                }catch (Exception ignored){}
-            }
-            CallHandler.view = layoutInflater.inflate(R.layout.floating_window_v2, null);
-            setTouchListener(layoutParams);
-            AppCompatImageView close = (AppCompatImageView) CallHandler.view.findViewById(R.id.close_floating);
-            AppCompatImageView bg = (AppCompatImageView) CallHandler.view.findViewById(R.id.imgBackground);
-            TextViewHelper msgText = (TextViewHelper) CallHandler.view.findViewById(R.id.floating_msg);
-            CardView cardView = (CardView) CallHandler.view.findViewById(R.id.flaoting_card);
-            close.bringToFront();
-            close.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
+        try {
+            if (checkDrawPermission(ctx)) {
+                if (CallHandler.manager == null)
+                    CallHandler.manager = (WindowManager) ctx.getSystemService(Context.WINDOW_SERVICE);
+                Realm realm = Realm.getDefaultInstance();
+                WindowManager.LayoutParams layoutParams = setupWM(ctx);
+                LayoutInflater layoutInflater = (LayoutInflater) ctx.getSystemService(LAYOUT_INFLATER_SERVICE);
+                //Verificar si existe una ventana flotante visible y removerla
+                if (CallHandler.view != null && CallHandler.view.isShown()) {
+                    CallHandler.manager.removeView(CallHandler.view);
                     try {
-                        if(CallHandler.view !=null && CallHandler.view.isShown())
-                            CallHandler.manager.removeView(CallHandler.view);
-                    }catch (Exception e){
-                        CallHandler.manager.removeView(CallHandler.view);
-                        FirebaseCrash.logcat(Log.ERROR, "onIncomingCallStarted", e.getMessage());
+                        FirebaseAnalytics analytics = FirebaseAnalytics.getInstance(ctx);
+                        analytics.logEvent("remove_floatW", null);
+                    } catch (Exception ignored) {
                     }
                 }
-            });
-            if(number!=null){
-                AreaCodeRealm areaCode = Utils.getOperadoraV4(number, ctx, realm);
-                if(areaCode!=null) {
-                    if (areaCode.area_operator.length() > 0) {
-                        msgText.setRobotoMedium();
-                        //msgText.setTextSize(14);
-                        msgText.setText(areaCode.area_operator);
-                        switch (areaCode.area_operator) {
-                            case CLARO:
-                                bg.setImageResource((R.drawable.ic_biohazard));
-                                break;
-                            case MOVISTAR:
-                                bg.setImageResource((R.drawable.ic_radiation));
-                                break;
-                            case COOTEL:
-                                bg.setImageResource((R.drawable.ic_star_circle));
-                                break;
-                            case CONVENCIONAL:
-                                bg.setImageResource((R.drawable.ic_internet));
-                                msgText.setText(areaCode.area_name);
-                                break;
-                            case INTERNACIONAL:
-                                bg.setImageResource((R.drawable.ic_exterior));
-                                if (areaCode.area_name.length()>0)
-                                    msgText.setText(areaCode.area_name);
-                                else if(areaCode.country_name.length()>0)
-                                    msgText.setText(areaCode.country_name);
-                                break;
-                            default:
-                                msgText.setText(areaCode.area_name);
-                                break;
+                CallHandler.view = layoutInflater.inflate(R.layout.floating_window_v2, null);
+                setTouchListener(layoutParams);
+                AppCompatImageView close = CallHandler.view.findViewById(R.id.close_floating);
+                AppCompatImageView bg = CallHandler.view.findViewById(R.id.imgBackground);
+                TextViewHelper msgText = CallHandler.view.findViewById(R.id.floating_msg);
+                CardView cardView = CallHandler.view.findViewById(R.id.flaoting_card);
+                close.bringToFront();
+                close.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        try {
+                            if (CallHandler.view != null && CallHandler.view.isShown())
+                                CallHandler.manager.removeView(CallHandler.view);
+                        } catch (Exception e) {
+                            CallHandler.manager.removeView(CallHandler.view);
+                            FirebaseCrash.logcat(Log.ERROR, "onIncomingCallStarted", e.getMessage());
                         }
-                        if (areaCode.area_name.length()>0 || areaCode.country_name.length()>0) {
+                    }
+                });
+                if (number != null) {
+                    AreaCodeRealm areaCode = Utils.getOperadoraV4(number, ctx, realm);
+                    if (areaCode != null) {
+                        if (areaCode.area_operator.length() > 0) {
+                            msgText.setText(areaCode.area_operator);
+                            switch (areaCode.area_operator) {
+                                case CLARO:
+                                    bg.setImageResource((R.drawable.ic_biohazard));
+                                    break;
+                                case MOVISTAR:
+                                    bg.setImageResource((R.drawable.ic_radiation));
+                                    break;
+                                case COOTEL:
+                                    bg.setImageResource((R.drawable.ic_star_circle));
+                                    break;
+                                case CONVENCIONAL:
+                                    bg.setImageResource((R.drawable.ic_internet));
+                                    msgText.setText(areaCode.area_name);
+                                    break;
+                                case INTERNACIONAL:
+                                    bg.setImageResource((R.drawable.ic_exterior));
+                                    if (areaCode.area_name.length() > 0)
+                                        msgText.setText(areaCode.area_name);
+                                    else if (areaCode.country_name.length() > 0)
+                                        msgText.setText(areaCode.country_name);
+                                    break;
+                                default:
+                                    msgText.setText(areaCode.area_name);
+                                    break;
+                            }
+                            if (areaCode.area_name.length() > 0 || areaCode.country_name.length() > 0) {
+                                try {
+                                    CallHandler.manager.addView(CallHandler.view, layoutParams);
+                                } catch (Exception ignored) {
+                                }
+                                ;
+                            }
+                        } else if (areaCode.area_name.length() > 0) {
+                            msgText.setText(areaCode.area_name);
+                            bg.setImageResource((R.drawable.ic_internet));
                             try {
                                 CallHandler.manager.addView(CallHandler.view, layoutParams);
-                            }catch (Exception ignored){};
+                            } catch (Exception ignored) {
+                            }
+                            ;
                         }
-                    } else if (areaCode.area_name.length()>0){
-                        msgText.setRobotoMedium();
-                        msgText.setText(areaCode.area_name);
-                        bg.setImageResource((R.drawable.ic_internet));
-                        CallHandler.manager.addView(CallHandler.view, layoutParams);
                     }
                 }
+                realm.close();
+                //fin de checkDraw Perms
             }
-            realm.close();
-        }//fin de checkDraw Perms
+        }catch (Exception ignored){
+            if(ignored.getMessage()!=null)
+                Answers.getInstance().logCustom(new CustomEvent("Error: "+ignored.getMessage())
+                        .putCustomAttribute("location", "onIncomingCallStarted"));
+        }
 
     }
 
     @Override
     protected void onOutgoingCallStarted(Context ctx, String number, Date start) {
         super.onOutgoingCallStarted(ctx, number, start);
-        if(checkDrawPermission(ctx)) {
-            if(CallHandler.manager==null)
-                CallHandler.manager = (WindowManager) ctx.getSystemService(Context.WINDOW_SERVICE);
-            Realm realm = Realm.getDefaultInstance();
-            WindowManager.LayoutParams layoutParams = setupWM(ctx);
-            LayoutInflater layoutInflater = (LayoutInflater) ctx.getSystemService(LAYOUT_INFLATER_SERVICE);
-            if(CallHandler.view !=null && CallHandler.view.isShown())
-                CallHandler.manager.removeView(CallHandler.view);
-            CallHandler.view = layoutInflater.inflate(R.layout.floating_window_v2, null);
-            //CallHandler.view = View.inflate(ctx.getApplicationContext(), R.layout.floating_window_v2, null);
-            setTouchListener(layoutParams);
-            AppCompatImageView close = (AppCompatImageView)  CallHandler.view.findViewById(R.id.close_floating);
-            AppCompatImageView bg = (AppCompatImageView)  CallHandler.view.findViewById(R.id.imgBackground);
-
-            TextViewHelper msgText = (TextViewHelper)  CallHandler.view.findViewById(R.id.floating_msg);
-            CardView cardView = (CardView)  CallHandler.view.findViewById(R.id.flaoting_card);
-
-            //close.bringToFront();
-            close.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    try {
-                        if(CallHandler.view !=null && CallHandler.view.isShown())
-                            CallHandler.manager.removeView(CallHandler.view);
-                    }catch (Exception e){
-                        CallHandler.manager.removeView( CallHandler.view);
-                        FirebaseCrash.logcat(Log.ERROR, "onOutgoingCallStarted", e.getMessage());
-                    }
+        try {
+            if (checkDrawPermission(ctx)) {
+                if (CallHandler.manager == null)
+                    CallHandler.manager = (WindowManager) ctx.getSystemService(Context.WINDOW_SERVICE);
+                Realm realm = Realm.getDefaultInstance();
+                WindowManager.LayoutParams layoutParams = setupWM(ctx);
+                LayoutInflater layoutInflater = (LayoutInflater) ctx.getSystemService(LAYOUT_INFLATER_SERVICE);
+                if (CallHandler.view != null && CallHandler.view.isShown())
+                    CallHandler.manager.removeView(CallHandler.view);
+                if (layoutInflater != null) {
+                    CallHandler.view = layoutInflater.inflate(R.layout.floating_window_v2, null);
                 }
-            });
+                //CallHandler.view = View.inflate(ctx.getApplicationContext(), R.layout.floating_window_v2, null);
+                setTouchListener(layoutParams);
+                AppCompatImageView close = (AppCompatImageView) CallHandler.view.findViewById(R.id.close_floating);
+                AppCompatImageView bg = (AppCompatImageView) CallHandler.view.findViewById(R.id.imgBackground);
 
-            if (number != null) {
-                AreaCodeRealm areaCode = Utils.getOperadoraV4(number, ctx, realm);
-                if (areaCode != null) {
-                    if( areaCode.area_operator.length() > 0) {
-                        msgText.setRobotoMedium();
-                        msgText.setText(areaCode.area_operator);
-                        switch (areaCode.area_operator) {
-                            case CLARO:
-                                bg.setImageResource((R.drawable.ic_biohazard));
-                                break;
-                            case MOVISTAR:
-                                bg.setImageResource((R.drawable.ic_radiation));
-                                break;
-                            case COOTEL:
-                                bg.setImageResource((R.drawable.ic_star_circle));
-                                break;
-                            case CONVENCIONAL:
-                                bg.setImageResource((R.drawable.ic_internet));
-                                msgText.setText(areaCode.area_name);
-                                break;
-                            case INTERNACIONAL:
-                                bg.setImageResource((R.drawable.ic_exterior));
-                                if (areaCode.area_name.length()>0)
-                                    msgText.setText(areaCode.area_name);
-                                else if(areaCode.country_name.length()>0)
-                                    msgText.setText(areaCode.country_name);
-                                break;
-                            default:
-                                msgText.setText(areaCode.area_name);
-                                break;
+                TextViewHelper msgText = (TextViewHelper) CallHandler.view.findViewById(R.id.floating_msg);
+                CardView cardView = (CardView) CallHandler.view.findViewById(R.id.flaoting_card);
+
+                //close.bringToFront();
+                close.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        try {
+                            if (CallHandler.view != null && CallHandler.view.isShown())
+                                CallHandler.manager.removeView(CallHandler.view);
+                        } catch (Exception e) {
+                            CallHandler.manager.removeView(CallHandler.view);
+                            FirebaseCrash.logcat(Log.ERROR, "onOutgoingCallStarted", e.getMessage());
                         }
-                        if (areaCode.area_name.length()>0 || areaCode.country_name.length()>0) {
+                    }
+                });
+
+                if (number != null) {
+                    AreaCodeRealm areaCode = Utils.getOperadoraV4(number, ctx, realm);
+                    if (areaCode != null) {
+                        String operator = DESCONOCIDO;
+                        if(areaCode.area_operator!=null)
+                            if(areaCode.area_operator.length()>0)
+                            operator = areaCode.area_operator;
+                        if (operator.length() > 0) {
+                            msgText.setText(areaCode.area_operator);
+                            switch (operator) {
+                                case CLARO:
+                                    bg.setImageResource((R.drawable.ic_biohazard));
+                                    break;
+                                case MOVISTAR:
+                                    bg.setImageResource((R.drawable.ic_radiation));
+                                    break;
+                                case COOTEL:
+                                    bg.setImageResource((R.drawable.ic_star_circle));
+                                    break;
+                                case CONVENCIONAL:
+                                    bg.setImageResource((R.drawable.ic_internet));
+                                    msgText.setText(areaCode.area_name);
+                                    break;
+                                case INTERNACIONAL:
+                                    bg.setImageResource((R.drawable.ic_exterior));
+                                    if (areaCode.area_name.length() > 0)
+                                        msgText.setText(areaCode.area_name);
+                                    else if (areaCode.country_name.length() > 0)
+                                        msgText.setText(areaCode.country_name);
+                                    break;
+                                default:
+                                    msgText.setText(areaCode.area_name);
+                                    break;
+                            }
+                            if (areaCode.area_name.length() > 0 || areaCode.country_name.length() > 0) {
+                                try {
+                                    CallHandler.manager.addView(CallHandler.view, layoutParams);
+                                } catch (Exception ignored) {
+                                }
+                                ;
+                            }
+                        } else if (areaCode.area_name.length() > 0) {
+                            msgText.setText(areaCode.area_name);
+                            //cardView.setCardBackgroundColor(ctx.getResources().getColor(R.color.md_blue_600));
+                            bg.setImageResource(R.drawable.ic_internet);
                             try {
                                 CallHandler.manager.addView(CallHandler.view, layoutParams);
-                            }catch (Exception ignored){};
+                            } catch (Exception ignored) {
+                            }
+                            ;
                         }
-                    } else if (areaCode.area_name.length()>0){
-                        msgText.setText(areaCode.area_name);
-                        msgText.setRobotoMedium();
-                        //cardView.setCardBackgroundColor(ctx.getResources().getColor(R.color.md_blue_600));
-                        bg.setImageResource(R.drawable.ic_internet);
-                        CallHandler.manager.addView(CallHandler.view, layoutParams);
                     }
                 }
+                realm.close();
             }
-            realm.close();
+        }catch (Exception ignored){
+            if(ignored.getMessage()!=null)
+                Answers.getInstance().logCustom(new CustomEvent("Error: "+ignored.getMessage())
+                .putCustomAttribute("location", "onOutgoingCallStarted"));
         }
     }
 
@@ -251,8 +281,8 @@ public class CallHandler extends PhonecallReceiver {
     protected void onMissedCall(Context ctx, String number, Date start) {
         super.onMissedCall(ctx, number, start);
         try {
-            if(!Prefs.getBoolean("ads_removed", false))
-                getads(ctx);
+            //if(!Prefs.getBoolean("ads_removed", false))
+                //getads(ctx);
             if(CallHandler.view !=null && CallHandler.view.isShown())
                 CallHandler.manager.removeView(CallHandler.view);
         }catch (Exception ignored){}
@@ -273,13 +303,24 @@ public class CallHandler extends PhonecallReceiver {
     }
 
     WindowManager.LayoutParams setupWM(Context ctx){
-        WindowManager.LayoutParams layoutParams = new WindowManager.LayoutParams(500, 200,
-                WindowManager.LayoutParams.TYPE_PHONE,
-                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE |
-                        WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED|
-                        WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD|
-                        WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON,
-                PixelFormat.TRANSLUCENT);
+        WindowManager.LayoutParams layoutParams = null;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            layoutParams = new WindowManager.LayoutParams(500, 200,
+                    WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
+                    WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE |
+                            WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED|
+                            WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD|
+                            WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON,
+                    PixelFormat.TRANSLUCENT);
+        }else {
+            layoutParams = new WindowManager.LayoutParams(500, 200,
+                    WindowManager.LayoutParams.TYPE_PHONE,
+                    WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE |
+                            WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED|
+                            WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD|
+                            WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON,
+                    PixelFormat.TRANSLUCENT);
+        }
         layoutParams.gravity = Gravity.CENTER;
         //layoutParams.type = WindowManager.LayoutParams.TYPE_SYSTEM_ALERT;
         layoutParams.width = WindowManager.LayoutParams.WRAP_CONTENT;
@@ -320,7 +361,6 @@ public class CallHandler extends PhonecallReceiver {
                         try {
                             CallHandler.manager.updateViewLayout(CallHandler.view, updatedParameters);
                         }catch (Exception e){
-                            FirebaseCrash.logcat(Log.ERROR, "ACTION_MOVE", "Error al mover la ventana");
                             if(CallHandler.view !=null && CallHandler.view.isShown())
                                 CallHandler.manager.removeView(CallHandler.view);
                         }
@@ -335,82 +375,53 @@ public class CallHandler extends PhonecallReceiver {
     }
 
     void saveCall(String number, Date start, int duration, int type, Context context){
-        Realm realm2 = Realm.getDefaultInstance();
-        AreaCodeRealm areaCodeRealm = Utils.getOperadoraV4(number, context, realm2);
-        String operator = "";
-        if(areaCodeRealm != null)
-            operator = areaCodeRealm.area_operator;
-        else
-            operator = Constans.DESCONOCIDO;
-
-        //CallsRealm call = realm.where(CallsRealm.class).equalTo("call_phone_number", number).findFirst();
-        RealmResults<CallsRealm> calls = realm2.where(CallsRealm.class)
-                .equalTo("call_phone_number", number).findAllSorted("call_date", Sort.DESCENDING);
-        CallsRealm call = null;
-        if(!calls.isEmpty()) {
-            call = calls.first();
-        }
         try {
-            if (call == null) {
-                String finalOperator = operator;
-                realm2.executeTransaction(realm1 -> {
-                    realm1.copyToRealm(new CallsRealm(Utils.getContact(number), number,
-                            duration, type, start, 1, finalOperator));
-                    realm1.copyToRealm(new CallsHistoryRealm(Utils.getContact(number), number,
-                            duration, type, start, finalOperator));
-                });
-            } else {
-                CallsRealm finalCall = call;
-                //Log.e("EDER","NUEVO Segundo" + call.call_phone_number);
-                String finalOperator1 = operator;
-                realm2.executeTransaction(realm1 -> {
-                    realm1.copyToRealm(new CallsHistoryRealm(Utils.getContact(number), number,
-                            duration, type, start, finalOperator1));
+            Realm realm2 = Realm.getDefaultInstance();
+            AreaCodeRealm areaCodeRealm = Utils.getOperadoraV4(number, context, realm2);
+            String operator;
+            if(areaCodeRealm != null)
+                operator = areaCodeRealm.area_operator;
+            else
+                operator = Constans.DESCONOCIDO;
+            String finalOperator2 = operator;
+            realm2.executeTransaction(realm_trans -> {
+                //Cargar el historial para el numero en cuestion
+                RealmResults<CallsHistoryRealm> calls = realm_trans.where(CallsHistoryRealm.class)
+                        .equalTo("call_phone_number", number).findAllSorted("call_date", Sort.DESCENDING);
+                CallsHistoryRealm lastCall = null;
+                if(calls.isEmpty()) {
+                    //+++++++++++++++++++++++++++++++++++++++++++++++PRIMER REGISTRO PARA UN NUMERO+++++++++++++++++++++++++++++++++++++++++++++++++++
+                    //Ya que no hay ingresar el primer registro al historial
+                    lastCall = realm_trans.copyToRealm(new CallsHistoryRealm(  Utils.getContact(number), number, duration,
+                            type, start, number));
+                    //Ya que no hay ingresar el registro al resumen
+                    CallsRealm callResume = realm_trans.createObject(CallsRealm.class, CallsRealm.getId());
+                    callResume.contact =  Utils.getContact(number);
+                    callResume.call_phone_number = number;
+                    if (lastCall != null) {
+                        callResume.entries.add(lastCall);
+                        callResume.last_update = start;
+                    }
+                    //realm_trans.copyToRealm(callResume);
+                    //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+                }else {
+                    lastCall = calls.first();
+                    if (lastCall != null && lastCall.call_date.before(start)) {
+                        lastCall = realm_trans.copyToRealm(new CallsHistoryRealm(Utils.getContact(number), number, duration,
+                                type, start, finalOperator2));
 
-                    finalCall.calls_count += 1;
-                    finalCall.contact = Utils.getContact(number);
-                    finalCall.call_direction = type;
-                    finalCall.call_date = start;
-                    finalCall.call_duration = duration;
-                    finalCall.call_operator = finalOperator1;
-                });
-
-            }
-        }catch (Exception ignored){}
-        realm2.close();
-    }
-    public void getads(Context ctx){
-
-        int ne =  Prefs.getInt("num_missed_calls", 0);
-        Prefs.putInt("num_missed_calls", ne + 1);
-        if(Prefs.getInt("num_missed_calls", 0) == Prefs.getInt("show_after_missed", 4)) {
-            Prefs.putInt("num_missed_calls", 0);
-            Random r = new Random();
-            int Low = 4;
-            int High = 8;
-            int rnd = r.nextInt(High - Low) + Low;
-            Prefs.putInt("show_after_missed", rnd);
-            try {
-                FirebaseAnalytics analytics = FirebaseAnalytics.getInstance(ctx);
-                analytics.logEvent("ads_after_missed_call", null);
-            }catch (Exception ignored){}
-
-            InterstitialAd mInterstitialAd = new InterstitialAd(ctx);
-            mInterstitialAd.setAdUnitId(ctx.getString(R.string.id_banner_interstical));
-
-            mInterstitialAd.setAdListener(new AdListener() {
-                @Override
-                public void onAdLoaded() {
-                    super.onAdLoaded();
-                    mInterstitialAd.show();
+                        CallsRealm cResume = realm_trans.where(CallsRealm.class).equalTo("call_phone_number", number).findFirst();
+                        if (cResume != null) {
+                            cResume.entries.add(lastCall);
+                            cResume.last_update = start;
+                            cResume.contact = Utils.getContact(number);
+                        }
+                    }
                 }
             });
 
-            AdRequest adRequest = new AdRequest.Builder()
-                    //.addTestDevice("0B307F34E3DDAF6C6CAB28FAD4084125")
-                    .build();
-
-            mInterstitialAd.loadAd(adRequest);
-        }
+            realm2.close();
+        }catch (Exception ignored){Log.e("EDER", "SAVE CALL ERROR");}
     }
+
 }

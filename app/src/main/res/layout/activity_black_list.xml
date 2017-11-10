@@ -24,7 +24,6 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="16dp"
             android:layout_marginLeft="0dp"
             android:layout_marginRight="0dp"
             android:layout_marginTop="0dp"
@@ -92,6 +91,23 @@
 
 
         </LinearLayout>
+
+    <com.google.android.gms.ads.AdView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:ads="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/adView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        ads:adSize="BANNER"
+        ads:adUnitId="@string/id_banner1"
+        android:layout_gravity="center_horizontal|bottom"
+        ads:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginBottom="0dp"
+        android:layout_marginRight="0dp"
+        ads:layout_constraintRight_toRightOf="parent"
+        android:layout_marginLeft="0dp"
+        ads:layout_constraintLeft_toLeftOf="parent">
+    </com.google.android.gms.ads.AdView>
 
 
     </android.support.constraint.ConstraintLayout>

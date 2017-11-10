@@ -223,9 +223,13 @@ public class AdapterContactSuggest extends RecyclerView.Adapter<AdapterContactSu
 
     @Override
     public int getItemCount() {
-        if (contactRealms != null) {
-            return contactRealms.size();
-        } else {
+        try {
+            if (contactRealms != null) {
+                return contactRealms.size();
+            } else {
+                return 0;
+            }
+        }catch (Exception ignored){
             return 0;
         }
     }

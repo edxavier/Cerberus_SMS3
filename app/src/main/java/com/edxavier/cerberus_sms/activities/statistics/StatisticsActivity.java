@@ -8,16 +8,15 @@ import android.text.SpannableString;
 import android.text.style.RelativeSizeSpan;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.LinearLayout;
 
+import com.crashlytics.android.answers.Answers;
+import com.crashlytics.android.answers.ContentViewEvent;
 import com.edxavier.cerberus_sms.DialerActivityV2;
 import com.edxavier.cerberus_sms.R;
 import com.github.mikephil.charting.charts.PieChart;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.AdView;
-import com.google.android.gms.ads.NativeExpressAdView;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.pixplicity.easyprefs.library.Prefs;
 
@@ -51,11 +50,12 @@ public class StatisticsActivity extends AppCompatActivity {
     PieChart outgoingCallTimeChart;
     @BindView(R.id.adView)
     AdView adView;
-    @BindView(R.id.admobContainer1)
-    LinearLayout admobContainer1;
-    @BindView(R.id.admobContainer2)
-    LinearLayout admobContainer2;
+
     FirebaseAnalytics analytics;
+    @BindView(R.id.adView2)
+    AdView adView2;
+    @BindView(R.id.adView3)
+    AdView adView3;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,6 +64,10 @@ public class StatisticsActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         analytics = FirebaseAnalytics.getInstance(this);
         analytics.logEvent("activity_estadisticas", null);
+        Answers.getInstance().logContentView(new ContentViewEvent()
+                .putContentName("Estadisticas")
+                .putContentId("p06")
+                .putContentType("Pantalla"));
         presenter = new StatisticsPresenterImpl(this);
         setSupportActionBar(toolbarSts);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -102,14 +106,17 @@ public class StatisticsActivity extends AppCompatActivity {
         incomingCallTimeChart.setCenterText(generateCenterSpannableText(getString(R.string.incoming_call_chart)));
         outgoingCallTimeChart.setCenterText(generateCenterSpannableText(getString(R.string.outgoing_call_chart)));
         adView.setVisibility(View.GONE);
-        if(!Prefs.getBoolean("ads_removed", false)) {
+        adView2.setVisibility(View.GONE);
+        adView3.setVisibility(View.GONE);
+        if (!Prefs.getBoolean("ads_removed", false)) {
             setupAds();
             DialerActivityV2.requestAds(this);
         }
     }
 
     private void setupAds() {
-        AdRequest adRequest = new AdRequest.Builder().build();
+        AdRequest adRequest = new AdRequest.Builder()
+                .build();
         adView.loadAd(adRequest);
         adView.setAdListener(new AdListener() {
             @Override
@@ -118,33 +125,25 @@ public class StatisticsActivity extends AppCompatActivity {
                 adView.setVisibility(View.VISIBLE);
             }
         });
-
-        NativeExpressAdView ads = new NativeExpressAdView(this);
-        NativeExpressAdView ads2 = new NativeExpressAdView(this);
-
-        ads.setAdSize(new AdSize(300, 82));
-        ads.setAdUnitId(getResources().getString(R.string.id_banner_native_small));
-        ads.loadAd(adRequest);
-        ads.setAdListener(new AdListener() {
+        adView2.loadAd(adRequest);
+        adView2.setAdListener(new AdListener() {
             @Override
             public void onAdLoaded() {
                 super.onAdLoaded();
-                admobContainer1.setVisibility(View.VISIBLE);
+                adView2.setVisibility(View.VISIBLE);
             }
         });
-        admobContainer1.addView(ads);
 
-        ads2.setAdSize(new AdSize(300, 82));
-        ads2.setAdUnitId(getResources().getString(R.string.id_banner_native_small));
-        ads2.loadAd(adRequest);
-        ads2.setAdListener(new AdListener() {
+        adView3.loadAd(adRequest);
+        adView3.setAdListener(new AdListener() {
             @Override
             public void onAdLoaded() {
                 super.onAdLoaded();
-                admobContainer2.setVisibility(View.VISIBLE);
+                adView3.setVisibility(View.VISIBLE);
             }
         });
-        admobContainer2.addView(ads2);
+
+
     }
 
     private SpannableString generateCenterSpannableText(String text) {

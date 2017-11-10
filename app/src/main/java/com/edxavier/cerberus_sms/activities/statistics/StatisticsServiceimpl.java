@@ -25,7 +25,7 @@ public class StatisticsServiceimpl implements StatisticsService {
     public RealmResults<CallsHistoryRealm> incomingCallsRes;
 
     private RealmResults<ContactRealm> contactsRes;
-    private RealmResults<MessagesRealm> messagesRes;
+    private RealmResults<MessagesHistoryRealm> messagesRes;
 
 
 
@@ -42,7 +42,7 @@ public class StatisticsServiceimpl implements StatisticsService {
 
         this.contactsRes = realm.where(ContactRealm.class)
                 .distinct("contact_operator").sort("contact_operator", Sort.ASCENDING);
-        this.messagesRes = realm.where(MessagesRealm.class)
+        this.messagesRes = realm.where(MessagesHistoryRealm.class)
                 .distinct("sms_operator").sort("sms_operator", Sort.ASCENDING);
     }
 
@@ -75,7 +75,7 @@ public class StatisticsServiceimpl implements StatisticsService {
     }
 
     @Override
-    public RealmResults<MessagesRealm> getSmsOperators() {
+    public RealmResults<MessagesHistoryRealm> getSmsOperators() {
         return messagesRes;
     }
 
@@ -167,7 +167,7 @@ public class StatisticsServiceimpl implements StatisticsService {
     @Override
     public ArrayList<PieEntry> getSmsEntries() {
         ArrayList<PieEntry> entries = new ArrayList<PieEntry>();
-        for (MessagesRealm re : messagesRes) {
+        for (MessagesHistoryRealm re : messagesRes) {
             long total = realm.where(MessagesHistoryRealm.class).equalTo("sms_operator",
                     re.sms_operator).count();
             entries.add(new PieEntry(total, re.sms_operator));

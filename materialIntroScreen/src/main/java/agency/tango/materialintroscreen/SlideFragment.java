@@ -144,9 +144,11 @@ public class SlideFragment extends ParallaxFragment {
                 }
             }
         }
+        try {
+            String[] permissionsToGrant = removeEmptyAndNullStrings(notGrantedPermissions);
+            ActivityCompat.requestPermissions(getActivity(), permissionsToGrant, PERMISSIONS_REQUEST_CODE);
+        }catch (Exception ignored){}
 
-        String[] permissionsToGrant = removeEmptyAndNullStrings(notGrantedPermissions);
-        ActivityCompat.requestPermissions(getActivity(), permissionsToGrant, PERMISSIONS_REQUEST_CODE);
     }
 
     private boolean hasPermissionsToGrant(String[] permissions) {

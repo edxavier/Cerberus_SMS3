@@ -1,14 +1,25 @@
 package com.edxavier.cerberus_sms.helpers;
 
 
+import android.annotation.TargetApi;
+import android.content.ContentValues;
 import android.content.Context;
+import android.net.Uri;
+import android.os.Build;
+import android.provider.Telephony;
 import android.telephony.TelephonyManager;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.amulyakhare.textdrawable.TextDrawable;
 import com.amulyakhare.textdrawable.util.ColorGenerator;
+import com.crashlytics.android.answers.Answers;
+import com.crashlytics.android.answers.BuildConfig;
+import com.crashlytics.android.answers.CustomEvent;
 import com.edxavier.cerberus_sms.db.realm.AreaCodeRealm;
+import com.edxavier.cerberus_sms.db.realm.BlackList;
 import com.edxavier.cerberus_sms.db.realm.ContactRealm;
+import com.edxavier.cerberus_sms.db.realm.Notifications;
 import com.google.firebase.crash.FirebaseCrash;
 
 import java.text.SimpleDateFormat;
@@ -16,6 +27,7 @@ import java.util.Date;
 import java.util.Locale;
 
 import io.realm.Realm;
+import io.realm.RealmResults;
 import io.realm.exceptions.RealmError;
 
 /**
@@ -27,84 +39,67 @@ public class Utils {
     public static AreaCodeRealm getOperadoraV4(String numero, Context cntx){
         String codigoPais="";
         String codigoArea="";
+        boolean isNumber = Utils.isPhoneNumber(numero);
+        boolean isMarketNum = !numero.startsWith("+505") && numero.length() <= 4;
+        boolean isMarketNum2 = numero.startsWith("+505") && numero.replaceAll("\\s+","").trim().length() <= 8;
 
-        if (numero != null) {
+        if(!(isMarketNum || isMarketNum2) && isNumber) {
+
             numero = numero.replaceAll("\\(", "").replaceAll("\\)", "").replaceAll("-", "").replaceAll("\\s+", "");
             if (numero.startsWith("+1")) {
                 codigoPais = "+1";
                 if (numero.length() >= 5)
                     codigoArea = numero.substring(2, 5);
-            }
-            else if (numero.startsWith("+7")) {
+            } else if (numero.startsWith("+7")) {
                 codigoPais = "+7";
-            }
-            else if (numero.startsWith("+50") && numero.length() >= 4) {
+            } else if (numero.startsWith("+50") && numero.length() >= 4) {
                 codigoPais = numero.substring(0, 4);
-                if(numero.length() >8 && numero.startsWith("+505"))
+                if (numero.length() > 8 && numero.startsWith("+505"))
                     codigoArea = numero.substring(4, 7);
-            }else if (numero.length() >= 3  && numero.startsWith("+3") || numero.startsWith("+4") || numero.startsWith("+8")) {
-                try{
+            } else if (numero.length() >= 3 && numero.startsWith("+3") || numero.startsWith("+4") || numero.startsWith("+8")) {
+                try {
                     codigoPais = numero.substring(0, 3);
-                }catch (Exception ignored){}
-            }else if (numero.length() >= 3  && numero.startsWith("+5")) {
-                if(!numero.startsWith("+50"))
+                } catch (Exception ignored) {
+                }
+            } else if (numero.length() >= 3 && numero.startsWith("+5")) {
+                if (!numero.startsWith("+50"))
                     codigoPais = numero.substring(0, 3);
-            }else if ( numero.length() >= 4 && numero.length()<=8) {
+            } else if (numero.length() >= 4 && numero.length() <= 8) {
                 TelephonyManager tm = (TelephonyManager) cntx.getSystemService(Context.TELEPHONY_SERVICE);
                 String countryCodeValue = tm.getNetworkCountryIso();
                 codigoPais = "+505";
                 codigoArea = numero.substring(0, 3);
 
-                //Log.d("EDER_CV",tm.getNetworkCountryIso());
-                //Log.d("EDER_CV",tm.getSimCountryIso());
-
-                //Log.d("EDER_CV",countryCodeValue);
-                /*if (countryCodeValue.equals("ni")) {
-                    codigoPais = "+505";
-                    codigoArea = numero.substring(0, 3);
-                }else if(countryCodeValue.equals("us")){
-                    codigoPais = "+1";
-                    codigoArea = "";
-                }*/
             }
 
-        }
-        Realm realm = null;
-        try {
-            realm = Realm.getDefaultInstance();
-            AreaCodeRealm areaCode;
-            if(codigoArea.length()>0) {
-                areaCode = realm.where(AreaCodeRealm.class).equalTo("country_code", codigoPais)
-                        .equalTo("area_code", codigoArea).findFirst();
-                //areaCode = SQLite.select().from(AreaCode.class).where(AreaCode_Table.country_code.eq(codigoPais))
-                  //      .and(AreaCode_Table.area_code.eq(codigoArea)).querySingle();
-            }else{
-                //areaCode = SQLite.select().from(AreaCode.class).where(AreaCode_Table.country_code.eq(codigoPais))
-                     //   .querySingle();
-                areaCode = realm.where(AreaCodeRealm.class).equalTo("country_code", codigoPais).findFirst();
-            }
-            realm.close();
-            return areaCode;
-
-        }
-        catch (RealmError err){
-            Log.e("EDER_ex", "RealmError");
-            if(realm != null)
+            Realm realm = null;
+            try {
+                realm = Realm.getDefaultInstance();
+                AreaCodeRealm areaCode;
+                if (codigoArea.length() > 0) {
+                    areaCode = realm.where(AreaCodeRealm.class).equalTo("country_code", codigoPais)
+                            .equalTo("area_code", codigoArea).findFirst();
+                } else {
+                    areaCode = realm.where(AreaCodeRealm.class).equalTo("country_code", codigoPais).findFirst();
+                }
                 realm.close();
-            if(err.getMessage()!=null) {
-                Log.e("EDER_ex", err.getMessage());
-                FirebaseCrash.logcat(Log.ERROR, "RealmError", err.getMessage());
+                return areaCode;
+
+            } catch (RealmError err) {
+                if (realm != null)
+                    realm.close();
+                if (err.getMessage() != null) {
+                    FirebaseCrash.logcat(Log.ERROR, "RealmError", err.getMessage());
+                }
+                return null;
+            } catch (Exception e) {
+                if (realm != null)
+                    realm.close();
+                return null;
             }
+        }else {
             return null;
         }
-        catch (Exception e) {
-            Log.e("EDER_ex", "Exception");
-            Log.e("EDER_ex", e.getMessage());
-            if(realm != null)
-                realm.close();
-            return null;
-        }
-
     }
 
     public static AreaCodeRealm getOperadoraV4(String numero, Context cntx, Realm realm){
@@ -270,6 +265,138 @@ public class Utils {
         return drawable;
     }
 
+    public static boolean isDefaultSmsApp(Context context) {
+        try {
+            boolean is = false;
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
+                is = context.getPackageName().equals(Telephony.Sms.getDefaultSmsPackage(context));
+            }
+            return is;
+        }catch (Exception ingnored){
+            return false;
+        }
+    }
 
+    public static boolean thereAreBlockedSmsNumbers() {
+        Realm realm = Realm.getDefaultInstance();
+        BlackList entry = realm.where(BlackList.class)
+                .equalTo("block_incoming_sms", true).findFirst();
+        boolean empty_list = entry == null;
+        realm.close();
+
+        return !empty_list;
+    }
+
+    public static boolean saveSms(String phoneNumber, String message, long fecha, int type, int readState, String folderName, Context context) {
+        boolean ret = false;
+        try {
+            ContentValues values = new ContentValues();
+            values.put("address", phoneNumber);
+            values.put("body", message);
+            values.put("read", String.valueOf(readState)); //"0" for have not read sms and "1" for have read sms
+            values.put("type", String.valueOf(type));
+            values.put("date", fecha);
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                Uri uri = Telephony.Sms.Sent.CONTENT_URI;
+                if(folderName.equals("inbox")){
+                    uri = Telephony.Sms.Inbox.CONTENT_URI;
+                }
+                context.getContentResolver().insert(uri, values);
+            }
+            else {
+                /* folderName  could be inbox or sent */
+                context.getContentResolver().insert(Uri.parse("content://sms/" + folderName), values);
+            }
+            ret = true;
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            ret = false;
+        }
+        return ret;
+    }
+
+    public static void sendToBlackList(int options, String number) {
+        Realm realm = Realm.getDefaultInstance();
+        realm.executeTransaction(realm1 -> {
+            BlackList entry = realm.where(BlackList.class).equalTo("phone_number", number).findFirst();
+            switch (options){
+                case Constans.BLOCK_MESSAGES:
+                    Answers.getInstance().logCustom(new CustomEvent("Numero Bloqueado")
+                            .putCustomAttribute("SDK", Build.VERSION.SDK)
+                            .putCustomAttribute("SDK_NAME", Build.VERSION.RELEASE)
+                    .putCustomAttribute("Tipo", "Mensajes"));
+                    if(entry!=null) {
+                        entry.block_incoming_sms = true;
+                        entry.block_incoming_call = false;
+                    }else {
+                        BlackList e = new BlackList();
+                        e.phone_number = number;
+                        e.block_incoming_sms = true;
+                        e.block_incoming_call = false;
+                        realm1.copyToRealm(e);
+                    }
+                    break;
+                case Constans.BLOCK_CALLS:
+                    Answers.getInstance().logCustom(new CustomEvent("Numero Bloqueado")
+                            .putCustomAttribute("SDK", Build.VERSION.SDK)
+                            .putCustomAttribute("SDK_NAME", Build.VERSION.RELEASE)
+                            .putCustomAttribute("Tipo", "Llamadas"));
+                    if(entry!=null) {
+                        entry.block_incoming_sms = false;
+                        entry.block_incoming_call = true;
+                    }else {
+                        BlackList e = new BlackList();
+                        e.phone_number = number;
+                        e.block_incoming_sms = false;
+                        e.block_incoming_call = true;
+                        realm1.copyToRealm(e);
+                    }
+                    break;
+                case Constans.BLOCK_BOTH:
+                    Answers.getInstance().logCustom(new CustomEvent("Numero Bloqueado")
+                            .putCustomAttribute("SDK", Build.VERSION.SDK)
+                            .putCustomAttribute("SDK_NAME", Build.VERSION.RELEASE)
+                            .putCustomAttribute("Tipo", "Mensajes y llamadas"));
+                    if(entry!=null) {
+                        entry.block_incoming_sms = true;
+                        entry.block_incoming_call = true;
+                    }else {
+                        BlackList e = new BlackList();
+                        e.phone_number = number;
+                        e.block_incoming_sms = true;
+                        e.block_incoming_call = true;
+                        realm1.copyToRealm(e);
+                    }
+                    break;
+                case Constans.BLOCK_NONE:
+                    Answers.getInstance().logCustom(new CustomEvent("Numero Bloqueado")
+                            .putCustomAttribute("SDK", Build.VERSION.SDK)
+                            .putCustomAttribute("SDK_NAME", Build.VERSION.RELEASE)
+                            .putCustomAttribute("Tipo", "Ninguno"));
+                    if (entry != null) {
+                        entry.deleteFromRealm();
+                    }
+                    break;
+
+            }
+
+        });
+        realm.close();
+    }
+
+    public static boolean isNotificationEnabled(String number){
+        boolean isEnabled = false;
+        Realm realm = Realm.getDefaultInstance();
+        RealmResults<Notifications> entries = realm.where(Notifications.class).equalTo("phone_number", number).findAll();
+        isEnabled = entries.isEmpty();
+        realm.close();
+        return isEnabled;
+    }
+
+
+    public static void showNotification(Context context){
+
+    }
 }
 

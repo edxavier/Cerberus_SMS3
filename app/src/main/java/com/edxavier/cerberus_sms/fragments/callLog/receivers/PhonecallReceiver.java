@@ -53,7 +53,10 @@ import io.realm.Realm;
                 if (stateStr != null && stateStr.equals(TelephonyManager.EXTRA_STATE_RINGING)) {
                     Realm rlm = Realm.getDefaultInstance();
                     rlm.beginTransaction();
-                    BlackList entry = rlm.where(BlackList.class).equalTo("phone_number", Utils.formatPhoneNumber(number)).findFirst();
+                    BlackList entry = rlm.where(BlackList.class)
+                            .equalTo("phone_number", Utils.formatPhoneNumber(number))
+                            .equalTo("block_incoming_call", true)
+                            .findFirst();
                     if (entry != null) {
                         disconnectPhoneItelephony(context);
                         entry.block_calls_count += 1;

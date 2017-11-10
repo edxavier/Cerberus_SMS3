@@ -15,7 +15,7 @@ import android.provider.Telephony;
 import android.telephony.SmsMessage;
 import android.widget.Toast;
 
-import com.edxavier.cerberus_sms.DetailConversation;
+import com.edxavier.cerberus_sms.activities.conversation.DetailConversation;
 import com.edxavier.cerberus_sms.R;
 
 /**
@@ -61,7 +61,7 @@ public class SmsReceiver extends BroadcastReceiver {
                                 //.setSmallIcon(R.drawable.error_filled_50)
                                 .setSound(soundUri)
                                 .setAutoCancel(true)
-                                .addAction(R.drawable.ic_support_50, "Establecer", pIntent)
+                                .addAction(R.drawable.ic_call_made, "Establecer", pIntent)
                                 .setStyle(new Notification.BigTextStyle()
                                         .bigText(context.getResources().getString(R.string.notification) + " "))
                                 .build();
@@ -101,7 +101,7 @@ public class SmsReceiver extends BroadcastReceiver {
                                     .setContentTitle("Nuevo mensaje")
                                     .setSmallIcon(R.drawable.sms)
                                     .setContentIntent(pIntent)
-                                    .addAction(R.drawable.ic_new_post_100, "Leer", pIntent)
+                                    .addAction(R.drawable.ic_call_made, "Leer", pIntent)
                                     .setSound(soundUri)
                                     .setAutoCancel(true)
                                     .setStyle(new Notification.BigTextStyle()

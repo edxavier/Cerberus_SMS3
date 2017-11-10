@@ -10,14 +10,18 @@ import android.support.v7.widget.AppCompatImageView;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.edxavier.cerberus_sms.R;
 import com.edxavier.cerberus_sms.db.realm.AreaCodeRealm;
+import com.edxavier.cerberus_sms.db.realm.BlackList;
 import com.edxavier.cerberus_sms.db.realm.ContactRealm;
 import com.edxavier.cerberus_sms.fragments.contacts.contracts.ContactsPresenter;
 import com.edxavier.cerberus_sms.fragments.contacts.contracts.ContactsView;
@@ -30,8 +34,11 @@ import java.lang.reflect.Field;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
+import io.realm.Realm;
 import io.realm.RealmChangeListener;
 import io.realm.RealmResults;
+
+import static com.edxavier.cerberus_sms.helpers.Constans.BLOCK_NONE;
 
 /**
  * Created by Eder Xavier Rojas on 12/07/2016.
@@ -65,13 +72,13 @@ public class AdapterContactRealm extends RecyclerView.Adapter<AdapterContactReal
         @BindView(R.id.contact_avatar)
         AppCompatImageView contactAvatar;
         @BindView(R.id.lbl_contact_name)
-        TextViewHelper lblContactName;
+        TextView lblContactName;
         @BindView(R.id.lbl_contact_number)
-        TextViewHelper lblContactNumber;
+        TextView lblContactNumber;
         @BindView(R.id.lbl_contact_country)
-        TextViewHelper lblContactCountry;
+        TextView lblContactCountry;
         @BindView(R.id.lbl_contact_operator)
-        TextViewHelper lblContactOperator;
+        TextView lblContactOperator;
         @BindView(R.id.sms_bl_cardviewRow)
         CardView smsBlCardviewRow;
         @BindView(R.id.profile_image)
@@ -102,14 +109,10 @@ public class AdapterContactRealm extends RecyclerView.Adapter<AdapterContactReal
             holder.profile_image.setVisibility(View.GONE);
             holder.contactAvatar.setVisibility(View.VISIBLE);
         }
-        //else
-            //holder.contactAvatar.setImageDrawable(Utils.getAvatar(contact.contact_name));
 
-        //holder.lblContactName.setRobotoBold();
-        //holder.lblContactOperator.setRobotoBold();
         AreaCodeRealm areaCode = Utils.getOperadoraV4(contact.contact_phone_number, holder.itemView.getContext());
         if (areaCode != null) {
-            holder.lblContactOperator.setText(contact.contact_operator);
+            holder.lblContactOperator.setText(areaCode.area_operator);
             switch (areaCode.area_operator) {
                 case Constans.CLARO:
                     holder.lblContactOperator.setTextColor(holder.itemView.getResources().getColor(R.color.md_red_600));
@@ -213,6 +216,34 @@ public class AdapterContactRealm extends RecyclerView.Adapter<AdapterContactReal
                         }
                         catch(Exception ignored) {}
                         return true;
+                    case R.id.action_block_contact:
+                        Realm realm = Realm.getDefaultInstance();
+                        int op = BLOCK_NONE;
+                        BlackList entry = realm.where(BlackList.class).equalTo("phone_number", contact.contact_phone_number).findFirst();
+                        if(entry!=null){
+                            if(entry.block_incoming_call && entry.block_incoming_sms)
+                                op = Constans.BLOCK_BOTH;
+                            else if(entry.block_incoming_call && !entry.block_incoming_sms)
+                                op = Constans.BLOCK_CALLS;
+                            else if(!entry.block_incoming_call && entry.block_incoming_sms)
+                                op = Constans.BLOCK_MESSAGES;
+
+                        }
+                        realm.close();
+                        new MaterialDialog.Builder(view.getContext())
+                                .title(R.string.ac_block)
+                                .items(R.array.block_options)
+                                .itemsCallbackSingleChoice(op, new MaterialDialog.ListCallbackSingleChoice() {
+                                    @Override
+                                    public boolean onSelection(MaterialDialog dialog, View view, int which, CharSequence text) {
+                                        presenter.sendToBlackList(which, contact.contact_phone_number);
+                                        return true;
+                                    }
+                                })
+                                .positiveText(R.string.accept)
+                                .negativeText(R.string.cancelar)
+                                .show();
+                        break;
                 }
                 return false;
             }

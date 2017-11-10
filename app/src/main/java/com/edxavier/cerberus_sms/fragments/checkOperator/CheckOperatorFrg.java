@@ -232,7 +232,9 @@ public class CheckOperatorFrg extends Fragment implements CheckOperatorView, Tex
     }
 
     private void setupAds() {
-        AdRequest adRequest = new AdRequest.Builder().build();
+        AdRequest adRequest = new AdRequest.Builder()
+                //.addTestDevice("0B307F34E3DDAF6C6CAB28FAD4084125")
+                .build();
         adView.setAdListener(new AdListener() {
             @Override
             public void onAdLoaded() {

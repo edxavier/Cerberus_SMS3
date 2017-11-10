@@ -38,7 +38,7 @@ public class IntroductionActivity extends MaterialIntroActivity {
         SlideFragmentBuilder calls = new SlideFragmentBuilder()
                 .backgroundColor(R.color.md_teal_500)
                 .buttonsColor(R.color.md_teal_A700)
-                .neededPermissions(new String[]{Manifest.permission.READ_CALL_LOG})
+                .neededPermissions(new String[]{Manifest.permission.READ_CALL_LOG, Manifest.permission.WRITE_CALL_LOG})
                 .title(getString(R.string.drawer_op_call_log))
                 .description(getString(R.string.intro_calls));
 

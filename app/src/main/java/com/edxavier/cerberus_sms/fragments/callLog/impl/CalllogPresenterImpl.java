@@ -1,5 +1,9 @@
 package com.edxavier.cerberus_sms.fragments.callLog.impl;
 
+import android.Manifest;
+import android.os.Build;
+import android.util.Log;
+
 import com.edxavier.cerberus_sms.db.realm.CallsRealm;
 import com.edxavier.cerberus_sms.fragments.callLog.contracts.CallLogPresenter;
 import com.edxavier.cerberus_sms.fragments.callLog.contracts.CallLogService;
@@ -77,13 +81,17 @@ public class CalllogPresenterImpl implements CallLogPresenter {
         return service.clearContactReacords(number);
     }
 
-    @Override
-    public void addToBlackList(Integer[] which, String number) {
-        service.addToBlackList(which, number);
-    }
+
 
     @Override
     public void requestPermission(String[] perms) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            view.requestPermission(new String[]{Manifest.permission.WRITE_CALL_LOG});
+        }
+    }
 
+    @Override
+    public void sendToBlackList(int options, String number) {
+        service.sendToBlackList(options, number);
     }
 }

@@ -12,15 +12,15 @@ import io.realm.annotations.PrimaryKey;
 
 public class MessagesHistoryRealm extends RealmObject {
     @PrimaryKey
-    String id;
+    public String id;
+    public int sms_id;
     public ContactRealm contact;
     @Index
     public String sms_phone_number;
-    @Index
     public String sms_operator;
     public String sms_text;
     public int sms_type;
-    public String sms_read;
+    public int sms_read;
     public Date sms_date;
 
 
@@ -28,7 +28,7 @@ public class MessagesHistoryRealm extends RealmObject {
         this.id = UUIDGenerator.nextUUID();
     }
 
-    public MessagesHistoryRealm(ContactRealm contact, String sms_phone_number, String sms_operator, String sms_text, int sms_type, String sms_read, Date sms_date) {
+    public MessagesHistoryRealm(ContactRealm contact, String sms_phone_number, String sms_operator, String sms_text, int sms_type, int sms_read, Date sms_date) {
         this.id = UUIDGenerator.nextUUID();
         this.contact = contact;
         this.sms_phone_number = sms_phone_number;

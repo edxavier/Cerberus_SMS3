@@ -22,10 +22,6 @@
             android:id="@+id/toolbar_sts"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="16dp"
-            android:layout_marginLeft="0dp"
-            android:layout_marginRight="0dp"
-            android:layout_marginTop="0dp"
             android:background="?attr/colorPrimary"
             android:elevation="4dp"
             android:minHeight="?attr/actionBarSize"
@@ -102,15 +98,17 @@
                 android:layout_height="280dp" />
 
 
-            <LinearLayout
-                android:layout_marginTop="8dp"
-                android:visibility="gone"
-                android:layout_gravity="center"
-                android:gravity="center"
-                android:orientation="horizontal"
-                android:id="@+id/admobContainer1"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+            <com.google.android.gms.ads.AdView
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:ads="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/adView2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                ads:adSize="BANNER"
+                ads:adUnitId="@string/id_banner1"
+                android:layout_gravity="center_horizontal|bottom">
+            </com.google.android.gms.ads.AdView>
+
             <View
                 android:layout_margin="8dp"
                 android:layout_width="match_parent"
@@ -163,15 +161,16 @@
                 android:layout_width="match_parent"
                 android:layout_height="280dp" />
 
-            <LinearLayout
-                android:layout_marginTop="8dp"
-                android:visibility="gone"
-                android:layout_gravity="center"
-                android:gravity="center"
-                android:orientation="horizontal"
-                android:id="@+id/admobContainer2"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+            <com.google.android.gms.ads.AdView
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:ads="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/adView3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                ads:adSize="BANNER"
+                ads:adUnitId="@string/id_banner1"
+                android:layout_gravity="center_horizontal|bottom">
+            </com.google.android.gms.ads.AdView>
             <View
                 android:layout_margin="8dp"
                 android:layout_width="match_parent"

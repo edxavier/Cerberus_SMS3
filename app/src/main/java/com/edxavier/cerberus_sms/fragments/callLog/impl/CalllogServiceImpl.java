@@ -70,12 +70,16 @@ public class CalllogServiceImpl implements CallLogService {
 
             ArrayList<String> numbers = new ArrayList<>();
 
+
             ContentResolver cr = context.getContentResolver();
             String strOrder = CallLog.Calls.DATE + " ASC";
             Uri callUri = Uri.parse("content://call_log/calls");
             Cursor cur = cr.query(callUri, null, null, null, strOrder);
             // loop through cursor
             while (cur != null && cur.moveToNext()) {
+                int id = Integer.valueOf(cur.getString(cur
+                        .getColumnIndex(CallLog.Calls._ID)));
+
                 String callNumber = cur.getString(cur
                         .getColumnIndex(CallLog.Calls.NUMBER));
                 long callDate = cur.getLong(cur
@@ -99,53 +103,43 @@ public class CalllogServiceImpl implements CallLogService {
                 numbers.add(callNumber);
                 //verificar si existe un contacto con ese numero
                 ContactRealm contact = Utils.getContact(callNumber);
-                //obtener todas las llamadas de ese numero
-                RealmResults<CallsRealm> callsR = realm.where(CallsRealm.class)
-                        .equalTo("call_phone_number", callNumber).findAllSorted("call_date", Sort.DESCENDING);
-                CallsRealm callLog = null;
-                //si hay resultados obtener el mas reciente
-                if (!callsR.isEmpty()) {
-                    callLog = callsR.first();
-                }
-                // si no hubo resultado guardarlo
-                if (callLog == null) {
-                    String finalCallNumber = callNumber;
-                    String finalOperator = operator;
-                    realm.executeTransaction(realm1 -> {
-                        realm1.copyToRealm(new CallsRealm(contact, finalCallNumber, duration,
-                                callType, fecha, 1, finalOperator));
-                        realm1.copyToRealm(new CallsHistoryRealm(contact, finalCallNumber, duration,
+                String finalCallNumber = callNumber;
+                String finalOperator = operator;
+                realm.executeTransaction(realm_trans -> {
+                    //Cargar el historial para el numero en cuestion
+                    RealmResults<CallsHistoryRealm> calls = realm_trans.where(CallsHistoryRealm.class)
+                            .equalTo("call_phone_number", finalCallNumber).findAllSorted("call_date", Sort.DESCENDING);
+                    CallsHistoryRealm lastCall = null;
+                    if(calls.isEmpty()) {
+                        //+++++++++++++++++++++++++++++++++++++++++++++++PRIMER REGISTRO PARA UN NUMERO+++++++++++++++++++++++++++++++++++++++++++++++++++
+                        //Ya que no hay ingresar el primer registro al historial
+                        lastCall = realm_trans.copyToRealm(new CallsHistoryRealm( contact, finalCallNumber, duration,
                                 callType, fecha, finalOperator));
-                    });
-                } else {
-                    //si hubo resultados verificar si es mas antigua que la entrada del registro del telefono
-                    if (callLog.call_date.before(fecha)) {
-                        String finalCallNumber1 = callNumber;
-                        CallsRealm finalCallLog = callLog;
-                        String finalOperator1 = operator;
-                        //guardar el registro en el historico y actualizar el resumen
-                        realm.executeTransaction(realm1 -> {
-                            realm1.copyToRealm(new CallsHistoryRealm(contact, finalCallNumber1,
-                                    duration, callType, fecha, finalOperator1));
-                            finalCallLog.contact = contact;
-                            finalCallLog.call_phone_number = finalCallNumber1;
-                            finalCallLog.call_duration = duration;
-                            finalCallLog.call_direction = callType;
-                            finalCallLog.call_date = fecha;
-                            finalCallLog.calls_count++;
-                            finalCallLog.call_operator = finalOperator1;
-                        });
+                        //Ya que no hay ingresar el registro al resumen
+                        CallsRealm callResume = realm.createObject(CallsRealm.class, CallsRealm.getId());
+                        callResume.contact = contact;
+                        callResume.call_phone_number = finalCallNumber;
+                        if (lastCall != null) {
+                            callResume.entries.add(lastCall);
+                            callResume.last_update = fecha;
+                        }
+                        //realm_trans.copyToRealm(callResume);
+                        //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+                    }else {
+                        lastCall = calls.first();
+                        if (lastCall.call_date.before(fecha)) {
+                            lastCall = realm_trans.copyToRealm(new CallsHistoryRealm( contact, finalCallNumber, duration,
+                                    callType, fecha, finalOperator));
 
-                    } else {
-                        //si no solo actualiza datos de contact y oeprador
-                        CallsRealm finalCallLog1 = callLog;
-                        String finalOperator2 = operator;
-                        realm.executeTransaction(realm1 -> {
-                            finalCallLog1.contact = contact;
-                            finalCallLog1.call_operator = finalOperator2;
-                        });
+                            CallsRealm cResume = realm_trans.where(CallsRealm.class).equalTo("call_phone_number", finalCallNumber).findFirst();
+                            if(cResume!=null) {
+                                cResume.entries.add(lastCall);
+                                cResume.last_update = fecha;
+                            }
+                        }
                     }
-                }
+                });
+
             }
             if (cur != null) {
                 cur.close();
@@ -176,9 +170,7 @@ public class CalllogServiceImpl implements CallLogService {
             return "";
         }).subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(t -> {
-                            //Log.e("EDER", "CALLS_SYNC DONE ");
-                        },
+                .subscribe(t -> {},
                         throwable -> {
                             Log.e("EDER", "CALLS_SYNC ERROR " + throwable.getMessage());
                         });
@@ -189,7 +181,7 @@ public class CalllogServiceImpl implements CallLogService {
     public RealmResults<CallsRealm> getCallsFromRealm() {
         //Log.e("EDER_H", String.valueOf(realmG.where(CallsHistoryRealm.class).count()));
         return realmG.where(CallsRealm.class)
-                .findAllSorted("call_date", Sort.DESCENDING);
+                .findAllSorted("last_update", Sort.DESCENDING);
 
     }
 
@@ -242,24 +234,11 @@ public class CalllogServiceImpl implements CallLogService {
             return -1;
     }
 
-    @Override
-    public void addToBlackList(Integer[] which, String number) {
-        realmG.executeTransaction(realm -> {
-            BlackList entry = realm.where(BlackList.class).equalTo("phone_number", number).findFirst();
-            if(entry == null)
-                entry = new BlackList();
-            entry.block_incoming_sms = false;
-            entry.block_incoming_call = false;
 
-            for (Integer integer : which) {
-                if(integer==0)
-                    entry.block_incoming_sms = true;
-                else
-                    entry.block_incoming_call = true;
-            }
-            entry.phone_number = number;
-            realm.copyToRealmOrUpdate(entry);
-        });
+
+    @Override
+    public void sendToBlackList(int options, String number) {
+        Utils.sendToBlackList(options, number);
     }
 
 }

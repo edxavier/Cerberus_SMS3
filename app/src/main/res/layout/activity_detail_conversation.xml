@@ -5,7 +5,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
     android:layout_height="match_parent" android:fitsSystemWindows="true"
-    tools:context="com.edxavier.cerberus_sms.DetailConversation">
+    android:background="@color/md_white_1000"
+    tools:context="com.edxavier.cerberus_sms.activities.conversation.DetailConversation">
 
     <android.support.design.widget.AppBarLayout android:layout_height="wrap_content"
         android:layout_width="match_parent" android:theme="@style/AppTheme.AppBarOverlay">
@@ -16,35 +17,49 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <LinearLayout
+    <FrameLayout
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:paddingLeft="8dp"
-
-        android:paddingTop="8dp"
-        android:paddingBottom="8dp"
-        android:orientation="vertical"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior">
-
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/_recycler_conversation_detail"
+        android:layout_height="match_parent">
+        <LinearLayout
             android:layout_width="match_parent"
-            android:scrollbars="vertical"
-            android:layout_height="match_parent"/>
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-    </LinearLayout>
+            <android.support.v7.widget.RecyclerView
+                android:layout_marginBottom="2dp"
+                app:reverseLayout="true"
+                android:id="@+id/_recycler_conversation"
+                android:layout_weight="20"
+                android:layout_width="match_parent"
+                android:scrollbars="vertical"
+                android:layout_height="wrap_content"
+                fab:stackFromEnd="true"/>
 
-    <!--
-    <com.melnykov.fab.FloatingActionButton
-        android:id="@+id/fab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|right"
-        android:layout_margin="16dp"
-        android:src="@drawable/ic_response_100"
-        fab:elevation="8dp"
-        fab:fab_colorNormal="@color/md_amber_600"
-        />
-        -->
+
+            <include
+                layout="@layout/message_input_layout"
+                android:layout_width="match_parent"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:gravity="bottom" />
+
+
+        </LinearLayout>
+
+        <com.google.android.gms.ads.AdView
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:ads="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/adView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            ads:adSize="BANNER"
+            ads:adUnitId="@string/id_banner1"
+            android:layout_gravity="center_horizontal|top">
+        </com.google.android.gms.ads.AdView>
+    </FrameLayout>
+
+
 
 </android.support.design.widget.CoordinatorLayout>

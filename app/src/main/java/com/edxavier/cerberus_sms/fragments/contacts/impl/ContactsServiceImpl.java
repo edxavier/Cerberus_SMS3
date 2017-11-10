@@ -126,8 +126,12 @@ public class ContactsServiceImpl implements ContactsService {
 
     @Override
     public void onDestroy() {
-        Log.e("EDER", "Close realm contacts");
         realmG.close();
+    }
+
+    @Override
+    public void sendToBlackList(int options, String number) {
+        Utils.sendToBlackList(options, number);
     }
 
 }

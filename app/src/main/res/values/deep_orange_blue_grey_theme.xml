@@ -3,4 +3,28 @@
   <color name="primary">#FF5722</color>
   <color name="primary_dark">#E64A19</color>
   <color name="primary_light">#FFCCBC</color>
+  <color name="accent">#536DFE</color>
+  <color name="primary_text">#212121</color>
+  <color name="secondary_text">#757575</color>
+  <color name="icons">#FFFFFF</color>
+  <color name="divider">#BDBDBD</color>
+
+
+  <color name="primary_green">@color/md_green_500</color>
+  <color name="primary_dark_green">@color/md_green_700</color>
+
+
+  <color name="primary_red">@color/md_red_500</color>
+  <color name="primary_dark_red">@color/md_red_700</color>
+
+
+  <color name="primary_orange">@color/md_orange_500</color>
+  <color name="primary_dark_orange">@color/md_orange_700</color>
+
+
+  <color name="primary_purple">@color/md_purple_500</color>
+  <color name="primary_dark_purple">@color/md_purple_700</color>
+
+  <color name="primary_grey">@color/md_grey_500</color>
+  <color name="primary_dark_grey">@color/md_grey_700</color>
 </resources>

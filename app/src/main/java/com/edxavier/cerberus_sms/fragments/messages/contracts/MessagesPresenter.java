@@ -11,5 +11,14 @@ public interface MessagesPresenter {
 
     void getMessagesFromRealm();
     void syncMessages();
+    int getUnreadedMsgs();
+    int getUnreadedMsgs(String number);
+    int getFailedMsgs(String number);
+    void sendToBlackList(int options, String number);
 
+    void clearRecords();
+    int clearPhoneReacords();
+    int clearContactReacords(String number);
+
+    void markAllAsRead();
 }

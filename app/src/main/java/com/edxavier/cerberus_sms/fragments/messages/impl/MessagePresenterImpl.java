@@ -56,4 +56,44 @@ public class MessagePresenterImpl implements MessagesPresenter {
     public void syncMessages() {
         service.syncMessagesToRealm();
     }
+
+    @Override
+    public int getUnreadedMsgs() {
+        return service.getUnreadedMsgs();
+    }
+
+    @Override
+    public int getUnreadedMsgs(String number) {
+        return service.getUnreadedMsgs(number);
+    }
+
+    @Override
+    public int getFailedMsgs(String number) {
+        return service.getFailedMsgs(number);
+    }
+
+    @Override
+    public void sendToBlackList(int options, String number) {
+        service.sendToBlackList(options, number);
+    }
+
+    @Override
+    public void clearRecords() {
+        service.clearRecords();
+    }
+
+    @Override
+    public int clearPhoneReacords() {
+        return service.clearPhoneReacords();
+    }
+
+    @Override
+    public int clearContactReacords(String number) {
+        return service.clearContactReacords(number);
+    }
+
+    @Override
+    public void markAllAsRead() {
+        service.markAllAsRead();
+    }
 }

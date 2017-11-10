@@ -8,22 +8,25 @@
     android:layout_height="match_parent"
     app:ignore="NamespaceTypo">
 
+
     <android.support.v4.widget.SwipeRefreshLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/swipeMessages"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/recyclerMessages"
-        android:paddingLeft="4dp"
-        android:paddingStart="4dp"
-        android:paddingRight="4dp"
-        android:paddingEnd="4dp"
-        android:paddingBottom="15dp"
-        android:layout_width="match_parent"
-        android:scrollbars="vertical"
-        android:layout_height="match_parent"/>
+
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/recyclerMessages"
+                    android:paddingLeft="4dp"
+                    android:paddingStart="4dp"
+                    android:paddingRight="4dp"
+                    android:paddingEnd="4dp"
+                    android:paddingBottom="15dp"
+                    android:layout_width="match_parent"
+                    android:scrollbars="vertical"
+                    android:layout_height="match_parent"/>
+
 
     </android.support.v4.widget.SwipeRefreshLayout>
 
@@ -78,11 +81,53 @@
 
     </LinearLayout>
 
+    <LinearLayout
+        android:visibility="gone"
+        android:background="@color/md_pink_A700"
+        android:id="@+id/warning"
+        android:padding="4dp"
+        android:orientation="horizontal"
+        android:layout_gravity="top"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <com.edxavier.cerberus_sms.helpers.TextViewHelper
+            android:textSize="11sp"
+            android:layout_width="0dp"
+            android:layout_weight="5"
+            android:layout_height="wrap_content"
+            android:textColor="@color/md_white_1000"
+            android:visibility="visible"
+            android:text="@string/default_sms_app_warning" />
+
+        <android.support.v7.widget.AppCompatImageView
+            android:layout_width="23dp"
+            android:layout_height="23dp"
+            android:layout_gravity="center"
+            android:layout_margin="2dp"
+            app:srcCompat="@drawable/ic_warning"
+            fab:srcCompat="@drawable/ic_warning" />
+    </LinearLayout>
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab_createevent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_anchor="@id/recyclerMessages"
+        android:layout_gravity="bottom|end"
+        android:layout_marginBottom="68dp"
+        android:layout_marginEnd="16dp"
+        fab:srcCompat="@drawable/ic_create_msg"
+        app:borderWidth="0dp"
+        android:layout_marginRight="16dp" />
+
+
     <include
         layout="@layout/admob_banner"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal|bottom" />
+
 
 
 </FrameLayout>

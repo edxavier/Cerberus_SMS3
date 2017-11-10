@@ -7,6 +7,7 @@ import android.support.v4.content.ContextCompat;
 import com.edxavier.cerberus_sms.R;
 import com.edxavier.cerberus_sms.db.realm.CallsHistoryRealm;
 import com.edxavier.cerberus_sms.db.realm.ContactRealm;
+import com.edxavier.cerberus_sms.db.realm.MessagesHistoryRealm;
 import com.edxavier.cerberus_sms.db.realm.MessagesRealm;
 import com.github.mikephil.charting.animation.Easing;
 import com.github.mikephil.charting.charts.PieChart;
@@ -58,7 +59,7 @@ public class StatisticsPresenterImpl implements StatisticsPresenter {
         RealmResults<CallsHistoryRealm> outgoingOperators = service.getOutgoingCallsOperators();
 
         RealmResults<ContactRealm> contactOperators = service.getContactsOperators();
-        RealmResults<MessagesRealm> smsOperators = service.getSmsOperators();
+        RealmResults<MessagesHistoryRealm> smsOperators = service.getSmsOperators();
 
         for (CallsHistoryRealm re : operators) {
             callColors.add(getOperatorColor(re.call_operator));
@@ -72,7 +73,7 @@ public class StatisticsPresenterImpl implements StatisticsPresenter {
         for (ContactRealm contactOperator : contactOperators) {
             contactColors.add(getOperatorColor(contactOperator.contact_operator));
         }
-        for (MessagesRealm smsOperator : smsOperators) {
+        for (MessagesHistoryRealm smsOperator : smsOperators) {
             smsColors.add(getOperatorColor(smsOperator.sms_operator));
         }
     }

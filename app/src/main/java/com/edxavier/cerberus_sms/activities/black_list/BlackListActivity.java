@@ -1,15 +1,11 @@
 package com.edxavier.cerberus_sms.activities.black_list;
 
-import android.content.res.Configuration;
-import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.TypedValue;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.OvershootInterpolator;
@@ -23,9 +19,10 @@ import com.edxavier.cerberus_sms.activities.black_list.contracts.BlackListPresen
 import com.edxavier.cerberus_sms.activities.black_list.contracts.BlackListPresenterImp;
 import com.edxavier.cerberus_sms.activities.black_list.contracts.BlackListView;
 import com.edxavier.cerberus_sms.db.realm.BlackList;
-import com.edxavier.cerberus_sms.fragments.callLog.CallLogFragment;
-import com.edxavier.cerberus_sms.fragments.callLog.adapter.AdapterCallsRealm;
 import com.edxavier.cerberus_sms.helpers.TextViewHelper;
+import com.google.android.gms.ads.AdListener;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.pixplicity.easyprefs.library.Prefs;
 
@@ -50,8 +47,8 @@ public class BlackListActivity extends AppCompatActivity implements BlackListVie
     @BindView(R.id.empty_list_layout)
     LinearLayout emptyListLayout;
     BlackListAdapter adapter;
-    private AlphaInAnimationAdapter slideAdapter;
-    private BlackListPresenter presenter;
+    @BindView(R.id.adView)
+    AdView adView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,12 +65,13 @@ public class BlackListActivity extends AppCompatActivity implements BlackListVie
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setTitle(getString(R.string.black_list));
-        presenter = new BlackListPresenterImp(this);
+        BlackListPresenter presenter = new BlackListPresenterImp(this);
 
         setupRecycler();
         presenter.getBlackList();
 
         if (!Prefs.getBoolean("ads_removed", false)) {
+            setupAds();
             DialerActivityV2.requestAds(this);
         }
     }
@@ -106,12 +104,26 @@ public class BlackListActivity extends AppCompatActivity implements BlackListVie
     @Override
     public void setCallsData(RealmResults<BlackList> blackList) {
         adapter = new BlackListAdapter(blackList, this);
-        slideAdapter = new AlphaInAnimationAdapter(adapter);
+        AlphaInAnimationAdapter slideAdapter = new AlphaInAnimationAdapter(adapter);
         slideAdapter.setDuration(250);
         slideAdapter.setInterpolator(new OvershootInterpolator(1f));
         slideAdapter.setFirstOnly(false);
         BlackListRecycler.setItemAnimator(new LandingAnimator());
         BlackListRecycler.getItemAnimator().setAddDuration(200);
         BlackListRecycler.setAdapter(adapter);
+    }
+
+    public void setupAds() {
+        AdRequest adRequest = new AdRequest.Builder()
+                //.addTestDevice("0B307F34E3DDAF6C6CAB28FAD4084125")
+                .build();
+        adView.setAdListener(new AdListener() {
+            @Override
+            public void onAdLoaded() {
+                super.onAdLoaded();
+                BlackListRecycler.setPadding(0,0,0,96);
+            }
+        });
+        adView.loadAd(adRequest);
     }
 }

@@ -6,12 +6,15 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.provider.Settings;
 import android.support.annotation.IdRes;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.design.widget.BottomSheetBehavior;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
@@ -36,12 +39,19 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.anjlab.android.iab.v3.BillingProcessor;
 import com.anjlab.android.iab.v3.TransactionDetails;
 import com.balysv.materialripple.MaterialRippleLayout;
+import com.crashlytics.android.answers.Answers;
+import com.crashlytics.android.answers.ContentViewEvent;
+import com.crashlytics.android.answers.CustomEvent;
 import com.edxavier.cerberus_sms.activities.black_list.BlackListActivity;
 import com.edxavier.cerberus_sms.activities.statistics.StatisticsActivity;
+import com.edxavier.cerberus_sms.db.realm.ContactRealm;
+import com.edxavier.cerberus_sms.db.realm.MessagesHistoryRealm;
+import com.edxavier.cerberus_sms.db.realm.MessagesRealm;
 import com.edxavier.cerberus_sms.fragments.callLog.CallLogFragment;
 import com.edxavier.cerberus_sms.fragments.checkOperator.CheckOperatorFrg;
 import com.edxavier.cerberus_sms.fragments.contacts.ContactFragment;
 import com.edxavier.cerberus_sms.fragments.messages.MessagesFragment;
+import com.edxavier.cerberus_sms.helpers.Constans;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.InterstitialAd;
@@ -59,57 +69,23 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
+import io.realm.DynamicRealm;
+import io.realm.Realm;
+import io.realm.RealmChangeListener;
+import io.realm.RealmResults;
 
 public class DialerActivityV2 extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, TabSelectionInterceptor, BillingProcessor.IBillingHandler {
+        implements NavigationView.OnNavigationItemSelectedListener,
+        TabSelectionInterceptor, BillingProcessor.IBillingHandler {
 
+    private static InterstitialAd mInterstitialAd;
     @BindView(R.id.toolbar)
     Toolbar toolbar;
     @BindView(R.id.fragmentContainer)
     FrameLayout fragmentContainer;
-    @BindView(R.id.adViewNative)
-    NativeExpressAdView adViewNative;
-    @BindView(R.id.suggestions)
-    ListView suggestions;
-    @BindView(R.id.operator_name)
-    TextView operatorName;
-    @BindView(R.id.card_operator)
-    CardView cardOperator;
-    @BindView(R.id.country)
-    TextView country;
-    @BindView(R.id.linear_operator_show)
-    LinearLayout linearOperatorShow;
-    @BindView(R.id.number_entry)
-    AutoCompleteTextView numberEntry;
-    @BindView(R.id.backspace_arrow)
-    MaterialRippleLayout backspaceArrow;
-    @BindView(R.id.num_1)
-    MaterialRippleLayout num1;
-    @BindView(R.id.num_2)
-    MaterialRippleLayout num2;
-    @BindView(R.id.num_3)
-    MaterialRippleLayout num3;
-    @BindView(R.id.num_4)
-    MaterialRippleLayout num4;
-    @BindView(R.id.num_5)
-    MaterialRippleLayout num5;
-    @BindView(R.id.num_6)
-    MaterialRippleLayout num6;
-    @BindView(R.id.num_7)
-    MaterialRippleLayout num7;
-    @BindView(R.id.num_8)
-    MaterialRippleLayout num8;
-    @BindView(R.id.num_9)
-    MaterialRippleLayout num9;
-    @BindView(R.id.num_asterisk)
-    MaterialRippleLayout numAsterisk;
-    @BindView(R.id.num_0)
-    MaterialRippleLayout num0;
-    @BindView(R.id.num_numeral)
-    MaterialRippleLayout numNumeral;
 
-    @BindView(R.id.linear_layout_bottom_sheet)
-    LinearLayout linearLayoutBottomSheet;
+
     @BindView(R.id.bottomBar)
     public BottomBar bottomBar;
     @BindView(R.id.nav_view)
@@ -119,11 +95,14 @@ public class DialerActivityV2 extends AppCompatActivity
 
     FirebaseAnalytics analytics;
     FragmentManager manager;
-    public BottomSheetBehavior mbottomSheetBehavior;
-    Fragment[] fragments = new Fragment[]{new ContactFragment(), new CallLogFragment(),  new MessagesFragment(), new CheckOperatorFrg()};
+    Fragment[] fragments = new Fragment[]{new ContactFragment(), new CallLogFragment(), new MessagesFragment(), new CheckOperatorFrg()};
     private static final int REQUEST_SYSTEM_ALERT_WINDOW = 2;
     public BillingProcessor bp;
     public static String PRODUCT = "remove_ads";
+    @BindView(R.id.main_coordinator)
+    CoordinatorLayout mainCoordinator;
+    private RealmResults<MessagesHistoryRealm> messages = null;
+    Realm realm = Realm.getDefaultInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -139,9 +118,15 @@ public class DialerActivityV2 extends AppCompatActivity
         ConstraintLayout headerNav = (ConstraintLayout) navView.getHeaderView(0);
         TextView version = (TextView) headerNav.findViewById(R.id.app_version);
         version.setText(BuildConfig.VERSION_NAME);
-        if(Prefs.getBoolean("ads_removed", false))
+        if (Prefs.getBoolean("ads_removed", false))
             hideItem();
 
+        Answers.getInstance().logCustom(new CustomEvent("Open app")
+                .putCustomAttribute("SDK", Build.VERSION.SDK)
+                .putCustomAttribute("SDK_NAME", Build.VERSION.RELEASE)
+                .putCustomAttribute("MARCA", Build.BRAND)
+                .putCustomAttribute("MODELO", Build.MODEL)
+        );
     }
 
     private void checkDrawWindowPermission() {
@@ -172,13 +157,10 @@ public class DialerActivityV2 extends AppCompatActivity
         toggle.syncState();
         navView.setNavigationItemSelectedListener(this);
 
-        mbottomSheetBehavior = BottomSheetBehavior.from(linearLayoutBottomSheet);
-        //to expand the bottom sheet
-        mbottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
-        mbottomSheetBehavior.setSkipCollapsed(true);
+
         manager = getSupportFragmentManager();
 
-        if(savedInstanceState==null) {
+        if (savedInstanceState == null) {
             manager.beginTransaction()
                     .add(R.id.fragmentContainer, fragments[1], "calls")
                     .add(R.id.fragmentContainer, fragments[0], "contacts")
@@ -191,7 +173,19 @@ public class DialerActivityV2 extends AppCompatActivity
 
 
         bottomBar.setTabSelectionInterceptor(this);
-        analytics =FirebaseAnalytics.getInstance(this);
+        analytics = FirebaseAnalytics.getInstance(this);
+
+            messages = realm.where(MessagesHistoryRealm.class)
+                .equalTo("sms_read", Constans.MESSAGE_UNREAD).findAll();
+
+        messages.addChangeListener((messagesHistoryRealms, changeSet) -> {
+            MessagesFragment frg2 = (MessagesFragment) manager.findFragmentByTag("messages");
+            int unrd = frg2.getUnreadedMessages();
+            if(unrd>0)
+                bottomBar.getTabWithId(R.id.tab_messages).setBadgeCount(unrd);
+            else
+                bottomBar.getTabWithId(R.id.tab_messages).removeBadge();
+        });
 
         //esto es para ejecutar el evento tabselect ya que si nom aparecen superpuestos los fragments
         Observable.interval(300, TimeUnit.MILLISECONDS).take(1)
@@ -248,21 +242,24 @@ public class DialerActivityV2 extends AppCompatActivity
                 analytics.logEvent("click_app_info", null);
                 try {
                     //Open the specific App Info page:
-                    Intent intent = new Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                    Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
                     intent.setData(Uri.parse("package:" + BuildConfig.APPLICATION_ID));
                     startActivity(intent);
-                } catch ( ActivityNotFoundException e ) {
+                } catch (ActivityNotFoundException e) {
                     //e.printStackTrace();
                     //Open the generic Apps page:
-                    Intent intent = new Intent(android.provider.Settings.ACTION_MANAGE_APPLICATIONS_SETTINGS);
+                    Intent intent = new Intent(Settings.ACTION_MANAGE_APPLICATIONS_SETTINGS);
                     startActivity(intent);
 
                 }
                 break;
             case R.id.nav_remove_ads:
                 analytics.logEvent("click_remove_ad", null);
-                if(bp!=null)
-                    bp.purchase(this, PRODUCT);
+                if (bp != null) {
+                    try {
+                        bp.purchase(this, PRODUCT);
+                    }catch (Exception ignored){}
+                }
                 break;
             case R.id.nav_share:
                 try {
@@ -271,10 +268,11 @@ public class DialerActivityV2 extends AppCompatActivity
                     i.setType("text/plain");
                     i.putExtra(Intent.EXTRA_SUBJECT, getResources().getString(R.string.app_name));
                     String sAux = getResources().getString(R.string.share_app_msg);
-                    sAux = sAux + "https://play.google.com/store/apps/details?id=" + getPackageName()+" \n\n";
+                    sAux = sAux + "https://play.google.com/store/apps/details?id=" + getPackageName() + " \n\n";
                     i.putExtra(Intent.EXTRA_TEXT, sAux);
                     startActivity(Intent.createChooser(i, getResources().getString(R.string.share_using)));
-                } catch(Exception ignored) {}
+                } catch (Exception ignored) {
+                }
                 break;
 
             case R.id.nav_rate:
@@ -293,13 +291,13 @@ public class DialerActivityV2 extends AppCompatActivity
                 break;
             case R.id.ac_drawer_issues:
                 //bp.consumePurchase(PRODUCT);
-                Intent intent = new Intent(Intent.ACTION_SENDTO, Uri.fromParts("mailto","edxavier05@gmail.com", null));
+                Intent intent = new Intent(Intent.ACTION_SENDTO, Uri.fromParts("mailto", "edxavier05@gmail.com", null));
                 intent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.app_name));
-                intent.putExtra(Intent.EXTRA_TEXT   , "Escriba sus comentarios, sugerencias, reporte de error o peticiones");
+                intent.putExtra(Intent.EXTRA_TEXT, "Escriba sus comentarios, sugerencias, reporte de error o peticiones");
 
                 try {
                     startActivity(Intent.createChooser(intent, "Send mail..."));
-                } catch (android.content.ActivityNotFoundException ex) {
+                } catch (ActivityNotFoundException ex) {
                     Toast.makeText(this, "There are no email clients installed.", Toast.LENGTH_SHORT).show();
                 }
 
@@ -316,16 +314,28 @@ public class DialerActivityV2 extends AppCompatActivity
     public boolean shouldInterceptTabSelection(@IdRes int oldTabId, @IdRes int newTabId) {
         //if(oldTabId != newTabId) {
         try {
+            MessagesFragment frg2 = (MessagesFragment) manager.findFragmentByTag("messages");
+            int unrd = frg2.getUnreadedMessages();
+            if(unrd>0)
+                bottomBar.getTabWithId(R.id.tab_messages).setBadgeCount(unrd);
+            else
+                bottomBar.getTabWithId(R.id.tab_messages).removeBadge();
             switch (newTabId) {
                 case R.id.tab_calls:
                     analytics.logEvent("frag_calls", null);
                     getSupportActionBar().setTitle(getString(R.string.drawer_op_call_log));
+                    CallLogFragment frg = (CallLogFragment) manager.findFragmentByTag("calls");
+                    frg.checkSMSsettings();
                     manager.beginTransaction()
                             .show(manager.findFragmentByTag("calls"))
                             .hide(manager.findFragmentByTag("contacts"))
                             .hide(manager.findFragmentByTag("messages"))
                             .hide(manager.findFragmentByTag("dialer"))
                             .commit();
+                    if (!Prefs.getBoolean("ads_removed", false)) {
+                        DialerActivityV2.requestAds(this);
+                    } else
+                        hideFragmentsAds();
                     break;
                 case R.id.tab_contacts:
                     analytics.logEvent("frag_contacts", null);
@@ -336,17 +346,26 @@ public class DialerActivityV2 extends AppCompatActivity
                             .hide(manager.findFragmentByTag("messages"))
                             .hide(manager.findFragmentByTag("dialer"))
                             .commit();
+                    if (!Prefs.getBoolean("ads_removed", false)) {
+                        DialerActivityV2.requestAds(this);
+                    } else
+                        hideFragmentsAds();
                     break;
 
                 case R.id.tab_messages:
                     analytics.logEvent("frag_sms", null);
                     getSupportActionBar().setTitle(getString(R.string.drawer_op_inbox));
+                    frg2.checkSMSsettings();
                     manager.beginTransaction()
                             .hide(manager.findFragmentByTag("calls"))
                             .hide(manager.findFragmentByTag("contacts"))
                             .show(manager.findFragmentByTag("messages"))
                             .hide(manager.findFragmentByTag("dialer"))
                             .commit();
+                    if (!Prefs.getBoolean("ads_removed", false)) {
+                        DialerActivityV2.requestAds(this);
+                    } else
+                        hideFragmentsAds();
                     break;
                 case R.id.tab_chart:
                     analytics.logEvent("frag_dialer", null);
@@ -357,16 +376,18 @@ public class DialerActivityV2 extends AppCompatActivity
                             .hide(manager.findFragmentByTag("messages"))
                             .show(manager.findFragmentByTag("dialer"))
                             .commit();
+                    if (!Prefs.getBoolean("ads_removed", false)) {
+                        DialerActivityV2.requestAds(this);
+                    } else
+                        hideFragmentsAds();
                     break;
             }
-        }catch (Exception e){
-            FirebaseCrash.logcat(Log.INFO, "shouldInterceptTabSelection", e.getMessage());
+        } catch (Exception e) {
+            if(e.getMessage()!=null)
+                Answers.getInstance().logCustom(new CustomEvent("Error")
+                        .putCustomAttribute("location", e.getLocalizedMessage()));
         }
         //}
-        if(!Prefs.getBoolean("ads_removed", false)) {
-            DialerActivityV2.requestAds(this);
-        }else
-            hideFragmentsAds();
 
         return false;
     }
@@ -374,7 +395,6 @@ public class DialerActivityV2 extends AppCompatActivity
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-
     }
 
     @Override
@@ -386,15 +406,17 @@ public class DialerActivityV2 extends AppCompatActivity
     }
 
     private void hideFragmentsAds() {
-        CallLogFragment callFrg = (CallLogFragment) manager.findFragmentByTag("calls");
-        ContactFragment contFrg = (ContactFragment) manager.findFragmentByTag("contacts");
-        MessagesFragment smsFrg = (MessagesFragment) manager.findFragmentByTag("messages");
-        CheckOperatorFrg dialFrg = (CheckOperatorFrg) manager.findFragmentByTag("dialer");
+        try {
+            CallLogFragment callFrg = (CallLogFragment) manager.findFragmentByTag("calls");
+            ContactFragment contFrg = (ContactFragment) manager.findFragmentByTag("contacts");
+            MessagesFragment smsFrg = (MessagesFragment) manager.findFragmentByTag("messages");
+            CheckOperatorFrg dialFrg = (CheckOperatorFrg) manager.findFragmentByTag("dialer");
 
-        callFrg.adView.setVisibility(View.GONE);
-        dialFrg.adView.setVisibility(View.GONE);
-        contFrg.adView.setVisibility(View.GONE);
-        smsFrg.adView.setVisibility(View.GONE);
+            callFrg.adView.setVisibility(View.GONE);
+            dialFrg.adView.setVisibility(View.GONE);
+            contFrg.adView.setVisibility(View.GONE);
+            smsFrg.adView.setVisibility(View.GONE);
+        }catch (Exception ignored){}
     }
 
     @Override
@@ -409,7 +431,8 @@ public class DialerActivityV2 extends AppCompatActivity
 
     @Override
     public void onBillingInitialized() {
-        if(bp!=null) {
+        loadInterstical();
+        if (bp != null) {
             Prefs.putBoolean("ads_removed", bp.isPurchased(PRODUCT));
             //if(bp.isOneTimePurchaseSupported()) {
             if (Prefs.getBoolean("ads_removed", false)) {
@@ -417,7 +440,7 @@ public class DialerActivityV2 extends AppCompatActivity
                 hideFragmentsAds();
             }
         }
-            //Log.e("EDER_ads_removed", String.valueOf(Prefs.getBoolean("ads_removed", false)));
+        //Log.e("EDER_ads_removed", String.valueOf(Prefs.getBoolean("ads_removed", false)));
         //}
     }
 
@@ -426,11 +449,15 @@ public class DialerActivityV2 extends AppCompatActivity
         if (!bp.handleActivityResult(requestCode, resultCode, data))
             super.onActivityResult(requestCode, resultCode, data);
     }
+
     @Override
     public void onDestroy() {
         if (bp != null)
             bp.release();
         super.onDestroy();
+        messages.removeAllChangeListeners();
+        if(!realm.isClosed())
+            realm.close();
     }
 
     private void hideItem() {
@@ -439,31 +466,75 @@ public class DialerActivityV2 extends AppCompatActivity
     }
 
     public static void requestAds(Context context) {
-        int ne =  Prefs.getInt("num_show_interstical", 0);
+
+        int ne = Prefs.getInt("num_show_interstical", 0);
         Prefs.putInt("num_show_interstical", ne + 1);
-        if(Prefs.getInt("num_show_interstical", 0) == Prefs.getInt("show_after", 7)) {
+        if (Prefs.getInt("num_show_interstical", 0) >= Prefs.getInt("show_after", 8)) {
             Prefs.putInt("num_show_interstical", 0);
             Random r = new Random();
-            int Low = 7;int High = 14;
-            int rnd = r.nextInt(High-Low) + Low;
+            int Low = 8;
+            int High = 16;
+            int rnd = r.nextInt(High - Low) + Low;
             Prefs.putInt("show_after", rnd);
-
-            AdRequest adRequest = new AdRequest.Builder()
-                    //.addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
-                    .build();
-
-            InterstitialAd mInterstitialAd = new InterstitialAd(context);
-            mInterstitialAd.setAdUnitId(context.getResources().getString(R.string.id_banner_interstical));
-            mInterstitialAd.setAdListener(new AdListener() {
-                @Override
-                public void onAdLoaded() {
-                    super.onAdLoaded();
-                    mInterstitialAd.show();
+            try {
+                if(mInterstitialAd.isLoaded()) {
+                    MaterialDialog dlg = new MaterialDialog.Builder(context)
+                            .title(R.string.ads_notice)
+                            .cancelable(false)
+                            .progress(true, 0)
+                            .progressIndeterminateStyle(true)
+                            .build();
+                    dlg.show();
+                    Observable.interval(1, TimeUnit.MILLISECONDS).take(2400)
+                            .subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(aLong -> {},
+                                    throwable -> {}, () -> {
+                                if(dlg.isShowing())
+                                    dlg.dismiss();
+                                mInterstitialAd.show();
+                                Answers.getInstance().logContentView(new ContentViewEvent()
+                                                .putContentName("Show Intersticall")
+                                                .putContentId("adsInterstical")
+                                                .putContentType("Ads"));
+                            });
                 }
-            });
-            mInterstitialAd.loadAd(adRequest);
+            }catch (Exception ignored){}
+
         }
     }
 
+    public  void loadInterstical(){
+
+        AdRequest adRequest = new AdRequest.Builder()
+                .addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
+                //.addTestDevice("0B307F34E3DDAF6C6CAB28FAD4084125")
+                .build();
+        mInterstitialAd = new InterstitialAd(getApplicationContext());
+        mInterstitialAd.setAdUnitId(getApplicationContext().getResources().getString(R.string.id_banner_interstical));
+        mInterstitialAd.setAdListener(new AdListener() {
+
+            @Override
+            public void onAdClosed() {
+                super.onAdClosed();
+                loadInterstical();
+            }
+
+            @Override
+            public void onAdFailedToLoad(int i) {
+                super.onAdFailedToLoad(i);
+                //SystemClock.sleep(5000);
+                Observable.interval(1, TimeUnit.SECONDS).take(5)
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(aLong -> {},
+                        throwable -> {}, () -> {
+                                    loadInterstical();
+                        });
+            }
+        });
+        if(!mInterstitialAd.isLoaded())
+            mInterstitialAd.loadAd(adRequest);
+    }
 
 }

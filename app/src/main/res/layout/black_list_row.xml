@@ -81,6 +81,7 @@
                 android:layout_gravity="center"
                 app:srcCompat="@drawable/ic_mail"
                 android:layout_width="25dp"
+                android:tint="@color/md_black_1000_50"
                 android:layout_height="25dp"
                 android:layout_marginLeft="0dp" />
 
@@ -129,7 +130,7 @@
                 android:id="@+id/txt_blocked_calls"
                 android:layout_margin="4dp"
                 style="@style/Base.TextAppearance.AppCompat.Subhead"
-                android:text=": 30"
+                android:text="Mensajes: 30"
                 android:layout_width="wrap_content"
                 android:layout_gravity="center"
                 android:layout_height="wrap_content" />

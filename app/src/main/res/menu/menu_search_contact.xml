@@ -3,8 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
    <item android:id="@+id/search"
-        android:title="Buscar contacto"
-        android:icon="@drawable/ic_action_action_search"
+        android:title="@string/search_contact"
+        android:icon="@drawable/ic_search"
         app:showAsAction="collapseActionView|ifRoom"
         app:actionViewClass="android.support.v7.widget.SearchView" />
 

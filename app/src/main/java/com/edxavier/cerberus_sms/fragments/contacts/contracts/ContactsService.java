@@ -16,6 +16,6 @@ public interface ContactsService {
     boolean canReadContacts();
 
     void onDestroy();
-
+    void sendToBlackList(int options, String number);
 
 }

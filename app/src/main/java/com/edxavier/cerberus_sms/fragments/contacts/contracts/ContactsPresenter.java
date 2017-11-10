@@ -12,5 +12,5 @@ public interface ContactsPresenter {
     boolean canReadContacts();
     void getContactsFromRealm();
     void syncContacts();
-
+    void sendToBlackList(int options, String number);
 }

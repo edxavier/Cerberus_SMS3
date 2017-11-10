@@ -16,7 +16,7 @@ public interface CallLogPresenter {
     int clearPhoneReacords();
     int clearContactReacords(String number);
 
-    void addToBlackList(Integer[] which, String number);
 
     void requestPermission(String [] perms);
+    void sendToBlackList(int options, String number);
 }

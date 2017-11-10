@@ -4,21 +4,21 @@ buildscript {
     }
 
     dependencies {
-        classpath 'io.fabric.tools:gradle:1.+'
+        classpath 'io.fabric.tools:gradle:1.24.4'
     }
 }
 apply plugin: 'com.android.application'
 apply plugin: 'io.fabric'
 //apply plugin: 'com.android.databinding'
-apply plugin: 'com.neenbedankt.android-apt'
-apply plugin: 'me.tatarka.retrolambda'
+//apply plugin: 'com.neenbedankt.android-apt'
+//apply plugin: 'me.tatarka.retrolambda'
 apply plugin: 'realm-android'
 
 
 android {
     compileOptions.incremental = false
-    compileSdkVersion 25
-    buildToolsVersion '26.0.0'
+    compileSdkVersion 27
+    buildToolsVersion '27.0.1'
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -39,9 +39,9 @@ android {
         }
         applicationId "com.edxavier.cerberus_sms"
         minSdkVersion 15
-        targetSdkVersion 25
-        versionCode 20
-        versionName "3.1.1.1707"
+        targetSdkVersion 26
+        versionCode 24
+        versionName "3.3.1.1711"
         multiDexEnabled true
     }
     packagingOptions {
@@ -114,15 +114,16 @@ dependencies {
     compile project(':materialIntroScreen')
 
 
+
     compile "org.greenrobot:eventbus:$rootProject.ext.eventbusVersion"
 
-    apt "com.google.dagger:dagger-compiler:$rootProject.ext.daggerVersion"
+    annotationProcessor "com.google.dagger:dagger-compiler:$rootProject.ext.daggerVersion"
     compile "com.google.dagger:dagger:$rootProject.ext.daggerVersion"
 
     //compile 'com.github.traex.rippleeffect:library:1.3'
     
 
-    compile('com.crashlytics.sdk.android:crashlytics:2.6.8@aar') {
+    compile('com.crashlytics.sdk.android:crashlytics:2.7.1@aar') {
         transitive = true;
     }
     compile('com.crashlytics.sdk.android:answers:1.3.13@aar') {
@@ -130,32 +131,45 @@ dependencies {
     }
 
     compile 'com.github.PhilJay:MPAndroidChart:v3.0.2'
-    compile 'com.jakewharton:butterknife:8.5.1'
+    compile 'com.jakewharton:butterknife:8.8.1'
+
     compile 'org.glassfish:javax.annotation:10.0-b28'
-    compile 'com.afollestad.material-dialogs:core:0.9.4.5'
-    compile 'com.google.firebase:firebase-core:10.2.1'
-    compile 'com.google.firebase:firebase-ads:10.2.1'
-    compile 'com.google.firebase:firebase-crash:10.2.1'
-    compile 'com.android.support:recyclerview-v7:25.3.1'
-    compile 'com.android.support:appcompat-v7:25.3.1'
-    compile 'com.android.support:cardview-v7:25.3.1'
-    compile 'com.android.support:support-v4:25.3.1'
-    compile 'com.android.support:multidex:1.0.1'
-    compile 'com.android.support:design:25.3.1'
+    compile 'com.afollestad.material-dialogs:core:0.9.5.0'
+
+    compile 'com.google.firebase:firebase-core:11.4.2'
+    compile 'com.google.firebase:firebase-ads:11.4.2'
+    compile 'com.google.firebase:firebase-crash:11.4.2'
+    //compile 'com.google.firebase:firebase-messaging:10.2.6'
+
+    compile 'com.android.support:recyclerview-v7:27.0.0'
+    compile 'com.android.support:appcompat-v7:27.0.0'
+    compile 'com.android.support:cardview-v7:27.0.0'
+    compile 'com.android.support:support-v4:27.0.0'
+    compile 'com.android.support:multidex:1.0.2'
+    compile 'com.android.support:design:27.0.0'
+
+    testCompile 'junit:junit:4.12'
+
     compile 'com.amulyakhare:com.amulyakhare.textdrawable:1.0.1'
     compile 'jp.wasabeef:recyclerview-animators:2.2.6'
     compile 'com.balysv:material-ripple:1.0.2'
     compile 'com.pixplicity.easyprefs:library:1.9.0'
     compile 'com.roughike:bottom-bar:2.3.1'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
-    compile 'io.reactivex.rxjava2:rxjava:2.1.1'
+
+    compile 'io.reactivex.rxjava2:rxjava:2.1.6'
     compile 'io.reactivex.rxjava2:rxandroid:2.0.1'
+
     compile 'com.jakewharton.rxbinding2:rxbinding:2.0.0'
     compile 'com.jakewharton.rxbinding2:rxbinding-appcompat-v7:2.0.0'
-    compile 'de.hdodenhof:circleimageview:2.1.0'
-    compile 'com.anjlab.android.iab.v3:library:1.0.39'
-    annotationProcessor 'com.jakewharton:butterknife-compiler:8.5.1'
-    apt 'com.jakewharton:butterknife-compiler:8.5.1'
+
+    compile 'de.hdodenhof:circleimageview:2.2.0'
+    compile 'com.anjlab.android.iab.v3:library:1.0.44'
+
+    compile 'com.github.pchmn:MaterialChipsInput:1.0.8'
+
+    annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
+
 }
 
 apply plugin: 'com.google.gms.google-services'
