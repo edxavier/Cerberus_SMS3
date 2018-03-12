@@ -1,6 +1,7 @@
 package com.edxavier.cerberus_sms.activities.statistics;
 
 import android.provider.CallLog;
+import android.util.Log;
 
 import com.edxavier.cerberus_sms.db.realm.CallsHistoryRealm;
 import com.edxavier.cerberus_sms.db.realm.ContactRealm;
@@ -31,6 +32,7 @@ public class StatisticsServiceimpl implements StatisticsService {
 
     public StatisticsServiceimpl() {
         realm = Realm.getDefaultInstance();
+
         this.callsRes = realm.where(CallsHistoryRealm.class)
                 .distinct("call_operator").sort("call_operator", Sort.ASCENDING);
         this.outgoingCallsRes = realm.where(CallsHistoryRealm.class)

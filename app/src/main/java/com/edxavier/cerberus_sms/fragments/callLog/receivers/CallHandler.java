@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.crashlytics.android.answers.Answers;
@@ -75,10 +76,10 @@ public class CallHandler extends PhonecallReceiver {
                 setTouchListener(layoutParams);
                 AppCompatImageView close = CallHandler.view.findViewById(R.id.close_floating);
                 AppCompatImageView bg = CallHandler.view.findViewById(R.id.imgBackground);
-                TextViewHelper msgText = CallHandler.view.findViewById(R.id.floating_msg);
+                TextView msgText = CallHandler.view.findViewById(R.id.floating_msg);
                 CardView cardView = CallHandler.view.findViewById(R.id.flaoting_card);
                 close.bringToFront();
-                close.setOnClickListener(new View.OnClickListener() {
+                cardView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         try {
@@ -169,11 +170,11 @@ public class CallHandler extends PhonecallReceiver {
                 AppCompatImageView close = (AppCompatImageView) CallHandler.view.findViewById(R.id.close_floating);
                 AppCompatImageView bg = (AppCompatImageView) CallHandler.view.findViewById(R.id.imgBackground);
 
-                TextViewHelper msgText = (TextViewHelper) CallHandler.view.findViewById(R.id.floating_msg);
+                TextView msgText = CallHandler.view.findViewById(R.id.floating_msg);
                 CardView cardView = (CardView) CallHandler.view.findViewById(R.id.flaoting_card);
 
                 //close.bringToFront();
-                close.setOnClickListener(new View.OnClickListener() {
+                cardView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         try {
@@ -383,7 +384,6 @@ public class CallHandler extends PhonecallReceiver {
                 operator = areaCodeRealm.area_operator;
             else
                 operator = Constans.DESCONOCIDO;
-            String finalOperator2 = operator;
             realm2.executeTransaction(realm_trans -> {
                 //Cargar el historial para el numero en cuestion
                 RealmResults<CallsHistoryRealm> calls = realm_trans.where(CallsHistoryRealm.class)
@@ -393,7 +393,7 @@ public class CallHandler extends PhonecallReceiver {
                     //+++++++++++++++++++++++++++++++++++++++++++++++PRIMER REGISTRO PARA UN NUMERO+++++++++++++++++++++++++++++++++++++++++++++++++++
                     //Ya que no hay ingresar el primer registro al historial
                     lastCall = realm_trans.copyToRealm(new CallsHistoryRealm(  Utils.getContact(number), number, duration,
-                            type, start, number));
+                            type, start, operator));
                     //Ya que no hay ingresar el registro al resumen
                     CallsRealm callResume = realm_trans.createObject(CallsRealm.class, CallsRealm.getId());
                     callResume.contact =  Utils.getContact(number);
@@ -408,7 +408,7 @@ public class CallHandler extends PhonecallReceiver {
                     lastCall = calls.first();
                     if (lastCall != null && lastCall.call_date.before(start)) {
                         lastCall = realm_trans.copyToRealm(new CallsHistoryRealm(Utils.getContact(number), number, duration,
-                                type, start, finalOperator2));
+                                type, start, operator));
 
                         CallsRealm cResume = realm_trans.where(CallsRealm.class).equalTo("call_phone_number", number).findFirst();
                         if (cResume != null) {

@@ -68,7 +68,7 @@ public class AppOperator extends MultiDexApplication {
                 .Builder()
                     //.schemaVersion(3) // Must be bumped when the schema changes
                     //.migration(new MigrationRealm()) // Migration to run instead of throwing an exceptio
-                .deleteRealmIfMigrationNeeded()
+                //.deleteRealmIfMigrationNeeded()
                 .build();
         try {
             Realm.compactRealm(realmConfiguration);

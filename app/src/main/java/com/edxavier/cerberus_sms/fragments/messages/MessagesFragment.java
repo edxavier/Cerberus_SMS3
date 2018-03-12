@@ -155,16 +155,18 @@ public class MessagesFragment extends Fragment implements MessagesView {
 
     public void checkSMSsettings() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            if (Utils.thereAreBlockedSmsNumbers() && !Utils.isDefaultSmsApp(getContext())) {
-                recyclerMessages.setPadding(0, 100, 0, 0);
-                warning.setVisibility(View.VISIBLE);
-            } else {
-                if(adView.isShown())
-                    recyclerMessages.setPadding(0, 0, 0, 90);
-                else
-                    recyclerMessages.setPadding(0, 0, 0, 0);
-                warning.setVisibility(View.GONE);
-            }
+            try {
+                if (Utils.thereAreBlockedSmsNumbers() && !Utils.isDefaultSmsApp(getContext())) {
+                    recyclerMessages.setPadding(0, 100, 0, 0);
+                    warning.setVisibility(View.VISIBLE);
+                } else {
+                    if (adView.isShown())
+                        recyclerMessages.setPadding(0, 0, 0, 90);
+                    else
+                        recyclerMessages.setPadding(0, 0, 0, 0);
+                    warning.setVisibility(View.GONE);
+                }
+            }catch (Exception ignored){}
         }
 
         warning.setOnClickListener(v -> {

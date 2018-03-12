@@ -334,9 +334,11 @@ public class CheckOperatorFrg extends Fragment implements CheckOperatorView, Tex
             @Override
             public void onSlide(@NonNull View bottomSheet, float slideOffset) {
                 if (slideOffset > offset[0]) {
-                    activityV2.bottomBar.getShySettings().hideBar();
+                    activityV2.bottomNavigation.hideBottomNavigation();
+                    //activityV2.bottomBar.getShySettings().hideBar();
                 } else if (slideOffset < offset[0]) {
-                    activityV2.bottomBar.getShySettings().showBar();
+                    //activityV2.bottomBar.getShySettings().showBar();
+                    activityV2.bottomNavigation.restoreBottomNavigation();
                 }
                 offset[0] = slideOffset;
             }

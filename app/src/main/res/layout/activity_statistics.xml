@@ -52,11 +52,12 @@
             <include layout="@layout/admob_banner"/>
 
             <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:gravity="center"
                 android:text="@string/call_count_chart"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:textStyle="bold" />
 
             <com.github.mikephil.charting.charts.PieChart
                 android:id="@+id/chart_detail"
@@ -71,11 +72,12 @@
                 android:background="@android:color/darker_gray"/>
 
             <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:gravity="center"
                 android:text="@string/income_calls_chart"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
+                android:textStyle="bold" />
             <com.github.mikephil.charting.charts.PieChart
                 android:id="@+id/incomingCallChart"
                 android:layout_width="match_parent"
@@ -86,6 +88,7 @@
                 android:layout_height="1dp"
                 android:background="@android:color/darker_gray"/>
             <TextView
+                android:textStyle="bold"
                 android:layout_marginTop="16dp"
                 android:gravity="center"
                 android:text="@string/outgo_calls_chart"
@@ -116,6 +119,7 @@
                 android:background="@android:color/darker_gray"/>
 
             <TextView
+                android:textStyle="bold"
                 android:layout_marginTop="16dp"
                 android:gravity="center"
                 android:text="@string/call_time_chart"
@@ -132,6 +136,7 @@
                 android:layout_height="1dp"
                 android:background="@android:color/darker_gray"/>
             <TextView
+                android:textStyle="bold"
                 android:layout_marginTop="16dp"
                 android:gravity="center"
                 android:text="@string/incall_time_chart"
@@ -150,6 +155,7 @@
                 android:background="@android:color/darker_gray"/>
 
             <TextView
+                android:textStyle="bold"
                 android:layout_marginTop="16dp"
                 android:gravity="center"
                 android:text="@string/outcalls_time_chart"
@@ -178,6 +184,7 @@
                 android:background="@android:color/darker_gray"/>
 
             <TextView
+                android:textStyle="bold"
                 android:layout_marginTop="16dp"
                 android:gravity="center"
                 android:text="@string/contacts_chart_title"
@@ -194,6 +201,7 @@
                 android:layout_height="1dp"
                 android:background="@android:color/darker_gray"/>
             <TextView
+                android:textStyle="bold"
                 android:layout_marginTop="16dp"
                 android:gravity="center"
                 android:text="@string/sms_chart_title"

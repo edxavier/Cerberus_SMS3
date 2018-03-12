@@ -125,24 +125,25 @@ public class CallLogFragment extends Fragment implements CallLogView {
             setupAds();
         }
         checkSMSsettings();
-
     }
 
     public void checkSMSsettings() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            if (Utils.thereAreBlockedSmsNumbers() && !Utils.isDefaultSmsApp(getContext())) {
-                if(adView.isShown())
-                    recyclerCallList.setPadding(0, 100, 0, 90);
-                else
-                    recyclerCallList.setPadding(0, 100, 0, 0);
-                warning.setVisibility(View.VISIBLE);
-            }else {
-                if(adView.isShown())
-                    recyclerCallList.setPadding(0, 0, 0, 90);
-                else
-                    recyclerCallList.setPadding(0, 0, 0, 0);
-                warning.setVisibility(View.GONE);
-            }
+            try {
+                if (Utils.thereAreBlockedSmsNumbers() && !Utils.isDefaultSmsApp(getContext())) {
+                    if (adView.isShown())
+                        recyclerCallList.setPadding(0, 100, 0, 90);
+                    else
+                        recyclerCallList.setPadding(0, 100, 0, 0);
+                    warning.setVisibility(View.VISIBLE);
+                } else {
+                    if (adView.isShown())
+                        recyclerCallList.setPadding(0, 0, 0, 90);
+                    else
+                        recyclerCallList.setPadding(0, 0, 0, 0);
+                    warning.setVisibility(View.GONE);
+                }
+            }catch (Exception ignored){}
         }
 
         warning.setOnClickListener(v -> {
