@@ -97,7 +97,7 @@ public class MessagesServiceImpl implements MessagesService {
                     realm.executeTransaction(realm_trans -> {
                         //Cargar el historial para el numero en cuestion
                         RealmResults<MessagesHistoryRealm> msgs = realm.where(MessagesHistoryRealm.class)
-                                .equalTo("sms_phone_number", finalNumber).findAllSorted("sms_date", Sort.DESCENDING);
+                                .equalTo("sms_phone_number", finalNumber).findAll().sort("sms_date", Sort.DESCENDING);
                         MessagesHistoryRealm lastSMS = null;
                         if(msgs.isEmpty()) {
                             //+++++++++++++++++++++++++++++++++++++++++++++++PRIMER REGISTRO PARA UN NUMERO+++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -166,7 +166,7 @@ public class MessagesServiceImpl implements MessagesService {
 
     @Override
     public RealmResults<MessagesRealm> getMessagesFromRealm() {
-        return realmG.where(MessagesRealm.class).findAllSorted("last_update", Sort.DESCENDING);
+        return realmG.where(MessagesRealm.class).findAll().sort("last_update", Sort.DESCENDING);
     }
 
     @Override

@@ -102,7 +102,7 @@ public class ContactsServiceImpl implements ContactsService {
     @Override
     public RealmResults<ContactRealm> getContactsFromRealm() {
         return realmG.where(ContactRealm.class)
-                .distinct("contact_phone_number").sort("contact_name", Sort.ASCENDING);
+                .distinct("contact_phone_number").findAll().sort("contact_name", Sort.ASCENDING);
     }
 
     @Override
@@ -113,7 +113,7 @@ public class ContactsServiceImpl implements ContactsService {
                     .or()
                     .contains("contact_name", query, Case.INSENSITIVE)
                 .endGroup()
-                .distinct("contact_phone_number");
+                .distinct("contact_phone_number").findAll();
     }
 
 

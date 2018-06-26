@@ -91,9 +91,9 @@ public class CreateMessageActivity extends AppCompatActivity implements AdapterV
         Realm realm = Realm.getDefaultInstance();
         RealmResults<ContactRealm> res = realm.where(ContactRealm.class).findAll();
         RealmResults<CallsHistoryRealm> calls = realm.where(CallsHistoryRealm.class)
-                .distinct("call_phone_number");
+                .distinct("call_phone_number").findAll();
         RealmResults<MessagesHistoryRealm> msgs = realm
-                .where(MessagesHistoryRealm.class).distinct("sms_phone_number");
+                .where(MessagesHistoryRealm.class).distinct("sms_phone_number").findAll();
 
         for (ContactRealm re : res) {
             if (re.contact_photo_uri != null)

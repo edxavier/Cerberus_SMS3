@@ -2,6 +2,7 @@ package com.edxavier.cerberus_sms.fragments.checkOperator;
 
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
@@ -255,6 +256,7 @@ public class CheckOperatorFrg extends Fragment implements CheckOperatorView, Tex
 
     }
 
+    @SuppressLint("CheckResult")
     private void setupWidgets() {
         setupRecycler();
         backspaceArrow.setOnClickListener(view -> {
@@ -365,7 +367,7 @@ public class CheckOperatorFrg extends Fragment implements CheckOperatorView, Tex
     private void setupAutocomplete() {
 
         Realm realm = Realm.getDefaultInstance();
-        RealmResults<ContactRealm> result = realm.where(ContactRealm.class).findAllSorted("contact_name");
+        RealmResults<ContactRealm> result = realm.where(ContactRealm.class).findAll().sort("contact_name");
         //ArrayAdapter adapter = new ArrayAdapter(this,android.R.layout.simple_list_item_1,result);
 
         numberEntry.setThreshold(2);
@@ -420,7 +422,7 @@ public class CheckOperatorFrg extends Fragment implements CheckOperatorView, Tex
         if (!numberEntry.getText().toString().isEmpty()) {
             RealmResults<ContactRealm> result = realm.where(ContactRealm.class)
                     .contains("contact_phone_number", numberEntry.getText().toString())
-                    .findAllSorted("contact_name");
+                    .findAll().sort("contact_name");
 
             //ArrayAdapter adapter = new ArrayAdapter(this,android.R.layout.simple_list_item_1,result);
             adapter_realm = new AdapterContactSuggest(result, getActivity(), this);
@@ -432,7 +434,7 @@ public class CheckOperatorFrg extends Fragment implements CheckOperatorView, Tex
         } else {
             RealmResults<ContactRealm> result = realm.where(ContactRealm.class)
                     .contains("contact_phone_number", "---------")
-                    .findAllSorted("contact_name");
+                    .findAll().sort("contact_name");
 
             //ArrayAdapter adapter = new ArrayAdapter(this,android.R.layout.simple_list_item_1,result);
             adapter_realm = new AdapterContactSuggest(result, getActivity(), this);

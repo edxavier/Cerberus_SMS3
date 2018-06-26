@@ -1,5 +1,6 @@
 package com.edxavier.cerberus_sms;
 
+import android.annotation.TargetApi;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
@@ -150,6 +151,7 @@ public class DialerActivityV2 extends AppCompatActivity
                         .content(R.string.alert_info)
                         .positiveText(R.string.accept)
                         .onPositive(new MaterialDialog.SingleButtonCallback() {
+                            @TargetApi(Build.VERSION_CODES.M)
                             @Override
                             public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
                                 Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,

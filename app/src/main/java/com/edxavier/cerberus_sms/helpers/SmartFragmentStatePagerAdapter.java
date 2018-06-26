@@ -1,5 +1,6 @@
 package com.edxavier.cerberus_sms.helpers;
 
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
@@ -18,6 +19,7 @@ public abstract class SmartFragmentStatePagerAdapter extends FragmentStatePagerA
     }
 
     // Register the fragment when the item is instantiated
+    @NonNull
     @Override
     public Object instantiateItem(ViewGroup container, int position) {
         Fragment fragment = (Fragment) super.instantiateItem(container, position);

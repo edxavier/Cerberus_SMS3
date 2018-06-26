@@ -24,6 +24,12 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
+    <android.support.v7.widget.AppCompatImageView
+        android:scaleType="centerCrop"
+        app:srcCompat="@drawable/blue_gradient"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
     <RelativeLayout
         android:padding="4dp"
         android:layout_gravity="center"

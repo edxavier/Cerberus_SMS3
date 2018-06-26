@@ -34,18 +34,18 @@ public class StatisticsServiceimpl implements StatisticsService {
         realm = Realm.getDefaultInstance();
 
         this.callsRes = realm.where(CallsHistoryRealm.class)
-                .distinct("call_operator").sort("call_operator", Sort.ASCENDING);
+                .distinct("call_operator").findAll().sort("call_operator", Sort.ASCENDING);
         this.outgoingCallsRes = realm.where(CallsHistoryRealm.class)
                 .equalTo("call_direction", android.provider.CallLog.Calls.OUTGOING_TYPE)
-                .distinct("call_operator").sort("call_operator", Sort.ASCENDING);
+                .distinct("call_operator").findAll().sort("call_operator", Sort.ASCENDING);
         this.incomingCallsRes = realm.where(CallsHistoryRealm.class)
                 .equalTo("call_direction", android.provider.CallLog.Calls.INCOMING_TYPE)
-                .distinct("call_operator").sort("call_operator", Sort.ASCENDING);
+                .distinct("call_operator").findAll().sort("call_operator", Sort.ASCENDING);
 
         this.contactsRes = realm.where(ContactRealm.class)
-                .distinct("contact_operator").sort("contact_operator", Sort.ASCENDING);
+                .distinct("contact_operator").findAll().sort("contact_operator", Sort.ASCENDING);
         this.messagesRes = realm.where(MessagesHistoryRealm.class)
-                .distinct("sms_operator").sort("sms_operator", Sort.ASCENDING);
+                .distinct("sms_operator").findAll().sort("sms_operator", Sort.ASCENDING);
     }
 
     @Override

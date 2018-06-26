@@ -1,6 +1,7 @@
 package com.edxavier.cerberus_sms;
 
 import android.Manifest;
+import android.annotation.TargetApi;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -21,6 +22,7 @@ import agency.tango.materialintroscreen.animations.IViewTranslation;
 
 public class IntroductionActivity extends MaterialIntroActivity {
 
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

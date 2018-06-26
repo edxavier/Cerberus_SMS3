@@ -1,6 +1,7 @@
 package com.edxavier.cerberus_sms.fragments.callLog.impl;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.pm.PackageManager;
@@ -63,13 +64,12 @@ public class CalllogServiceImpl implements CallLogService {
     }
 
 
+    @SuppressLint("CheckResult")
     @Override
     public void syncCallsToRealm() {
         Flowable.fromCallable(() -> {
             Realm realm = Realm.getDefaultInstance();
-
             ArrayList<String> numbers = new ArrayList<>();
-
 
             ContentResolver cr = context.getContentResolver();
             String strOrder = CallLog.Calls.DATE + " ASC";
@@ -108,7 +108,7 @@ public class CalllogServiceImpl implements CallLogService {
                 realm.executeTransaction(realm_trans -> {
                     //Cargar el historial para el numero en cuestion
                     RealmResults<CallsHistoryRealm> calls = realm_trans.where(CallsHistoryRealm.class)
-                            .equalTo("call_phone_number", finalCallNumber).findAllSorted("call_date", Sort.DESCENDING);
+                            .equalTo("call_phone_number", finalCallNumber).findAll().sort("call_date", Sort.DESCENDING);
                     CallsHistoryRealm lastCall = null;
                     if(calls.isEmpty()) {
                         //+++++++++++++++++++++++++++++++++++++++++++++++PRIMER REGISTRO PARA UN NUMERO+++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -181,7 +181,7 @@ public class CalllogServiceImpl implements CallLogService {
     public RealmResults<CallsRealm> getCallsFromRealm() {
         //Log.e("EDER_H", String.valueOf(realmG.where(CallsHistoryRealm.class).count()));
         return realmG.where(CallsRealm.class)
-                .findAllSorted("last_update", Sort.DESCENDING);
+                .findAll().sort("last_update", Sort.DESCENDING);
 
     }
 

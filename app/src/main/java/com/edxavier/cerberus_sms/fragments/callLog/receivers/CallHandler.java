@@ -1,6 +1,7 @@
 package com.edxavier.cerberus_sms.fragments.callLog.receivers;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.PixelFormat;
 import android.os.Build;
 import android.provider.Settings;
@@ -13,7 +14,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.crashlytics.android.answers.Answers;
 import com.crashlytics.android.answers.CustomEvent;
@@ -22,17 +22,11 @@ import com.edxavier.cerberus_sms.db.realm.AreaCodeRealm;
 import com.edxavier.cerberus_sms.db.realm.CallsHistoryRealm;
 import com.edxavier.cerberus_sms.db.realm.CallsRealm;
 import com.edxavier.cerberus_sms.helpers.Constans;
-import com.edxavier.cerberus_sms.helpers.TextViewHelper;
 import com.edxavier.cerberus_sms.helpers.Utils;
-import com.google.android.gms.ads.AdListener;
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.InterstitialAd;
 import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.crash.FirebaseCrash;
-import com.pixplicity.easyprefs.library.Prefs;
 
 import java.util.Date;
-import java.util.Random;
 
 import io.realm.Realm;
 import io.realm.RealmResults;
@@ -56,13 +50,14 @@ public class CallHandler extends PhonecallReceiver {
     @Override
     protected void onIncomingCallStarted(Context ctx, String number, Date start) {
         super.onIncomingCallStarted(ctx, number, start);
+
         try {
             if (checkDrawPermission(ctx)) {
                 if (CallHandler.manager == null)
                     CallHandler.manager = (WindowManager) ctx.getSystemService(Context.WINDOW_SERVICE);
                 Realm realm = Realm.getDefaultInstance();
                 WindowManager.LayoutParams layoutParams = setupWM(ctx);
-                LayoutInflater layoutInflater = (LayoutInflater) ctx.getSystemService(LAYOUT_INFLATER_SERVICE);
+                // LayoutInflater layoutInflater = (LayoutInflater) ctx.getSystemService(LAYOUT_INFLATER_SERVICE);
                 //Verificar si existe una ventana flotante visible y removerla
                 if (CallHandler.view != null && CallHandler.view.isShown()) {
                     CallHandler.manager.removeView(CallHandler.view);
@@ -72,7 +67,9 @@ public class CallHandler extends PhonecallReceiver {
                     } catch (Exception ignored) {
                     }
                 }
-                CallHandler.view = layoutInflater.inflate(R.layout.floating_window_v2, null);
+                //CallHandler.view = layoutInflater.inflate(R.layout.floating_window_v2, null);
+                CallHandler.view = LayoutInflater.from(ctx).inflate(R.layout.floating_window_v2, null);
+
                 setTouchListener(layoutParams);
                 AppCompatImageView close = CallHandler.view.findViewById(R.id.close_floating);
                 AppCompatImageView bg = CallHandler.view.findViewById(R.id.imgBackground);
@@ -91,6 +88,7 @@ public class CallHandler extends PhonecallReceiver {
                         }
                     }
                 });
+                //if(number!=null){Log.e("EDER_N", number);}else{Log.e("EDER_N", "no number received");}
                 if (number != null) {
                     AreaCodeRealm areaCode = Utils.getOperadoraV4(number, ctx, realm);
                     if (areaCode != null) {
@@ -143,6 +141,7 @@ public class CallHandler extends PhonecallReceiver {
                 //fin de checkDraw Perms
             }
         }catch (Exception ignored){
+            Log.e("EDER", ignored.getMessage());
             if(ignored.getMessage()!=null)
                 Answers.getInstance().logCustom(new CustomEvent("Error: "+ignored.getMessage())
                         .putCustomAttribute("location", "onIncomingCallStarted"));
@@ -159,12 +158,12 @@ public class CallHandler extends PhonecallReceiver {
                     CallHandler.manager = (WindowManager) ctx.getSystemService(Context.WINDOW_SERVICE);
                 Realm realm = Realm.getDefaultInstance();
                 WindowManager.LayoutParams layoutParams = setupWM(ctx);
-                LayoutInflater layoutInflater = (LayoutInflater) ctx.getSystemService(LAYOUT_INFLATER_SERVICE);
+                // LayoutInflater layoutInflater = (LayoutInflater) ctx.getSystemService(LAYOUT_INFLATER_SERVICE);
                 if (CallHandler.view != null && CallHandler.view.isShown())
                     CallHandler.manager.removeView(CallHandler.view);
-                if (layoutInflater != null) {
-                    CallHandler.view = layoutInflater.inflate(R.layout.floating_window_v2, null);
-                }
+
+                CallHandler.view = LayoutInflater.from(ctx).inflate(R.layout.floating_window_v2, null);
+
                 //CallHandler.view = View.inflate(ctx.getApplicationContext(), R.layout.floating_window_v2, null);
                 setTouchListener(layoutParams);
                 AppCompatImageView close = (AppCompatImageView) CallHandler.view.findViewById(R.id.close_floating);
@@ -243,6 +242,7 @@ public class CallHandler extends PhonecallReceiver {
                 realm.close();
             }
         }catch (Exception ignored){
+            Log.e("EDER", ignored.getMessage());
             if(ignored.getMessage()!=null)
                 Answers.getInstance().logCustom(new CustomEvent("Error: "+ignored.getMessage())
                 .putCustomAttribute("location", "onOutgoingCallStarted"));
@@ -326,7 +326,7 @@ public class CallHandler extends PhonecallReceiver {
         //layoutParams.type = WindowManager.LayoutParams.TYPE_SYSTEM_ALERT;
         layoutParams.width = WindowManager.LayoutParams.WRAP_CONTENT;
         layoutParams.height = WindowManager.LayoutParams.WRAP_CONTENT;
-        layoutParams.alpha = 0.95f;
+        // layoutParams.alpha = 0.98f;
         layoutParams.packageName = ctx.getPackageName();
         layoutParams.buttonBrightness = 1f;
         layoutParams.windowAnimations = android.R.style.Animation_Dialog;
@@ -387,7 +387,7 @@ public class CallHandler extends PhonecallReceiver {
             realm2.executeTransaction(realm_trans -> {
                 //Cargar el historial para el numero en cuestion
                 RealmResults<CallsHistoryRealm> calls = realm_trans.where(CallsHistoryRealm.class)
-                        .equalTo("call_phone_number", number).findAllSorted("call_date", Sort.DESCENDING);
+                        .equalTo("call_phone_number", number).findAll().sort("call_date", Sort.DESCENDING);
                 CallsHistoryRealm lastCall = null;
                 if(calls.isEmpty()) {
                     //+++++++++++++++++++++++++++++++++++++++++++++++PRIMER REGISTRO PARA UN NUMERO+++++++++++++++++++++++++++++++++++++++++++++++++++

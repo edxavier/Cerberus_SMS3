@@ -14,10 +14,10 @@ public class MigrationRealm implements RealmMigration {
         RealmSchema schema = realm.getSchema();
 
         if (oldVersion == 1) {
-            schema.get("ContactRealm")
+            //schema.get("ContactRealm")
                     //.addField("contact_last_update", String.class);
-                    .addIndex("contact_phone_number");
-            oldVersion++;
+               //     .addIndex("contact_phone_number");
+            //oldVersion++;
         }
 
 

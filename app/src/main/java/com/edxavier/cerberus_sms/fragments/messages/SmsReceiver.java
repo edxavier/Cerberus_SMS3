@@ -128,7 +128,7 @@ public class SmsReceiver extends BroadcastReceiver {
                         realm.executeTransaction(realm_trans -> {
                             //Cargar el historial para el numero en cuestion
                             RealmResults<MessagesHistoryRealm> msgs = realm.where(MessagesHistoryRealm.class)
-                                    .equalTo("sms_phone_number", finalIncomingNum).findAllSorted("sms_date", Sort.DESCENDING);
+                                    .equalTo("sms_phone_number", finalIncomingNum).findAll().sort("sms_date", Sort.DESCENDING);
                             MessagesHistoryRealm lastSMS = null;
                             if (msgs.isEmpty()) {
                                 //+++++++++++++++++++++++++++++++++++++++++++++++PRIMER REGISTRO PARA UN NUMERO+++++++++++++++++++++++++++++++++++++++++++++++++++

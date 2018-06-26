@@ -29,7 +29,6 @@ public class MyOperatorService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        Log.e("EDER", "onCreate");
         callHandler = new CallHandler();
         IntentFilter filter = new IntentFilter();
         filter.addAction("android.intent.action.PHONE_STATE");

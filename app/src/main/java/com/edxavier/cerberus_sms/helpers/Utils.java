@@ -1,7 +1,6 @@
 package com.edxavier.cerberus_sms.helpers;
 
 
-import android.annotation.TargetApi;
 import android.content.ContentValues;
 import android.content.Context;
 import android.net.Uri;
@@ -9,22 +8,16 @@ import android.os.Build;
 import android.provider.Telephony;
 import android.telephony.TelephonyManager;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.amulyakhare.textdrawable.TextDrawable;
 import com.amulyakhare.textdrawable.util.ColorGenerator;
 import com.crashlytics.android.answers.Answers;
-import com.crashlytics.android.answers.BuildConfig;
 import com.crashlytics.android.answers.CustomEvent;
 import com.edxavier.cerberus_sms.db.realm.AreaCodeRealm;
 import com.edxavier.cerberus_sms.db.realm.BlackList;
 import com.edxavier.cerberus_sms.db.realm.ContactRealm;
 import com.edxavier.cerberus_sms.db.realm.Notifications;
 import com.google.firebase.crash.FirebaseCrash;
-
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
 
 import io.realm.Realm;
 import io.realm.RealmResults;
@@ -250,6 +243,7 @@ public class Utils {
         realm.close();
         return contact;
     }
+
 
     public static TextDrawable getAvatar(String contact_name){
         ColorGenerator generator = ColorGenerator.MATERIAL; // or use DEFAULT

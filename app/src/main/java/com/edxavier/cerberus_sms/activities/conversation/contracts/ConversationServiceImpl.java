@@ -28,7 +28,8 @@ public class ConversationServiceImpl implements ConversationService {
         //Realm realm = Realm.getDefaultInstance();
         RealmResults<MessagesHistoryRealm> res = realm.where(MessagesHistoryRealm.class)
                 .equalTo("sms_phone_number", number)
-                .findAllSorted("sms_date", Sort.DESCENDING);
+                .findAll()
+                .sort("sms_date", Sort.DESCENDING);
         //realm.close();
         return res;
     }

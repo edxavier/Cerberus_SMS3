@@ -7,13 +7,11 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.telephony.TelephonyManager;
 import android.util.Log;
-import android.view.View;
-import android.view.WindowManager;
 import android.widget.Toast;
 
+import com.android.internal.telephony.ITelephony;
 import com.edxavier.cerberus_sms.db.realm.BlackList;
 import com.edxavier.cerberus_sms.helpers.Utils;
-import com.google.firebase.crash.FirebaseCrash;
 
 import java.lang.reflect.Method;
 import java.util.Date;
@@ -37,35 +35,45 @@ import io.realm.Realm;
 
     @Override
     public void onReceive(Context context, Intent intent) {
+
         //We listen to two intents.  The new outgoing call only tells us of an outgoing call.  We use it to get the number.
+
         if (intent.getAction().equals("android.intent.action.NEW_OUTGOING_CALL")) {
             try {
-                savedNumber = intent.getExtras().getString("android.intent.extra.PHONE_NUMBER");
-            }catch (Exception ignored){}
+                savedNumber = intent.getStringExtra("android.intent.extra.PHONE_NUMBER");
+            }catch (Exception ignored){
+            }
         }
         else{
             String stateStr = null;
             String number = null;
             try{
-                number = intent.getExtras().getString(TelephonyManager.EXTRA_INCOMING_NUMBER);
-                stateStr = intent.getExtras().getString(TelephonyManager.EXTRA_STATE);
+                number = intent.getStringExtra(TelephonyManager.EXTRA_INCOMING_NUMBER);
+                // number = intent.getExtras().getString(TelephonyManager.EXTRA_INCOMING_NUMBER);
+                stateStr = intent.getStringExtra(TelephonyManager.EXTRA_STATE);
                 //Si es llamada entrante, verificar si es un numero bloqueado
                 if (stateStr != null && stateStr.equals(TelephonyManager.EXTRA_STATE_RINGING)) {
-                    Realm rlm = Realm.getDefaultInstance();
-                    rlm.beginTransaction();
-                    BlackList entry = rlm.where(BlackList.class)
-                            .equalTo("phone_number", Utils.formatPhoneNumber(number))
-                            .equalTo("block_incoming_call", true)
-                            .findFirst();
-                    if (entry != null) {
-                        disconnectPhoneItelephony(context);
-                        entry.block_calls_count += 1;
+                    if( number!= null) {
+                        Realm rlm = Realm.getDefaultInstance();
+                        String finalNumber = number;
+                        rlm.executeTransaction(realm -> {
+                            Log.e("EDER_blockCall", "Execute transaction");
+                            BlackList entry = rlm.where(BlackList.class)
+                                    .equalTo("phone_number", Utils.formatPhoneNumber(finalNumber))
+                                    .equalTo("block_incoming_call", true)
+                                    .findFirst();
+                            if (entry != null) {
+                                Log.e("EDER_blockCall", "call Function");
+                                disconnectPhoneItelephony(context);
+                                entry.block_calls_count += 1;
+                            }
+                        });
+                        rlm.close();
                     }
-                    rlm.commitTransaction();
-                    rlm.close();
-
                 }
-            }catch (Exception ignored){}
+            }catch (Exception ignored){
+                Log.e("EDER_intent", "ERR Llamada saliente " + ignored.getMessage());
+            }
 
                 int state = 0;
                 if (stateStr != null && stateStr.equals(TelephonyManager.EXTRA_STATE_IDLE)) {
@@ -91,9 +99,12 @@ import io.realm.Realm;
     //Incoming call-  goes from IDLE to RINGING when it rings, to OFFHOOK when it's answered, to IDLE when its hung up
     //Outgoing call-  goes from IDLE to OFFHOOK when it dials out, to IDLE when hung up
     public void onCallStateChanged(Context context, int state, String number) {
+
         if(lastState == state){
             //No change, debounce extras
-            return;
+            if(!(lastState == TelephonyManager.CALL_STATE_RINGING)) {
+                return;
+            }
         }
 
         switch (state) {
@@ -112,6 +123,7 @@ import io.realm.Realm;
                 }
                 break;
             case TelephonyManager.CALL_STATE_IDLE:
+
                 //Went to idle-  this is the end of a call.  What type depends on previous state(s)
                 if(lastState == TelephonyManager.CALL_STATE_RINGING){
                     //Ring but no pickup-  a miss
@@ -133,6 +145,9 @@ import io.realm.Realm;
     @SuppressWarnings({ "rawtypes", "unchecked" })
     private void disconnectPhoneItelephony(Context context) {
         try {
+            ITelephony telephonyService;
+            Log.e("EDER_blockCall", "Inicio");
+            /*
             String serviceManagerName = "android.os.ServiceManager";
             String serviceManagerNativeName = "android.os.ServiceManagerNative";
             String telephonyName = "com.android.internal.telephony.ITelephony";
@@ -159,8 +174,17 @@ import io.realm.Realm;
             telephonyEndCall = telephonyClass.getMethod("endCall");
             telephonyEndCall.invoke(telephonyObject);
 
+                 */
+            TelephonyManager tm = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
+            Class c = Class.forName(tm.getClass().getName());
+            Method m = c.getDeclaredMethod("getITelephony");
+            m.setAccessible(true);
+            telephonyService = (ITelephony) m.invoke(tm);
+            telephonyService.endCall();
+
         } catch (Exception e) {
             e.printStackTrace();
+            Toast.makeText(context, "No es posible desconectar la llamada", Toast.LENGTH_LONG).show();
         }
     }
 

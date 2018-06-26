@@ -224,7 +224,7 @@ public class NotificationHelper extends ContextWrapper {
         Realm realm = Realm.getDefaultInstance();
         RealmResults<MessagesHistoryRealm> res = realm.where(MessagesHistoryRealm.class)
                 .equalTo("sms_phone_number", number)
-                .equalTo("sms_read", Constans.MESSAGE_UNREAD).findAllSorted("sms_date", Sort.DESCENDING);
+                .equalTo("sms_read", Constans.MESSAGE_UNREAD).findAll().sort("sms_date", Sort.DESCENDING);
         realm.close();
         return res;
     }

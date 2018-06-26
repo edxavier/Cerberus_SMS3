@@ -150,7 +150,7 @@ encontrado.
     <string name="search_contact">Buscar contacto</string>
     <string name="sent_dest_required">Ingrese un número destino</string>
     <string name="ads_notice">Espacio publicitario…</string>
-    <string name="delete_sms_content" >Se eliminaran los registros de mensajes de la aplicación y del teléfono, ¿deseas continuar?</string>
+    <string name="delete_sms_content">Se eliminaran los registros de mensajes de la aplicación y del teléfono, ¿deseas continuar?</string>
     <string name="sms_warn1">Solo puede ejecutar esta acción si Verifica Operador es tu aplicación SMS por predeterminada</string>
     <string name="accept">Aceptar</string>
 
